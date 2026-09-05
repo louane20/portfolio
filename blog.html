@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Notes — Nawal Guerd</title>
+<meta name="description" content="Notes on Kubernetes, GitOps and Zero Trust security from a DevOps engineer working in production.">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html#top" class="brand"><span class="dot"></span>nawal@infra:~$</a>
+    <ul class="nav-links">
+      <li><a href="index.html#profile">Profile</a></li>
+      <li><a href="index.html#stack">Stack</a></li>
+      <li><a href="index.html#experience">Experience</a></li>
+      <li><a href="index.html#research">Research</a></li>
+      <li><a href="index.html#projects">Projects</a></li>
+      <li><a href="blog.html" class="active">Field Notes</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+  </div>
+</header>
+
+<main>
+<section class="hero" style="padding-bottom:3rem;">
+  <div class="wrap">
+    <span class="section-tag">// field notes</span>
+    <h1 style="font-size:clamp(2rem,4.5vw,3rem); max-width:16ch;">Writing from production</h1>
+    <p class="role" style="max-width:56ch;">Notes from the platform work I actually do — Kubernetes, GitOps and network security in environments that don't forgive shortcuts.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="blog-grid">
+      <a class="panel blog-card" href="posts/zero-trust-5g.html">
+        <span class="meta">RESEARCH · 8 MIN READ · MAR 2025</span>
+        <h3>Zero Trust microsegmentation for cloud-native 5G networks</h3>
+        <p>What "Zero Trust" actually means once you have to enforce it at 5G scale — and how service mesh and CNI layers can do it together.</p>
+        <span class="read">Read the article →</span>
+      </a>
+      <a class="panel blog-card" href="posts/airgapped-kubernetes.html">
+        <span class="meta">PLATFORM · 7 MIN READ · JAN 2025</span>
+        <h3>Operating Kubernetes behind an air gap</h3>
+        <p>Lessons from running production clusters with no direct internet access — image mirroring, GitOps without a live registry, and the DMZ patterns that make it work.</p>
+        <span class="read">Read the article →</span>
+      </a>
+      <a class="panel blog-card" href="posts/gitops-multi-dc.html">
+        <span class="meta">DELIVERY · 6 MIN READ · DEC 2024</span>
+        <h3>GitOps across multiple datacenters with Argo CD</h3>
+        <p>Patterns for keeping several clusters, several datacenters and one source of truth in agreement — without a 2am reconciliation surprise.</p>
+        <span class="read">Read the article →</span>
+      </a>
+    </div>
+
+    <div class="panel" style="margin-top:2.5rem; text-align:center; padding:2.5rem;">
+      <p style="margin:0; font-family:'IBM Plex Mono',monospace; font-size:0.9rem; color:var(--text-faint);">more notes in progress — next up: Cilium network policies in multi-tenant clusters.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span class="mono">© 2026 Nawal Guerd</span>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="mailto:guerd.nawal@gmail.com">Email</a>
+      <a href="https://www.linkedin.com/in/nawal-guerd-140b191ba" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>
