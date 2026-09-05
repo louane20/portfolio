@@ -1,1 +1,471 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nawal Guerd — DevOps Engineer, Cloud-Native Infrastructure & Zero Trust Security</title>
+<meta name="description" content="DevOps engineer specializing in Kubernetes, GitOps, and Zero Trust security for cloud-native and 5G infrastructure. Based in Algiers, Algeria.">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="#top" class="brand"><span class="dot"></span>nawal@infra:~$</a>
+    <ul class="nav-links">
+      <li><a href="#profile">Profile</a></li>
+      <li><a href="#stack">Stack</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#field-notes">Field Notes</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="hero-eyebrow reveal"><span class="pulse"></span>available for DevOps &amp; platform engineering roles</div>
+      <h1 class="reveal d1">Guerd Nawal<br><span>DevOps Engineer</span></h1>
+      <p class="role reveal d2">I build and secure the platforms other teams ship on — Kubernetes, GitOps and Zero Trust networking for cloud-native and telecom-grade infrastructure.</p>
+      <div class="hero-cta reveal d3">
+        <a class="btn primary" href="mailto:guerd.nawal@gmail.com">Get in touch</a>
+        <a class="btn" href="https://github.com/louane20" target="_blank" rel="noopener">GitHub ↗</a>
+        <a class="btn" href="https://www.linkedin.com/in/nawal-guerd-140b191ba" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </div>
+    </div>
+
+    <div class="panel console reveal d4">
+      <div class="console-head">
+        <span>system.status</span>
+        <span>El-Biar, Algiers, DZ</span>
+      </div>
+      <div class="console-row"><span class="k">role</span><span class="v">DevOps Engineer @ ATM Mobilis</span></div>
+      <div class="console-row"><span class="k">since</span><span class="v">Nov 2024</span></div>
+      <div class="console-row"><span class="k">kubernetes</span><span class="v status-ok">operational</span></div>
+      <div class="console-row"><span class="k">gitops</span><span class="v status-ok">argo-cd · synced</span></div>
+      <div class="console-row"><span class="k">network policy</span><span class="v status-ok">zero-trust enforced</span></div>
+      <div class="console-row"><span class="k">observability</span><span class="v status-ok">prometheus · grafana · loki</span></div>
+      <div class="console-row"><span class="k">research</span><span class="v">IEEE WCNC 2025</span></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><div class="num">1</div><div class="label">IEEE conference paper</div></div>
+      <div class="stat"><div class="num">5</div><div class="label">certifications</div></div>
+      <div class="stat"><div class="num">2/69</div><div class="label">bachelor's class rank</div></div>
+      <div class="stat"><div class="num">3</div><div class="label">languages spoken</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROFILE ================= -->
+<section id="profile">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// profile</span>
+      <h2>Infrastructure that stays up, and stays out.</h2>
+    </div>
+    <p style="font-size:1.05rem; max-width:70ch;">I'm a Computer Systems Security graduate working in DevOps, where I design and operate secure, scalable production environments end to end. My day-to-day spans Kubernetes platform engineering, infrastructure automation with Ansible, GitOps delivery with Argo CD, and network security with Cilium — often inside air-gapped and multi-datacenter environments where "it works on my machine" isn't an option.</p>
+      <p style="font-size:1.05rem; max-width:70ch;">Before DevOps, I spent two years researching Zero Trust architectures for 5G networks, which is where the security instincts come from: I don't just deploy a cluster, I think about who — or what — is allowed to talk to it, and why. I work across development, security, network and infrastructure teams to get systems to production readiness without cutting corners on either reliability or access control.</p>
+  </div>
+</section>
+
+<!-- ================= STACK ================= -->
+<section id="stack">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// stack</span>
+      <h2>The stack, layer by layer</h2>
+      <p>Organized the way I actually think about a platform — from the wire up to what a user hits. Click a layer to expand it.</p>
+    </div>
+
+    <div class="stack-layers">
+
+      <div class="layer open">
+        <button class="layer-head">
+          <span class="li-left"><span class="layer-idx">06</span><span class="layer-name">Traffic &amp; access</span></span>
+          <span class="li-left"><span class="layer-count">6 tools</span><span class="layer-chevron">▾</span></span>
+        </button>
+        <div class="layer-body">
+          <div class="layer-tags">
+            <span class="tag">Nginx</span><span class="tag">F5</span><span class="tag">Kong</span><span class="tag">MetalLB</span><span class="tag">Istio</span><span class="tag">Service Mesh</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layer">
+        <button class="layer-head">
+          <span class="li-left"><span class="layer-idx">05</span><span class="layer-name">Observability</span></span>
+          <span class="li-left"><span class="layer-count">5 tools</span><span class="layer-chevron">▾</span></span>
+        </button>
+        <div class="layer-body">
+          <div class="layer-tags">
+            <span class="tag">Prometheus</span><span class="tag">Grafana</span><span class="tag">Loki</span><span class="tag">Promtail</span><span class="tag">K6</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layer">
+        <button class="layer-head">
+          <span class="li-left"><span class="layer-idx">04</span><span class="layer-name">Delivery &amp; automation</span></span>
+          <span class="li-left"><span class="layer-count">6 tools</span><span class="layer-chevron">▾</span></span>
+        </button>
+        <div class="layer-body">
+          <div class="layer-tags">
+            <span class="tag">Argo CD</span><span class="tag">GitOps</span><span class="tag">GitLab CI/CD</span><span class="tag">Ansible</span><span class="tag">Docker Compose</span><span class="tag">HashiCorp Vault</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layer">
+        <button class="layer-head">
+          <span class="li-left"><span class="layer-idx">03</span><span class="layer-name">Orchestration</span></span>
+          <span class="li-left"><span class="layer-count">4 tools</span><span class="layer-chevron">▾</span></span>
+        </button>
+        <div class="layer-body">
+          <div class="layer-tags">
+            <span class="tag">Kubernetes</span><span class="tag">kubeadm</span><span class="tag">Docker</span><span class="tag">containerd</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layer">
+        <button class="layer-head">
+          <span class="li-left"><span class="layer-idx">02</span><span class="layer-name">Data &amp; messaging</span></span>
+          <span class="li-left"><span class="layer-count">5 tools</span><span class="layer-chevron">▾</span></span>
+        </button>
+        <div class="layer-body">
+          <div class="layer-tags">
+            <span class="tag">PostgreSQL</span><span class="tag">Redis</span><span class="tag">Kafka / Strimzi</span><span class="tag">ClickHouse</span><span class="tag">Oracle</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layer">
+        <button class="layer-head">
+          <span class="li-left"><span class="layer-idx">01</span><span class="layer-name">Network &amp; security</span></span>
+          <span class="li-left"><span class="layer-count">8 tools</span><span class="layer-chevron">▾</span></span>
+        </button>
+        <div class="layer-body">
+          <div class="layer-tags">
+            <span class="tag">Cilium</span><span class="tag">Calico</span><span class="tag">Zero Trust</span><span class="tag">DMZ / Segmentation</span><span class="tag">Snort</span><span class="tag">Wireshark</span><span class="tag">Nmap</span><span class="tag">OpenVAS</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:2.5rem; display:flex; flex-wrap:wrap; gap:0.5rem;">
+      <span class="tag">Python</span><span class="tag">Node.js</span><span class="tag">C</span><span class="tag">PHP</span><span class="tag">Shell Scripting</span><span class="tag">Windows Server</span><span class="tag">Linux</span><span class="tag">Active Directory</span><span class="tag">5G Core / RAN</span><span class="tag">O-RAN</span><span class="tag">3GPP Standards</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EXPERIENCE ================= -->
+<section id="experience">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// experience</span>
+      <h2>Where I've built things</h2>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-date mono">11/2024 — Present</div>
+        <div>
+          <div class="tl-role">DevOps Engineer</div>
+          <div class="tl-org">ATM Mobilis · Algiers, Algeria</div>
+          <ul>
+            <li>Deploy and operate production-grade <b>Kubernetes clusters</b> with <b>kubeadm</b>, including in <b>air-gapped and restricted-connectivity environments</b> with controlled connectivity through DMZ and gateway components.</li>
+            <li>Design <b>GitOps</b> workflows with <b>Argo CD</b> and GitLab for controlled, auditable application deployments, backed by <b>GitLab CI/CD</b> pipelines for build, test and containerization.</li>
+            <li>Automate infrastructure provisioning and configuration with <b>Ansible</b>, and enforce <b>Zero Trust</b> network policies and segmentation with <b>Cilium</b>.</li>
+            <li>Contribute to <b>multi-datacenter Kubernetes architectures</b> — inter-DC connectivity, high availability, and traffic exposure via <b>MetalLB, F5, Kong and Nginx</b>.</li>
+            <li>Run the observability stack (<b>Prometheus, Grafana, Loki</b>) and administer <b>Kafka/Strimzi, PostgreSQL, Redis and HashiCorp Vault</b>; load-test with <b>K6</b> and chase down the bottlenecks it finds.</li>
+            <li>Work daily across Development, Security, Network and Infrastructure teams on platform engineering, troubleshooting and documentation.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date mono">07/2022 — 10/2022</div>
+        <div>
+          <div class="tl-role">Cybersecurity Bootcamp</div>
+          <div class="tl-org">Cybertalents · Remote</div>
+          <ul>
+            <li>Trained across network security, penetration testing and vulnerability assessment with industry-standard tooling and methodology.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date mono">07/2022</div>
+        <div>
+          <div class="tl-role">Summer Research Internship</div>
+          <div class="tl-org">Sonatrach · Algiers, Algeria</div>
+          <ul>
+            <li>Assessed IT infrastructure across multiple departments and proposed an open-source, containerized video surveillance solution for enterprise deployment, including its security and scalability trade-offs.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date mono">07/2020 — 08/2020</div>
+        <div>
+          <div class="tl-role">Summer Internship</div>
+          <div class="tl-org">ManyDesigns Afrique · Algiers, Algeria</div>
+          <ul>
+            <li>Deployed enterprise web server infrastructure and designed a local network architecture with its access control policies.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RESEARCH / PUBLICATIONS ================= -->
+<section id="research">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// research</span>
+      <h2>Published research</h2>
+    </div>
+
+    <div class="panel pub-panel">
+      <div>
+        <span class="pub-meta">IEEE WCNC 2025 · Dubai, UAE · March 2025</span>
+        <div class="pub-title">A Multi-Layered Zero Trust Microsegmentation Solution for Cloud-Native 5G &amp; Beyond Networks</div>
+        <div class="pub-authors">Chafika Benzaid, <b>Nawal Guerd</b>, Nour El Houda Rehouma, Khaled Zeraoulia, Tarik Taleb</div>
+      </div>
+      <ul class="pub-list">
+        <li>Proposed <b>THAALOUB</b>, a Zero Trust framework delivering 3GPP-compliant, end-to-end security in cloud-native 5G/B5G networks.</li>
+        <li>Combined <b>service mesh</b> and <b>CNI</b> technologies for multi-layered microsegmentation and intent-based access control.</li>
+        <li>Validated experimentally, showing an improved security posture with minimal added latency or resource overhead.</li>
+      </ul>
+      <a class="pub-link" href="http://www.mosaic-lab.org/uploads/papers/8c23544f-09c9-4b87-b511-b7deb5bdc908.pdf" target="_blank" rel="noopener">Read the paper (PDF) →</a>
+    </div>
+
+    <p style="margin-top:1.5rem; font-size:0.92rem;">This work grew out of my master's thesis, <em>Design and Implementation of a Zero Trust Security Solution for 5G Networks</em>, at USTHB — where I also built an automated deployment application for 5G infrastructure and cluster management, and implemented the resulting Zero Trust policies with Istio.</p>
+  </div>
+</section>
+
+<!-- ================= PROJECTS ================= -->
+<section id="projects">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// projects</span>
+      <h2>Selected projects</h2>
+    </div>
+
+    <div class="grid-cards">
+      <div class="panel card">
+        <span class="cap">2024</span>
+        <h3>DDoS Detection &amp; Mitigation in SDN</h3>
+        <p>Built a Software-Defined Network with Mininet and the Ryu controller, generated a training dataset, and applied a Random Forest classifier to detect DDoS traffic with an automated real-time mitigation module.</p>
+        <div class="tags"><span class="tag">Mininet</span><span class="tag">Ryu</span><span class="tag">Machine Learning</span></div>
+      </div>
+
+      <div class="panel card">
+        <span class="cap">2024</span>
+        <h3>Security of Microservices in the Cloud</h3>
+        <p>Compared Zero Trust, perimeter-based security and DevSecOps approaches for microservices, then built a security framework for a microservices architecture deployed on Microsoft Azure.</p>
+        <div class="tags"><span class="tag">Azure</span><span class="tag">Zero Trust</span><span class="tag">DevSecOps</span></div>
+      </div>
+
+      <div class="panel card">
+        <span class="cap">2024</span>
+        <h3>Black-Box Penetration Test — USTHB</h3>
+        <p>Led a simulated security audit of the Faculty of Computer Science: drafted the engagement contract, ran black-box tests against industry standards, and wrote the full audit report.</p>
+        <div class="tags"><span class="tag">Pentesting</span><span class="tag">Reporting</span></div>
+      </div>
+
+      <div class="panel card">
+        <span class="cap">2024</span>
+        <h3>Intrusion Detection with Snort</h3>
+        <p>Simulated an attack on Windows Server 2012 R2 from Kali Linux, then deployed and tuned Snort on Ubuntu with custom alert rules to detect it.</p>
+        <div class="tags"><span class="tag">Snort</span><span class="tag">Kali Linux</span></div>
+      </div>
+
+      <div class="panel card">
+        <span class="cap">2024</span>
+        <h3>Enterprise VPN Deployment</h3>
+        <p>Designed a three-tier VPN architecture — client, Active Directory server, and gateway — for secure remote access with proper authentication and encryption.</p>
+        <div class="tags"><span class="tag">Windows Server</span><span class="tag">Active Directory</span></div>
+      </div>
+
+      <div class="panel card">
+        <span class="cap">2023</span>
+        <h3>Defender AV Benchmark on Azure</h3>
+        <p>Ran a comparative analysis of enterprise antivirus solutions, then configured and tuned Microsoft Defender in Azure with custom security policies.</p>
+        <div class="tags"><span class="tag">Azure</span><span class="tag">Endpoint Security</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CERTS + AWARDS ================= -->
+<section id="credentials">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// credentials</span>
+      <h2>Certifications &amp; recognition</h2>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:3rem;" class="grid-cards-outer">
+      <div>
+        <h3 style="font-size:1rem; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; margin-bottom:0.5rem; font-weight:500;">certifications</h3>
+        <div class="list-panel">
+          <div class="list-row"><span class="name">Certified Kubernetes Administrator (CKA) Course</span><span class="org">KodeKloud</span><span class="date">08/2025</span></div>
+          <div class="list-row"><span class="name">GitLab CI Fundamentals</span><span class="org">GitLab</span><span class="date">11/2024</span></div>
+          <div class="list-row"><span class="name">Next-Generation Cyber Security</span><span class="org">Huawei</span><span class="date">08/2024</span></div>
+          <div class="list-row"><span class="name">Cybersecurity Essentials</span><span class="org">CISCO</span><span class="date">08/2023</span></div>
+          <div class="list-row"><span class="name">Fundamentals of Deep Learning</span><span class="org">NVIDIA</span><span class="date">12/2022</span></div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-size:1rem; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; margin-bottom:0.5rem; font-weight:500;">awards</h3>
+        <div class="list-panel">
+          <div class="list-row"><span class="name">Young Entrepreneur League 2023 — Finalist</span><span class="org">Injaz El Djazair</span><span class="date">2023</span></div>
+          <div class="list-row"><span class="name">HackINI CTF, Edition 12</span><span class="org">Shellmate / ESI</span><span class="date">2023</span></div>
+          <div class="list-row"><span class="name">JunctionX Algiers</span><span class="org">MOBORN Tourism</span><span class="date">2021</span></div>
+        </div>
+      </div>
+    </div>
+    <style>@media (max-width:760px){ .grid-cards-outer{ grid-template-columns:1fr !important; } }</style>
+  </div>
+</section>
+
+<!-- ================= EDUCATION ================= -->
+<section id="education">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// education</span>
+      <h2>Education</h2>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-date mono">2022 — 2024</div>
+        <div>
+          <div class="tl-role">Master's Degree, Computer Systems Security</div>
+          <div class="tl-org">USTHB · Algiers, Algeria</div>
+          <p style="margin-bottom:0.7rem;">Thesis: <em>Design and Implementation of a Zero Trust Security Solution for 5G Networks</em> — led to the IEEE WCNC 2025 publication.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date mono">2019 — 2022</div>
+        <div>
+          <div class="tl-role">Bachelor's Degree, Mathematics &amp; Computer Science</div>
+          <div class="tl-org">USTHB · Telecommunications &amp; Networks · Class rank 2/69</div>
+          <p style="margin-bottom:0.7rem;">Capstone: containerized a video-surveillance SOA application with Docker Compose, built full Grafana/cAdvisor/Node Exporter/Prometheus monitoring, and added a Deepstack-powered alerting module.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FIELD NOTES (BLOG) ================= -->
+<section id="field-notes">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// field notes</span>
+      <h2>Writing from production</h2>
+      <p>Notes from the platform work I actually do — Kubernetes, GitOps and network security in environments that don't forgive shortcuts.</p>
+    </div>
+
+    <div class="blog-grid">
+      <a class="panel blog-card" href="posts/zero-trust-5g.html">
+        <span class="meta">RESEARCH · 8 MIN READ</span>
+        <h3>Zero Trust microsegmentation for cloud-native 5G networks</h3>
+        <p>What "Zero Trust" actually means once you have to enforce it at 5G scale — and how service mesh and CNI layers can do it together.</p>
+        <span class="read">Read the article →</span>
+      </a>
+      <a class="panel blog-card" href="posts/airgapped-kubernetes.html">
+        <span class="meta">PLATFORM · 7 MIN READ</span>
+        <h3>Operating Kubernetes behind an air gap</h3>
+        <p>Lessons from running production clusters with no direct internet access — image mirroring, GitOps without a live registry, and the DMZ patterns that make it work.</p>
+        <span class="read">Read the article →</span>
+      </a>
+      <a class="panel blog-card" href="posts/gitops-multi-dc.html">
+        <span class="meta">DELIVERY · 6 MIN READ</span>
+        <h3>GitOps across multiple datacenters with Argo CD</h3>
+        <p>Patterns for keeping several clusters, several datacenters and one source of truth in agreement — without a 2am reconciliation surprise.</p>
+        <span class="read">Read the article →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LANGUAGES / INTERESTS ================= -->
+<section id="about">
+  <div class="wrap" style="display:grid; grid-template-columns:1fr 1fr; gap:3rem;">
+    <div>
+      <span class="section-tag">// languages</span>
+      <div class="list-panel" style="margin-top:1rem;">
+        <div class="list-row"><span class="name">Arabic</span><span class="date">Native</span><span></span></div>
+        <div class="list-row"><span class="name">French</span><span class="date">Fluent</span><span></span></div>
+        <div class="list-row"><span class="name">English</span><span class="date">Proficient</span><span></span></div>
+      </div>
+    </div>
+    <div>
+      <span class="section-tag">// leadership &amp; interests</span>
+      <p style="margin-top:1rem;">IT Team Lead at <b style="color:var(--text);">Openminds Club, USTHB</b> (2020–2023), organizing Install Party and Hacktoberfest events and running open-source workshops. Outside of infrastructure: CTF competitions, technical reading, research conferences, and — deliberately unrelated to servers — gardening.</p>
+    </div>
+  </div>
+  <style>@media (max-width:760px){ #about .wrap{ grid-template-columns:1fr !important; } }</style>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section id="contact">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// contact</span>
+      <h2>Let's talk infrastructure</h2>
+      <p>Open to DevOps, platform engineering and cloud security roles. The fastest way to reach me is email.</p>
+    </div>
+
+    <div class="contact">
+      <div>
+        <div class="contact-row">
+          <span class="k">email</span>
+          <span style="display:flex; align-items:center; gap:0.6rem;">
+            <a class="v" href="mailto:guerd.nawal@gmail.com">guerd.nawal@gmail.com</a>
+            <button class="copy-btn" data-copy="guerd.nawal@gmail.com">copy</button>
+          </span>
+        </div>
+        <div class="contact-row"><span class="k">phone</span><a class="v" href="tel:+213661908059">+213 661 90 80 59</a></div>
+        <div class="contact-row"><span class="k">location</span><span class="v">El-Biar, Algiers, Algeria</span></div>
+      </div>
+      <div>
+        <div class="contact-row"><span class="k">linkedin</span><a class="v" href="https://www.linkedin.com/in/nawal-guerd-140b191ba" target="_blank" rel="noopener">nawal-guerd-140b191ba ↗</a></div>
+        <div class="contact-row"><span class="k">github</span><a class="v" href="https://github.com/louane20" target="_blank" rel="noopener">louane20 ↗</a></div>
+        <div class="contact-row"><span class="k">status</span><span class="v status-ok">open to opportunities</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span class="mono">© 2026 Nawal Guerd — built by hand, deployed like everything else I ship.</span>
+    <div class="footer-links">
+      <a href="blog.html">Field Notes</a>
+      <a href="mailto:guerd.nawal@gmail.com">Email</a>
+      <a href="https://www.linkedin.com/in/nawal-guerd-140b191ba" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>
