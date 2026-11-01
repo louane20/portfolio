@@ -37,7 +37,7 @@ body {
 }
 
 .js body {
-  padding-bottom: var(--pager-h);
+  padding-bottom: calc(var(--pager-h) + env(safe-area-inset-bottom, 0px));
 }
 
 h1,

@@ -9,6 +9,7 @@
     "custom-property-empty-line-before": null,
     "value-keyword-case": ["lower", { "ignoreProperties": ["font-family"] }],
     "font-family-name-quotes": "always-where-recommended",
-    "media-feature-range-notation": "context"
+    "media-feature-range-notation": "context",
+    "length-zero-no-unit": [true, { "ignoreFunctions": ["env"] }]
   }
 }
