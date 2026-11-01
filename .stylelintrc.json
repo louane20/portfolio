@@ -1,0 +1,14 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "rules": {
+    "selector-class-pattern": null,
+    "custom-property-pattern": null,
+    "no-descending-specificity": null,
+    "declaration-no-important": null,
+    "property-no-vendor-prefix": [true, { "ignoreProperties": ["/text-size-adjust/"] }],
+    "custom-property-empty-line-before": null,
+    "value-keyword-case": ["lower", { "ignoreProperties": ["font-family"] }],
+    "font-family-name-quotes": "always-where-recommended",
+    "media-feature-range-notation": "context"
+  }
+}
