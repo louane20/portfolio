@@ -1,0 +1,313 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://louane20.github.io/portfolio/schema/profile.json",
+  "title": "Portfolio content",
+  "description": "Schema for content/profile.yaml. Every translatable field must exist in English and French.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["site", "person", "hero", "about", "skills", "experience", "research", "projects", "credentials", "pipeline", "notes", "interests", "bugs", "contact", "see_also"],
+  "$defs": {
+    "i18n": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["en", "fr"],
+      "properties": {
+        "en": { "type": "string", "minLength": 1 },
+        "fr": { "type": "string", "minLength": 1 }
+      }
+    },
+    "text": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        { "$ref": "#/$defs/i18n" }
+      ]
+    },
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "month": {
+      "oneOf": [
+        { "type": "integer", "minimum": 1990, "maximum": 2100 },
+        { "type": "string", "pattern": "^(19|20)\\d{2}(-(0[1-9]|1[0-2]))?$" }
+      ]
+    },
+    "url": { "type": "string", "pattern": "^https://[^\\s]+$" },
+    "heading": { "$ref": "#/$defs/i18n" },
+    "fileList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "path", "name", "issuer", "date"],
+        "properties": {
+          "id": { "$ref": "#/$defs/id" },
+          "path": { "type": "string", "pattern": "^/[a-z0-9/._-]+$" },
+          "name": { "$ref": "#/$defs/text" },
+          "issuer": { "type": "string" },
+          "date": { "$ref": "#/$defs/month" }
+        }
+      }
+    }
+  },
+  "properties": {
+    "site": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command", "section", "manual", "title", "description", "url", "repository", "resume"],
+      "properties": {
+        "command": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+        "section": { "type": "integer", "minimum": 1, "maximum": 9 },
+        "manual": { "$ref": "#/$defs/i18n" },
+        "title": { "$ref": "#/$defs/i18n" },
+        "description": {
+          "allOf": [
+            { "$ref": "#/$defs/i18n" },
+            { "type": "object", "properties": { "en": { "type": "string", "maxLength": 200 }, "fr": { "type": "string", "maxLength": 220 } } }
+          ]
+        },
+        "url": { "$ref": "#/$defs/url" },
+        "repository": { "type": "string", "pattern": "^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$" },
+        "resume": { "type": "string", "pattern": "^[A-Za-z0-9._-]+\\.pdf$" }
+      }
+    },
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "given_name", "family_name", "role", "employer", "location", "timezone", "email", "links", "availability"],
+      "properties": {
+        "name": { "type": "string" },
+        "given_name": { "type": "string" },
+        "family_name": { "type": "string" },
+        "role": { "$ref": "#/$defs/i18n" },
+        "employer": { "type": "string" },
+        "location": { "$ref": "#/$defs/i18n" },
+        "timezone": { "type": "string", "pattern": "^[A-Za-z]+/[A-Za-z_]+$" },
+        "email": { "type": "string", "pattern": "^[^@\\s]+@[^@\\s]+\\.[a-z]{2,}$" },
+        "phone": { "type": "string", "pattern": "^\\+[0-9 ]{8,20}$" },
+        "phone_display": { "enum": ["hidden", "reveal", "visible"] },
+        "links": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["github", "linkedin"],
+          "properties": {
+            "github": { "$ref": "#/$defs/url" },
+            "linkedin": { "$ref": "#/$defs/url" }
+          }
+        },
+        "availability": { "$ref": "#/$defs/i18n" }
+      }
+    },
+    "hero": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tagline", "synopsis", "argument"],
+      "properties": {
+        "tagline": { "$ref": "#/$defs/i18n" },
+        "synopsis": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" } },
+        "argument": { "type": "string" }
+      }
+    },
+    "about": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "paragraphs", "environment"],
+      "properties": {
+        "heading": { "$ref": "#/$defs/heading" },
+        "paragraphs": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/i18n" } },
+        "environment": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["key", "value"],
+            "properties": {
+              "key": { "type": "string", "pattern": "^[A-Z_]+$" },
+              "value": { "$ref": "#/$defs/text" }
+            }
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "items"],
+      "properties": {
+        "heading": { "$ref": "#/$defs/heading" },
+        "intro": { "$ref": "#/$defs/i18n" },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "long", "args", "text"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "short": { "type": "string", "pattern": "^-[a-zA-Z0-9]$" },
+              "long": { "type": "string", "pattern": "^--[a-z0-9-]+$" },
+              "args": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+              "text": { "$ref": "#/$defs/i18n" },
+              "evidence": { "type": "array", "items": { "$ref": "#/$defs/id" } }
+            }
+          }
+        }
+      }
+    },
+    "experience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "lanes", "items"],
+      "properties": {
+        "heading": { "$ref": "#/$defs/heading" },
+        "lanes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label"],
+            "properties": { "id": { "$ref": "#/$defs/id" }, "label": { "type": "string" } }
+          }
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "lane", "commit", "title", "org", "start"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "lane": { "$ref": "#/$defs/id" },
+              "refs": { "type": "array", "items": { "type": "string" } },
+              "commit": { "type": "string", "maxLength": 72 },
+              "title": { "$ref": "#/$defs/text" },
+              "org": { "type": "string" },
+              "place": { "$ref": "#/$defs/text" },
+              "start": { "$ref": "#/$defs/month" },
+              "end": { "oneOf": [{ "$ref": "#/$defs/month" }, { "const": "present" }] },
+              "open": { "type": "boolean" },
+              "details": { "type": "array", "items": { "$ref": "#/$defs/i18n" } }
+            }
+          }
+        }
+      }
+    },
+    "research": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "paper", "thesis"],
+      "properties": {
+        "heading": { "$ref": "#/$defs/heading" },
+        "paper": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title", "authors", "venue", "short_venue", "location", "dates", "year", "doi", "summary", "bibtex_key"],
+          "properties": {
+            "title": { "type": "string" },
+            "authors": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+            "venue": { "type": "string" },
+            "short_venue": { "type": "string" },
+            "location": { "$ref": "#/$defs/i18n" },
+            "dates": { "$ref": "#/$defs/i18n" },
+            "year": { "type": "integer" },
+            "pages": { "type": "string" },
+            "doi": { "type": "string", "pattern": "^10\\.\\d{4,}/\\S+$" },
+            "open_access": { "$ref": "#/$defs/url" },
+            "open_access_license": { "type": "string" },
+            "bibtex_key": { "type": "string", "pattern": "^[a-z0-9]+$" },
+            "summary": { "type": "array", "items": { "$ref": "#/$defs/i18n" } },
+            "funding": { "$ref": "#/$defs/i18n" }
+          }
+        },
+        "thesis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title", "institution", "year", "text"],
+          "properties": {
+            "title": { "type": "string" },
+            "institution": { "type": "string" },
+            "year": { "type": "integer" },
+            "text": { "$ref": "#/$defs/i18n" }
+          }
+        }
+      }
+    },
+    "projects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "items"],
+      "properties": {
+        "heading": { "$ref": "#/$defs/heading" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "year", "command", "title", "text", "tags"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "year": { "type": "integer" },
+              "command": { "type": "string", "maxLength": 80 },
+              "title": { "$ref": "#/$defs/text" },
+              "text": { "$ref": "#/$defs/i18n" },
+              "tags": { "type": "array", "items": { "type": "string" } },
+              "link": { "oneOf": [{ "$ref": "#/$defs/url" }, { "const": "repository" }] }
+            }
+          }
+        }
+      }
+    },
+    "credentials": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "certifications", "awards"],
+      "properties": {
+        "heading": { "$ref": "#/$defs/heading" },
+        "certifications": { "$ref": "#/$defs/fileList" },
+        "awards": { "$ref": "#/$defs/fileList" }
+      }
+    },
+    "pipeline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "intro"],
+      "properties": { "heading": { "$ref": "#/$defs/heading" }, "intro": { "$ref": "#/$defs/i18n" } }
+    },
+    "notes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading"],
+      "properties": { "heading": { "$ref": "#/$defs/heading" } }
+    },
+    "interests": { "$ref": "#/$defs/i18n" },
+    "bugs": { "type": "array", "items": { "$ref": "#/$defs/i18n" } },
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "text"],
+      "properties": { "heading": { "$ref": "#/$defs/heading" }, "text": { "$ref": "#/$defs/i18n" } }
+    },
+    "see_also": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intro", "items"],
+      "properties": {
+        "intro": { "$ref": "#/$defs/i18n" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "section", "url"],
+            "properties": {
+              "name": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+              "section": { "type": "integer", "minimum": 1, "maximum": 9 },
+              "url": { "$ref": "#/$defs/url" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

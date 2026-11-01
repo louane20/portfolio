@@ -1,0 +1,735 @@
+# yaml-language-server: $schema=./schema.json
+#
+# Single source of truth for the whole site (EN + FR), the man page (guerd.1)
+# and the JSON-LD. Edit this file, push, and the pipeline does the rest.
+# `npm run validate:content` checks it against content/schema.json.
+#
+# Inline formatting allowed in text fields: **bold**, *italic*, `code`, [link](url).
+
+site:
+  command: guerd
+  section: 1
+  manual:
+    en: DevOps Engineer's Manual
+    fr: Manuel de l'ingénieure DevOps
+  title:
+    en: Nawal Guerd, DevOps Engineer
+    fr: Nawal Guerd, ingénieure DevOps
+  description:
+    en: >-
+      Nawal Guerd, DevOps engineer in Algiers: production Kubernetes platforms,
+      GitOps delivery and Zero Trust network security with Cilium. IEEE WCNC 2025 author.
+    fr: >-
+      Nawal Guerd, ingénieure DevOps à Alger : plateformes Kubernetes en production,
+      livraison GitOps et sécurité réseau Zero Trust avec Cilium. Autrice d'un article IEEE WCNC 2025.
+  # Overridden in CI by actions/configure-pages and $GITHUB_REPOSITORY.
+  url: https://louane20.github.io/portfolio/
+  repository: louane20/portfolio
+  resume: GUERD_Nawal_CV.pdf
+
+person:
+  name: Nawal Guerd
+  given_name: Nawal
+  family_name: Guerd
+  role:
+    en: DevOps engineer
+    fr: Ingénieure DevOps
+  employer: ATM Mobilis
+  location:
+    en: El-Biar, Algiers, Algeria
+    fr: El-Biar, Alger, Algérie
+  timezone: Africa/Algiers
+  email: guerd.nawal@gmail.com
+  phone: "+213 661 90 80 59"
+  # hidden: never shown. reveal: shown after a click (keeps it away from scrapers). visible: always shown.
+  phone_display: reveal
+  links:
+    github: https://github.com/louane20
+    linkedin: https://www.linkedin.com/in/nawal-guerd-140b191ba
+  availability:
+    en: Open to DevOps, platform engineering and cloud security roles
+    fr: Ouverte aux postes DevOps, platform engineering et sécurité cloud
+
+hero:
+  tagline:
+    en: I don't just deploy the cluster. I design who is allowed to talk to it.
+    fr: Je ne me contente pas de déployer le cluster. Je décide qui a le droit de lui parler.
+  synopsis: [kubernetes, gitops, zero-trust, air-gapped, observability, security, telecom]
+  argument: cluster
+
+about:
+  heading:
+    en: I build the platforms other teams ship on, and I keep them closed by default.
+    fr: Je construis les plateformes sur lesquelles les autres équipes livrent, fermées par défaut.
+  paragraphs:
+    - en: >-
+        I'm a DevOps engineer at **ATM Mobilis**, the Algerian mobile operator, where I deploy and
+        operate production Kubernetes platforms end to end: clusters built with kubeadm, GitOps
+        delivery with Argo CD and GitLab CI/CD, automation with Ansible and network security with
+        Cilium. Much of it runs in air-gapped, multi-datacenter environments, where “it works on
+        my machine” is not an answer.
+      fr: >-
+        Je suis ingénieure DevOps chez **ATM Mobilis**, l'opérateur mobile algérien, où je déploie
+        et j'exploite des plateformes Kubernetes de production de bout en bout : clusters montés
+        avec kubeadm, livraison GitOps avec Argo CD et GitLab CI/CD, automatisation avec Ansible et
+        sécurité réseau avec Cilium. Une bonne partie tourne dans des environnements isolés
+        (air-gapped) et multi-datacenters, où « ça marche sur ma machine » n'est pas une réponse.
+    - en: >-
+        Before that, I spent two years researching Zero Trust architectures for 5G networks during
+        my master's in computer systems security. The work became a paper at **IEEE WCNC 2025**, and
+        it left me with a habit: before anything goes live, I want to know exactly who is allowed
+        to reach it, and why.
+      fr: >-
+        Avant cela, j'ai consacré deux ans à la recherche sur les architectures Zero Trust pour les
+        réseaux 5G, pendant mon master en sécurité des systèmes informatiques. Ce travail a donné un
+        article à **IEEE WCNC 2025**, et une habitude : avant toute mise en production, je veux
+        savoir exactement qui a le droit d'y accéder, et pourquoi.
+    - en: >-
+        Day to day I work across development, security, network and infrastructure teams. I care
+        about the unglamorous parts that keep a platform healthy: documentation, observability and
+        pipelines anyone can rerun.
+      fr: >-
+        Au quotidien, je travaille avec les équipes développement, sécurité, réseau et
+        infrastructure. Je soigne les parties peu glamour qui gardent une plateforme en bonne santé :
+        la documentation, l'observabilité et des pipelines que n'importe qui peut relancer.
+  environment:
+    - key: ROLE
+      value:
+        en: DevOps engineer, ATM Mobilis
+        fr: Ingénieure DevOps, ATM Mobilis
+    - key: SINCE
+      value:
+        en: November 2024
+        fr: novembre 2024
+    - key: HOME
+      value:
+        en: El-Biar, Algiers
+        fr: El-Biar, Alger
+    - key: TZ
+      value: Africa/Algiers (UTC+1)
+    - key: LANG
+      value:
+        en: Arabic (native), French (fluent), English (proficient)
+        fr: arabe (langue maternelle), français (courant), anglais (avancé)
+    - key: STATUS
+      value:
+        en: Open to work
+        fr: Disponible
+
+skills:
+  heading:
+    en: What I work with, and where it has been used for real.
+    fr: Ce avec quoi je travaille, et où je l'ai utilisé pour de vrai.
+  intro:
+    en: Grouped the way a platform is built, from the cluster up. Each option names its tools, then where they were used.
+    fr: Regroupé comme on construit une plateforme, à partir du cluster. Chaque option cite ses outils, puis où ils ont servi.
+  items:
+    - id: kubernetes
+      short: -k
+      long: --kubernetes
+      args: [kubeadm, containerd, Docker, Linux]
+      text:
+        en: >-
+          Deploys and operates production clusters built with kubeadm, including air-gapped
+          environments reachable only through DMZ and gateway components.
+        fr: >-
+          Déploie et exploite des clusters de production montés avec kubeadm, y compris dans des
+          environnements isolés joignables uniquement via une DMZ et des passerelles.
+      evidence: [atm-mobilis, cka-course]
+    - id: air-gapped
+      long: --air-gapped
+      args: [DMZ, gateways, multi-datacenter, high availability]
+      text:
+        en: >-
+          Runs platforms with no direct internet access, where every dependency and every
+          connection crosses the DMZ on purpose. Contributes to multi-datacenter architectures with
+          high-availability requirements.
+        fr: >-
+          Exploite des plateformes sans accès direct à Internet, où chaque dépendance et chaque
+          connexion traverse la DMZ de façon délibérée. Contribue à des architectures
+          multi-datacenters soumises à des exigences de haute disponibilité.
+      evidence: [atm-mobilis]
+    - id: gitops
+      short: -g
+      long: --gitops
+      args: [Argo CD, GitLab CI/CD, Ansible, HashiCorp Vault]
+      text:
+        en: >-
+          Designs GitOps workflows with Argo CD and GitLab CI/CD for controlled, auditable
+          deployments, and automates provisioning and configuration with Ansible.
+        fr: >-
+          Conçoit des workflows GitOps avec Argo CD et GitLab CI/CD pour des déploiements contrôlés
+          et traçables, et automatise le provisioning et la configuration avec Ansible.
+      evidence: [atm-mobilis, gitlab-ci]
+    - id: zero-trust
+      short: -z
+      long: --zero-trust
+      args: [Cilium, Istio, NetworkPolicy, Calico, microsegmentation]
+      text:
+        en: >-
+          Enforces Zero Trust network policies and segmentation with Cilium in production. Designed
+          multi-layer microsegmentation that combines the CNI and the service mesh for 5G networks,
+          published at IEEE WCNC 2025.
+        fr: >-
+          Applique des politiques réseau Zero Trust et de la segmentation avec Cilium en production.
+          A conçu une microsegmentation multicouche combinant CNI et service mesh pour les réseaux
+          5G, publiée à IEEE WCNC 2025.
+      evidence: [atm-mobilis, wcnc-2025, msc]
+    - id: ingress
+      long: --ingress
+      args: [MetalLB, Kong, Nginx, F5]
+      text:
+        en: >-
+          Exposes and load-balances application traffic on bare-metal clusters with MetalLB, Kong,
+          Nginx and F5.
+        fr: >-
+          Expose et répartit le trafic applicatif sur des clusters bare-metal avec MetalLB, Kong,
+          Nginx et F5.
+      evidence: [atm-mobilis]
+    - id: observability
+      short: -o
+      long: --observability
+      args: [Prometheus, Grafana, Loki, Promtail, K6]
+      text:
+        en: >-
+          Runs the Prometheus, Grafana and Loki stack, load-tests with K6 and chases down the
+          bottlenecks it finds.
+        fr: >-
+          Exploite la stack Prometheus, Grafana et Loki, réalise des tests de charge avec K6 et
+          traque les goulots d'étranglement qu'ils révèlent.
+      evidence: [atm-mobilis, bsc]
+    - id: data
+      long: --data
+      args: [Kafka/Strimzi, PostgreSQL, Redis, ClickHouse, Oracle]
+      text:
+        en: >-
+          Administers the distributed components platforms depend on: Kafka on Kubernetes with
+          Strimzi, PostgreSQL and Redis, plus ClickHouse and Oracle.
+        fr: >-
+          Administre les composants distribués dont les plateformes dépendent : Kafka sur Kubernetes
+          avec Strimzi, PostgreSQL et Redis, ainsi que ClickHouse et Oracle.
+      evidence: [atm-mobilis]
+    - id: security
+      short: -s
+      long: --security
+      args: [Nmap, Wireshark, Snort, OpenVAS, OWASP ZAP, Kali Linux]
+      text:
+        en: >-
+          Brings an offensive-security background to platform work: penetration testing,
+          vulnerability assessment and intrusion detection, from a master's in computer systems
+          security and a CyberTalents bootcamp.
+        fr: >-
+          Apporte un regard de sécurité offensive au travail de plateforme : tests d'intrusion,
+          évaluation de vulnérabilités et détection d'intrusion, issus d'un master en sécurité des
+          systèmes informatiques et d'un bootcamp CyberTalents.
+      evidence: [pentest-usthb, snort, bootcamp, msc]
+    - id: systems
+      long: --systems
+      args: [Linux, Windows Server, Active Directory, Python, Shell, Node.js, C, PHP]
+      text:
+        en: >-
+          Works comfortably from the operating system up: Linux and Windows Server administration,
+          Active Directory, and automation in Python and shell.
+        fr: >-
+          À l'aise du système d'exploitation jusqu'à l'application : administration Linux et Windows
+          Server, Active Directory, automatisation en Python et en shell.
+      evidence: [vpn, snort, ddos-sdn]
+    - id: telecom
+      long: --5g
+      args: [5G Core, RAN, O-RAN, 3GPP]
+      text:
+        en: >-
+          Understands 5G core and RAN architectures and their 3GPP security requirements, from two
+          years of research on cloud-native 5G.
+        fr: >-
+          Connaît les architectures 5G cœur et RAN et leurs exigences de sécurité 3GPP, après deux
+          ans de recherche sur la 5G cloud-native.
+      evidence: [msc, wcnc-2025]
+
+experience:
+  heading:
+    en: Where I've built things, newest commit first.
+    fr: Là où j'ai construit des choses, du commit le plus récent au plus ancien.
+  lanes:
+    - id: main
+      label: main
+    - id: research
+      label: research
+    - id: community
+      label: community
+  # Listed newest first, like `git log`. The graph (forks and merges) is computed at build time.
+  items:
+    - id: wcnc-2025
+      lane: research
+      refs: ["tag: wcnc-2025", research]
+      commit: "docs(research): publish THAALOUB at IEEE WCNC 2025"
+      title:
+        en: Paper published
+        fr: Article publié
+      org: IEEE WCNC 2025
+      place:
+        en: Milan, Italy
+        fr: Milan, Italie
+      start: 2025-03
+      details:
+        - en: >-
+            *A Multi-Layered Zero Trust Microsegmentation Solution for Cloud-Native 5G & Beyond
+            Networks*, with C. Benzaïd, N. E. H. Rehouma, K. Zeraoulia and T. Taleb. See
+            [Research](#research).
+          fr: >-
+            *A Multi-Layered Zero Trust Microsegmentation Solution for Cloud-Native 5G & Beyond
+            Networks*, avec C. Benzaïd, N. E. H. Rehouma, K. Zeraoulia et T. Taleb. Voir
+            [Recherche](#research).
+    - id: atm-mobilis
+      lane: main
+      refs: ["HEAD -> main"]
+      commit: "feat(career): DevOps engineer at ATM Mobilis"
+      title:
+        en: DevOps engineer
+        fr: Ingénieure DevOps
+      org: ATM Mobilis
+      place:
+        en: Algiers, Algeria
+        fr: Alger, Algérie
+      start: 2024-11
+      end: present
+      open: true
+      details:
+        - en: >-
+            Deploy and operate production Kubernetes clusters with kubeadm, including air-gapped
+            environments with controlled connectivity through DMZ and gateway components.
+          fr: >-
+            Déploiement et exploitation de clusters Kubernetes de production avec kubeadm, y compris
+            en environnements isolés à la connectivité contrôlée via DMZ et passerelles.
+        - en: >-
+            Design GitOps workflows with Argo CD and GitLab for controlled, auditable deployments,
+            backed by GitLab CI/CD pipelines for build, test and containerization.
+          fr: >-
+            Conception de workflows GitOps avec Argo CD et GitLab pour des déploiements contrôlés et
+            traçables, appuyés sur des pipelines GitLab CI/CD de build, de test et de conteneurisation.
+        - en: >-
+            Automate provisioning and configuration with Ansible; enforce Zero Trust network
+            policies and segmentation with Cilium.
+          fr: >-
+            Automatisation du provisioning et de la configuration avec Ansible ; application de
+            politiques réseau Zero Trust et de segmentation avec Cilium.
+        - en: >-
+            Contribute to multi-datacenter Kubernetes architectures: inter-datacenter connectivity,
+            high availability, and traffic exposure via MetalLB, F5, Kong and Nginx.
+          fr: >-
+            Contribution aux architectures Kubernetes multi-datacenters : connectivité
+            inter-datacenters, haute disponibilité et exposition du trafic via MetalLB, F5, Kong et Nginx.
+        - en: >-
+            Run the Prometheus, Grafana and Loki observability stack; administer Kafka/Strimzi,
+            PostgreSQL, Redis and HashiCorp Vault; load-test with K6 and fix what it finds.
+          fr: >-
+            Exploitation de la stack d'observabilité Prometheus, Grafana et Loki ; administration de
+            Kafka/Strimzi, PostgreSQL, Redis et HashiCorp Vault ; tests de charge avec K6 et
+            correction de ce qu'ils révèlent.
+        - en: >-
+            Work daily across development, security, network and infrastructure teams on platform
+            engineering, troubleshooting and documentation.
+          fr: >-
+            Travail quotidien avec les équipes développement, sécurité, réseau et infrastructure sur
+            le platform engineering, le dépannage et la documentation.
+    - id: msc
+      lane: research
+      commit: "feat(education): M.Sc. in computer systems security"
+      title:
+        en: Master's degree, Computer Systems Security
+        fr: Master, Sécurité des systèmes informatiques
+      org: USTHB
+      place:
+        en: Algiers, Algeria
+        fr: Alger, Algérie
+      start: 2022
+      end: 2024
+      details:
+        - en: >-
+            Thesis: *Design and Implementation of a Zero Trust Security Solution for 5G Networks*.
+            Built an automated deployment and cluster-management application for 5G infrastructure
+            and implemented the Zero Trust policies with Istio, which led to the IEEE WCNC 2025 paper.
+          fr: >-
+            Mémoire : *Design and Implementation of a Zero Trust Security Solution for 5G Networks*.
+            Développement d'une application de déploiement automatisé et de gestion de clusters pour
+            l'infrastructure 5G, et mise en œuvre des politiques Zero Trust avec Istio, à l'origine
+            de l'article IEEE WCNC 2025.
+    - id: bootcamp
+      lane: research
+      commit: "feat(security): CyberTalents cybersecurity bootcamp"
+      title:
+        en: Cybersecurity bootcamp
+        fr: Bootcamp cybersécurité
+      org: CyberTalents
+      place:
+        en: Remote
+        fr: À distance
+      start: 2022-07
+      end: 2022-10
+      details:
+        - en: >-
+            Network security, penetration testing and vulnerability assessment with
+            industry-standard tooling and methodology.
+          fr: >-
+            Sécurité réseau, tests d'intrusion et évaluation de vulnérabilités avec les outils et
+            méthodologies standards du secteur.
+    - id: sonatrach
+      lane: main
+      commit: "feat(career): research internship at Sonatrach"
+      title:
+        en: Summer research internship
+        fr: Stage d'été de recherche
+      org: Sonatrach
+      place:
+        en: Algiers, Algeria
+        fr: Alger, Algérie
+      start: 2022-07
+      details:
+        - en: >-
+            Assessed IT infrastructure across several departments and proposed an open-source,
+            containerized video-surveillance solution for enterprise deployment, with its security
+            and scalability trade-offs.
+          fr: >-
+            Évaluation de l'infrastructure informatique de plusieurs départements et proposition
+            d'une solution de vidéosurveillance open source et conteneurisée pour un déploiement en
+            entreprise, avec ses compromis de sécurité et de passage à l'échelle.
+    - id: openminds
+      lane: community
+      commit: "feat(community): lead the Openminds open-source club"
+      title:
+        en: IT team leader
+        fr: Responsable de l'équipe IT
+      org: Openminds Club, USTHB
+      place:
+        en: Algiers, Algeria
+        fr: Alger, Algérie
+      start: 2020
+      end: 2023
+      details:
+        - en: >-
+            Led the open-source club's technical activities: organized Install Party 10 and
+            Hacktoberfest, and ran workshops on open-source tooling.
+          fr: >-
+            Animation des activités techniques du club open source : organisation de l'Install
+            Party 10 et de Hacktoberfest, ateliers sur les outils open source.
+    - id: manydesigns
+      lane: main
+      commit: "feat(career): first internship at ManyDesigns Afrique"
+      title:
+        en: Summer internship
+        fr: Stage d'été
+      org: ManyDesigns Afrique
+      place:
+        en: Algiers, Algeria
+        fr: Alger, Algérie
+      start: 2020-07
+      end: 2020-08
+      details:
+        - en: >-
+            Deployed enterprise web server infrastructure and designed a local network architecture
+            with its access-control policies.
+          fr: >-
+            Déploiement d'une infrastructure de serveurs web d'entreprise et conception d'une
+            architecture réseau locale avec ses politiques de contrôle d'accès.
+    - id: bsc
+      lane: main
+      commit: "init: B.Sc. in mathematics and computer science, ranked 2/69"
+      title:
+        en: Bachelor's degree, Mathematics & Computer Science
+        fr: Licence, Mathématiques et informatique
+      org: USTHB
+      place:
+        en: Algiers, Algeria
+        fr: Alger, Algérie
+      start: 2019
+      end: 2022
+      details:
+        - en: >-
+            Telecommunications and networks track, ranked 2nd of 69. Capstone: containerized a
+            video-surveillance SOA application with Docker Compose, with full Prometheus, Grafana,
+            cAdvisor and Node Exporter monitoring and a Deepstack-powered alerting module.
+          fr: >-
+            Spécialité télécommunications et réseaux, classée 2e sur 69. Projet de fin d'études :
+            conteneurisation d'une application SOA de vidéosurveillance avec Docker Compose,
+            supervision complète avec Prometheus, Grafana, cAdvisor et Node Exporter, et module
+            d'alerte basé sur Deepstack.
+
+research:
+  heading:
+    en: Published research on Zero Trust microsegmentation for cloud-native 5G.
+    fr: Recherche publiée sur la microsegmentation Zero Trust pour la 5G cloud-native.
+  paper:
+    title: A Multi-Layered Zero Trust Microsegmentation Solution for Cloud-Native 5G & Beyond Networks
+    authors: [Chafika Benzaïd, Nawal Guerd, Nour El Houda Rehouma, Khaled Zeraoulia, Tarik Taleb]
+    venue: 2025 IEEE Wireless Communications and Networking Conference (WCNC)
+    short_venue: IEEE WCNC 2025
+    location:
+      en: Milan, Italy
+      fr: Milan, Italie
+    dates:
+      en: 24–27 March 2025
+      fr: 24–27 mars 2025
+    year: 2025
+    pages: "1–7"
+    doi: 10.1109/WCNC61545.2025.10978671
+    open_access: https://zenodo.org/records/14699793
+    open_access_license: CC BY 4.0
+    bibtex_key: benzaid2025thaaloub
+    summary:
+      - en: >-
+          Proposes **THAALOUB**, a 3GPP-compliant Zero Trust framework for end-to-end security in
+          cloud-native 5G and beyond networks.
+        fr: >-
+          Propose **THAALOUB**, un framework Zero Trust conforme aux normes 3GPP pour une sécurité de
+          bout en bout dans les réseaux 5G et au-delà cloud-native.
+      - en: >-
+          Combines the service mesh and the container network interface (CNI) into multi-layered
+          microsegmentation, with intent-based access control.
+        fr: >-
+          Combine le service mesh et le CNI (Container Network Interface) en une microsegmentation
+          multicouche, avec un contrôle d'accès fondé sur l'intention.
+      - en: >-
+          Validated experimentally: a stronger security posture for minimal added latency and
+          resource overhead.
+        fr: >-
+          Validé expérimentalement : une meilleure posture de sécurité pour un surcoût minimal en
+          latence et en ressources.
+    funding:
+      en: Funded in part by the European Commission through the RIGOUROUS project (grant agreement 101095933).
+      fr: Financé en partie par la Commission européenne via le projet RIGOUROUS (convention de subvention 101095933).
+  thesis:
+    title: Design and Implementation of a Zero Trust Security Solution for 5G Networks
+    institution: USTHB
+    year: 2024
+    text:
+      en: >-
+        The master's thesis behind the paper: an automated deployment and cluster-management
+        application for 5G infrastructure, with the Zero Trust policies implemented in Istio.
+      fr: >-
+        Le mémoire de master à l'origine de l'article : une application de déploiement automatisé
+        et de gestion de clusters pour l'infrastructure 5G, avec les politiques Zero Trust mises en
+        œuvre dans Istio.
+
+projects:
+  heading:
+    en: Selected projects, written as the commands they would be.
+    fr: Projets choisis, écrits comme les commandes qu'ils seraient.
+  items:
+    - id: portfolio
+      year: 2026
+      command: guerd deploy portfolio --gitops --signed --zero-trust
+      title:
+        en: This portfolio
+        fr: Ce portfolio
+      text:
+        en: >-
+          A static site generated from YAML, typeset as a man page and shipped by its own pipeline:
+          end-to-end and accessibility tests, Lighthouse budgets, Trivy scans, a signed multi-arch
+          image with an SBOM, and a kind cluster where Cilium proves the network policies on every
+          change.
+        fr: >-
+          Un site statique généré à partir de YAML, composé comme une page de manuel et livré par
+          son propre pipeline : tests de bout en bout et d'accessibilité, budgets Lighthouse,
+          scans Trivy, image multi-architecture signée avec SBOM, et un cluster kind où Cilium
+          prouve les politiques réseau à chaque changement.
+      tags: [GitHub Actions, Cilium, kind, cosign, Playwright]
+      link: repository
+    - id: ddos-sdn
+      year: 2024
+      command: guerd detect --ddos --controller=ryu --model=random-forest
+      title:
+        en: DDoS detection and mitigation in SDN
+        fr: Détection et mitigation DDoS dans un SDN
+      text:
+        en: >-
+          Built a software-defined network with Mininet and the Ryu controller, generated a
+          training dataset and trained a Random Forest classifier to detect DDoS traffic, with an
+          automated, real-time mitigation module.
+        fr: >-
+          Mise en place d'un réseau SDN avec Mininet et le contrôleur Ryu, création d'un jeu de
+          données d'entraînement et classification du trafic DDoS par Random Forest, avec un module
+          de mitigation automatique en temps réel.
+      tags: [Python, Mininet, Ryu, Random Forest]
+    - id: azure-microservices
+      year: 2024
+      command: guerd compare zero-trust perimeter devsecops --cloud=azure
+      title:
+        en: Securing microservices in the cloud
+        fr: Sécuriser des microservices dans le cloud
+      text:
+        en: >-
+          Compared Zero Trust, perimeter-based and DevSecOps approaches for microservices, then
+          built a security framework for a microservices architecture deployed on Microsoft Azure.
+        fr: >-
+          Comparaison des approches Zero Trust, périmétrique et DevSecOps pour les microservices,
+          puis conception d'un cadre de sécurité pour une architecture microservices déployée sur
+          Microsoft Azure.
+      tags: [Azure, Zero Trust, DevSecOps]
+    - id: pentest-usthb
+      year: 2024
+      command: guerd audit --black-box --scope=faculty-of-computer-science
+      title:
+        en: Black-box penetration test, USTHB
+        fr: Test d'intrusion en boîte noire, USTHB
+      text:
+        en: >-
+          Led a simulated security audit of the Faculty of Computer Science: drafted the
+          engagement contract, ran black-box tests against industry standards and wrote the full
+          audit report.
+        fr: >-
+          Conduite d'un audit de sécurité simulé de la Faculté d'informatique : rédaction du
+          contrat d'engagement, tests en boîte noire selon les standards du secteur et rapport
+          d'audit complet.
+      tags: [Pentesting, Reporting]
+    - id: snort
+      year: 2024
+      command: guerd detect --ids=snort --target=windows-server-2012r2
+      title:
+        en: Intrusion detection with Snort
+        fr: Détection d'intrusion avec Snort
+      text:
+        en: >-
+          Simulated an attack on Windows Server 2012 R2 from Kali Linux, then deployed and tuned
+          Snort on Ubuntu with custom alert rules to detect it.
+        fr: >-
+          Simulation d'une attaque sur Windows Server 2012 R2 depuis Kali Linux, puis déploiement et
+          réglage de Snort sur Ubuntu avec des règles d'alerte sur mesure pour la détecter.
+      tags: [Snort, Kali Linux, Ubuntu]
+    - id: vpn
+      year: 2024
+      command: guerd deploy vpn --tiers=client,active-directory,gateway
+      title:
+        en: Enterprise VPN deployment
+        fr: Déploiement d'un VPN d'entreprise
+      text:
+        en: >-
+          Designed a three-tier VPN architecture (client, Active Directory server and gateway) for
+          secure remote access with proper authentication and encryption.
+        fr: >-
+          Conception d'une architecture VPN à trois niveaux (client, serveur Active Directory et
+          passerelle) pour un accès distant sécurisé, authentifié et chiffré.
+      tags: [Windows Server, Active Directory, VPN]
+    - id: defender
+      year: 2023
+      command: guerd benchmark antivirus --tune=defender --cloud=azure
+      title:
+        en: Antivirus benchmark on Azure
+        fr: Comparatif d'antivirus sur Azure
+      text:
+        en: >-
+          Compared enterprise antivirus solutions, then configured and tuned Microsoft Defender in
+          Azure with custom security policies.
+        fr: >-
+          Comparaison de solutions antivirus d'entreprise, puis configuration et réglage de
+          Microsoft Defender dans Azure avec des politiques de sécurité sur mesure.
+      tags: [Azure, Endpoint security]
+
+credentials:
+  heading:
+    en: Résumé, certificates and awards.
+    fr: CV, certificats et distinctions.
+  certifications:
+    - id: cka-course
+      path: /etc/certs/cka-course.pem
+      name:
+        en: Certified Kubernetes Administrator, preparation course
+        fr: Certified Kubernetes Administrator, cours de préparation
+      issuer: KodeKloud
+      date: 2025-08
+    - id: gitlab-ci
+      path: /etc/certs/gitlab-ci.pem
+      name: GitLab CI Fundamentals
+      issuer: GitLab
+      date: 2024-11
+    - id: huawei-ngcs
+      path: /etc/certs/huawei-ngcs.pem
+      name: Next-Generation Cyber Security
+      issuer: Huawei
+      date: 2024-08
+    - id: cisco-cybersecurity
+      path: /etc/certs/cisco-cybersecurity.pem
+      name: Cybersecurity Essentials
+      issuer: Cisco
+      date: 2023-08
+    - id: nvidia-dli
+      path: /etc/certs/nvidia-dli.pem
+      name: Fundamentals of Deep Learning
+      issuer: NVIDIA
+      date: 2022-12
+  awards:
+    - id: yel-2023
+      path: /var/log/awards/2023-yel.log
+      name:
+        en: Young Entrepreneur League 2023, finalist
+        fr: Young Entrepreneur League 2023, finaliste
+      issuer: Injaz El Djazair
+      date: 2023
+    - id: hackini-2023
+      path: /var/log/awards/2023-hackini.log
+      name:
+        en: HackINI CTF, 12th edition
+        fr: HackINI CTF, 12e édition
+      issuer: Shellmate / ESI
+      date: 2023
+    - id: junctionx-2021
+      path: /var/log/awards/2021-junctionx.log
+      name: JunctionX Algiers
+      issuer: MOBORN Tourism
+      date: 2021
+
+pipeline:
+  heading:
+    en: Don't take the résumé's word for it. Check the pipeline.
+    fr: Ne croyez pas le CV sur parole. Vérifiez le pipeline.
+  intro:
+    en: >-
+      This page is generated from YAML, then tested, audited, packaged, signed and deployed by its
+      own GitHub Actions workflows. The status below comes live from the GitHub API.
+    fr: >-
+      Cette page est générée à partir de YAML, puis testée, auditée, empaquetée, signée et déployée
+      par ses propres workflows GitHub Actions. Le statut ci-dessous vient en direct de l'API GitHub.
+
+notes:
+  heading:
+    en: Field notes, from production and from research.
+    fr: Notes de terrain, entre production et recherche.
+
+interests:
+  en: >-
+    CTF competitions, open source, technical writing, research conferences and, deliberately
+    unrelated to servers, gardening.
+  fr: >-
+    Compétitions CTF, open source, rédaction technique, conférences de recherche et, sans aucun
+    rapport avec les serveurs, le jardinage.
+
+bugs:
+  - en: Asks “which CNI?” before asking how you are.
+    fr: Demande « quel CNI ? » avant de demander comment ça va.
+  - en: Cannot leave a namespace without a default-deny policy, not even in staging.
+    fr: Incapable de laisser un namespace sans politique default-deny, même en staging.
+  - en: The garden is not reconciled by Argo CD yet. Expect drift.
+    fr: Le jardin n'est pas encore réconcilié par Argo CD. Une dérive est à prévoir.
+
+contact:
+  heading:
+    en: Let's talk infrastructure.
+    fr: Parlons infrastructure.
+  text:
+    en: Open to DevOps, platform engineering and cloud security roles. Email is the fastest way to reach me.
+    fr: Ouverte aux postes DevOps, platform engineering et sécurité cloud. L'e-mail reste le moyen le plus rapide de me joindre.
+
+see_also:
+  intro:
+    en: The open-source projects this work stands on. Thank you to their maintainers.
+    fr: Les projets open source sur lesquels repose ce travail. Merci à leurs mainteneurs.
+  items:
+    - { name: kubeadm, section: 8, url: "https://kubernetes.io/docs/reference/setup-tools/kubeadm/" }
+    - { name: cilium, section: 8, url: "https://cilium.io/" }
+    - { name: hubble, section: 1, url: "https://github.com/cilium/hubble" }
+    - { name: istio, section: 7, url: "https://istio.io/" }
+    - { name: argocd, section: 1, url: "https://argo-cd.readthedocs.io/" }
+    - { name: ansible, section: 1, url: "https://docs.ansible.com/" }
+    - { name: strimzi, section: 7, url: "https://strimzi.io/" }
+    - { name: prometheus, section: 1, url: "https://prometheus.io/" }
+    - { name: grafana, section: 1, url: "https://grafana.com/oss/" }
+    - { name: k6, section: 1, url: "https://k6.io/" }

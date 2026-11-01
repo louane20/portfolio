@@ -1,0 +1,56 @@
+/* Printing the page gives a clean, paper-only manual. */
+@media print {
+  :root,
+  :root[data-theme="dark"] {
+    --paper: #fff;
+    --sheet: #fff;
+    --ink: #000;
+    --ink-2: #333;
+    --ink-3: #555;
+    --bold: #000;
+    --arg: #000;
+    --font-body: var(--font-serif);
+    --font-display: var(--font-serif);
+    --sec-space: 1.5rem;
+
+    color-scheme: light;
+  }
+
+  body {
+    padding: 0 !important;
+    font-size: 10.5pt;
+  }
+
+  .skip,
+  .runhead-bar,
+  .pager,
+  .toast,
+  .copy,
+  .zt,
+  .verify,
+  .pipe,
+  dialog,
+  .cta,
+  .commit-details summary {
+    display: none !important;
+  }
+
+  .commit-details ul {
+    display: block;
+  }
+
+  .sh {
+    position: static;
+  }
+
+  .sec,
+  .commit,
+  .example,
+  .opt {
+    break-inside: avoid;
+  }
+
+  a {
+    text-decoration: none;
+  }
+}
