@@ -1,0 +1,9 @@
+# Single-node kind cluster without its default CNI: Cilium is installed instead.
+# Used by .github/workflows/zero-trust-e2e.yml and `make kind-up`.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: zero-trust
+networking:
+  disableDefaultCNI: true
+nodes:
+  - role: control-plane

@@ -1,0 +1,9 @@
+# Only what the image build needs goes into the context.
+*
+!package.json
+!package-lock.json
+!content/
+!scripts/
+!src/
+!deploy/docker/
+scripts/og/

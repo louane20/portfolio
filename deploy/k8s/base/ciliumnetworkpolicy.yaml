@@ -1,0 +1,28 @@
+# Who may talk to the site, and what they may ask for.
+# - L3/L4: only pods labelled as the gateway, in the "edge" namespace, on port 8080.
+# - L7: only GET and HEAD. Anything else is answered 403 by Cilium's Envoy proxy,
+#   before nginx ever sees the request.
+# Egress stays denied by the default-deny policy: a static site needs no outbound traffic,
+# so a compromised pod has nowhere to send data.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: portfolio-ingress
+spec:
+  description: Allow read-only HTTP from the edge gateway to the portfolio, nothing else.
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: portfolio
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: edge
+            app.kubernetes.io/name: gateway
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+          rules:
+            http:
+              - method: GET
+              - method: HEAD

@@ -1,0 +1,11 @@
+# Zero Trust starts here: every pod in the namespace is isolated in both directions.
+# Anything that must flow is allowed explicitly, by identity (see ciliumnetworkpolicy.yaml).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress

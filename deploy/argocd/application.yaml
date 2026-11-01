@@ -1,0 +1,31 @@
+# GitOps: Argo CD keeps the cluster in sync with deploy/k8s/overlays/production.
+# Drift is reverted (selfHeal) and resources removed from Git are pruned.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: portfolio
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/louane20/portfolio.git
+    targetRevision: main
+    path: deploy/k8s/overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: portfolio
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - PruneLast=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 2m

@@ -1,0 +1,9 @@
+# Used by .github/workflows/zero-trust-e2e.yml: the image is built in CI and loaded into kind.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+images:
+  - name: portfolio
+    newName: localhost/portfolio
+    newTag: e2e

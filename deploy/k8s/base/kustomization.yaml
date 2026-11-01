@@ -1,0 +1,17 @@
+# Base manifests for the portfolio. Overlays choose the image and the size.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: portfolio
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: guerd
+      app.kubernetes.io/managed-by: kustomize
+resources:
+  - namespace.yaml
+  - serviceaccount.yaml
+  - deployment.yaml
+  - service.yaml
+  - poddisruptionbudget.yaml
+  - networkpolicy-default-deny.yaml
+  - ciliumnetworkpolicy.yaml
+# The container image is set by each overlay (the base uses the placeholder name "portfolio").
