@@ -1,0 +1,24 @@
+name: Set up Node.js and dependencies
+description: Installs the Node.js version pinned in .nvmrc and the locked npm dependencies, without running install scripts.
+inputs:
+  dependencies:
+    description: '"all" (build + QA tooling) or "build" (only what scripts/build.mjs needs)'
+    required: false
+    default: all
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version-file: .nvmrc
+        cache: npm
+    - name: Install dependencies (npm ci, lockfile only, no install scripts)
+      shell: bash
+      env:
+        DEPENDENCIES: ${{ inputs.dependencies }}
+      run: |
+        if [[ "$DEPENDENCIES" == build ]]; then
+          npm ci --omit=dev --ignore-scripts --no-audit --no-fund
+        else
+          npm ci --ignore-scripts --no-audit --no-fund
+        fi
