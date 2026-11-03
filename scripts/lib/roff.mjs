@@ -146,7 +146,7 @@ export function renderManPage(profile, lang, { date, version, siteUrl, notes }) 
     `${roffText(s.web)} ${roffText(lang === 'fr' ? `${siteUrl}fr/` : siteUrl)}`,
   );
   if (notes.length) {
-    line('.PP', `${roffText(s.notes)}:`);
+    line('.PP', `${roffText(s.notes)}: ${roffText(`${siteUrl}${lang === 'fr' ? 'fr/' : ''}blog/`)}`);
     for (const n of notes) line('.IP \\(bu 2', `${roffText(n.title)} (${n.date})`);
   }
   return `${out.join('\n')}\n`;

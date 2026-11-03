@@ -1,7 +1,8 @@
 // The home page, section by section.
-import { html, raw, md, t, fmtMonth, fmtPeriod, fmtDay, icon } from './common.mjs';
+import { html, raw, md, t, fmtMonth, fmtPeriod, icon } from './common.mjs';
 import { monogram } from './layout.mjs';
 import { panelSvg, legendSwatch } from './figure.mjs';
+import { postCard, blogHref } from './blog/pages.mjs';
 
 const languagesLine = (profile, lang) =>
   profile.person.languages.map((l) => `${t(l.name, lang)} (${t(l.level, lang)})`).join(', ');
@@ -314,25 +315,23 @@ function education(ctx) {
 }
 
 function writing(ctx) {
-  const { profile, lang, ui, root } = ctx;
-  if (!ctx.notes.length) return '';
+  const { profile, lang, ui } = ctx;
+  if (!ctx.posts.length) return '';
+  const b = profile.blog;
   return html`
 <section class="section" id="writing" aria-labelledby="writing-h">
   <div class="container">
-    <header class="section-head">
-      <h2 class="section-title" id="writing-h">${t(profile.notes.heading, lang)}</h2>
-      ${profile.notes.intro ? html`<p class="lede">${t(profile.notes.intro, lang)}</p>` : ''}
+    <header class="section-head section-head-split">
+      <div>
+        <h2 class="section-title" id="writing-h">${t(b.heading, lang)}</h2>
+        ${b.intro ? html`<p class="lede">${t(b.intro, lang)}</p>` : ''}
+      </div>
+      <a class="btn btn-secondary" href="${blogHref(ctx)}"><span>${ui.blog.viewAll}</span>${icon.arrowRight}</a>
     </header>
-    <ul class="articles">
-      ${ctx.notes.map(
-        (n) => html`
-      <li class="article">
-        <p class="article-meta"><time datetime="${n.date}">${fmtDay(n.date, ui)}</time><span>${n.minutes} ${ui.minRead}</span>${n.lang !== lang ? html`<span lang="${n.lang}">${n.lang === 'en' ? 'English' : 'Français'}</span>` : ''}</p>
-        <h3><a href="${root}notes/${n.slug}/" hreflang="${n.lang}">${n.title}</a></h3>
-        <p>${n.summary}</p>
-      </li>`,
-      )}
+    <ul class="post-grid post-grid-home">
+      ${ctx.posts.slice(0, 3).map((post) => postCard(ctx, post, { uid: `h-${post.slug}` }))}
     </ul>
+    ${lang !== 'en' ? html`<p class="lang-note">${ui.blog.inEnglish}</p>` : ''}
   </div>
 </section>`;
 }

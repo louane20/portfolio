@@ -5,7 +5,10 @@ import { test, expect } from './fixtures.mjs';
 const PAGES = [
   ['home (en)', './'],
   ['home (fr)', 'fr/'],
-  ['field note', 'notes/zero-trust-5g/'],
+  ['blog (en)', 'blog/'],
+  ['blog (fr)', 'fr/blog/'],
+  ['post', 'blog/zero-trust-5g/'],
+  ['post with diagrams and code', 'blog/kubernetes-operators/'],
   ['404', 'nope/'],
 ];
 

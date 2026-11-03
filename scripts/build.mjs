@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// Static site generator: content/*.yaml + content/notes/*.md -> dist/
+// Static site generator: content/profile.yaml + content/blog/*.md -> dist/
 //
 //   node scripts/build.mjs            production build
-//   node scripts/build.mjs --drafts   include draft notes
+//   node scripts/build.mjs --drafts   include draft posts
 //
 // Environment (all optional, set by CI):
 //   SITE_URL            absolute URL the site is served from (actions/configure-pages base_url)
@@ -11,18 +11,19 @@
 //   SOURCE_DATE_EPOCH   makes the build date reproducible
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { access, cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as esbuild from 'esbuild';
 
-import { loadProfile, loadNotes, t, LANGS, ContentError } from './lib/content.mjs';
+import { loadProfile, loadPosts, t, LANGS, ContentError } from './lib/content.mjs';
 import { renderManPage } from './lib/roff.mjs';
 import { plain } from './lib/html.mjs';
 import { UI } from '../src/i18n.mjs';
 import { layout, csp, THEME_SCRIPT } from '../src/templates/layout.mjs';
 import { homeBody, personJsonLd } from '../src/templates/home.mjs';
-import { noteBody, notFoundBody } from '../src/templates/pages.mjs';
+import { notFoundBody } from '../src/templates/pages.mjs';
+import { blogIndexBody, blogJsonLd, postBody, postJsonLd } from '../src/templates/blog/pages.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(ROOT, 'dist');
@@ -40,6 +41,12 @@ const git = (...cmd) => {
 const withSlash = (url) => (url.endsWith('/') ? url : `${url}/`);
 const sha256 = (data) => createHash('sha256').update(data).digest('base64');
 const kb = (bytes) => `${Math.round(bytes / 1024)} KB`;
+const xml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const exists = (file) =>
+  access(file).then(
+    () => true,
+    () => false,
+  );
 
 async function write(rel, content) {
   const file = path.join(DIST, rel);
@@ -105,7 +112,7 @@ async function bundle() {
 async function main() {
   const pkg = JSON.parse(await readFile(path.join(ROOT, 'package.json'), 'utf8'));
   const profile = await loadProfile();
-  const notes = await loadNotes({ drafts: args.has('--drafts') });
+  const posts = await loadPosts({ drafts: args.has('--drafts') });
   const build = buildInfo(profile, pkg);
 
   await rm(DIST, { recursive: true, force: true });
@@ -136,23 +143,24 @@ async function main() {
     ].join('\n'),
   );
 
+  /** Template context for one page. `root` is the relative path from that page to the site root. */
+  const context = (lang, root, otherLangHref) => ({
+    profile,
+    lang,
+    ui: UI[lang],
+    posts,
+    build,
+    assets,
+    root,
+    resumeSize,
+    resumeHref: `${root}${profile.site.resume}`,
+    themeScriptHash,
+    otherLangHref,
+  });
+
   for (const lang of LANGS) {
-    const ui = UI[lang];
     const prefix = lang === 'en' ? '' : `${lang}/`;
-    const root = lang === 'en' ? '' : '../';
-    const ctx = {
-      profile,
-      lang,
-      ui,
-      notes,
-      build,
-      assets,
-      root,
-      resumeSize,
-      resumeHref: `${root}${profile.site.resume}`,
-      themeScriptHash,
-      otherLangHref: lang === 'en' ? 'fr/' : '../',
-    };
+    const ctx = context(lang, lang === 'en' ? '' : '../', lang === 'en' ? 'fr/' : '../');
     const page = layout(ctx, {
       home: true,
       path: prefix,
@@ -168,67 +176,67 @@ async function main() {
       bodyClass: 'page-home',
     });
     await write(`${prefix}index.html`, page);
-    pages.push({ path: prefix, lang });
+    pages.push({ path: prefix, alternates: true });
     await write(
       `${prefix}${profile.site.command}.1`,
-      renderManPage(profile, lang, { date: build.date, version: build.version, siteUrl: build.siteUrl, notes }),
+      renderManPage(profile, lang, { date: build.date, version: build.version, siteUrl: build.siteUrl, notes: posts }),
     );
+
+    // The blog index, in both languages (the posts themselves are in English).
+    const blogCtx = context(lang, lang === 'en' ? '../' : '../../', lang === 'en' ? '../fr/blog/' : '../../blog/');
+    const blogPath = `${prefix}blog/`;
+    await write(
+      `${blogPath}index.html`,
+      layout(blogCtx, {
+        blog: true,
+        path: blogPath,
+        title: `${t(profile.blog.title, lang)} | ${profile.person.name}`,
+        description: t(profile.blog.description, lang),
+        ogType: 'website',
+        alternates: [
+          { lang: 'en', path: 'blog/' },
+          { lang: 'fr', path: 'fr/blog/' },
+          { lang: 'x-default', path: 'blog/' },
+        ],
+        body: String(blogIndexBody(blogCtx)),
+        jsonld: blogJsonLd(blogCtx, `${build.siteUrl}${blogPath}`),
+        bodyClass: 'page-blog',
+      }),
+    );
+    pages.push({ path: blogPath, alternates: true });
   }
 
-  // Field notes (written in English; linked from both languages).
-  for (const note of notes) {
-    const ui = UI[note.lang];
-    const ctx = {
-      profile,
-      lang: note.lang,
-      ui,
-      notes,
-      build,
-      assets,
-      root: '../../',
-      resumeSize,
-      resumeHref: `../../${profile.site.resume}`,
-      themeScriptHash,
-      otherLangHref: '../../fr/',
-    };
-    const page = layout(ctx, {
-      path: `notes/${note.slug}/`,
-      title: `${note.title} | ${profile.person.name}`,
-      description: note.summary,
-      ogType: 'article',
-      body: String(noteBody(ctx, note)),
-      bodyClass: 'page-note',
-      jsonld: {
-        '@context': 'https://schema.org',
-        '@type': 'TechArticle',
-        headline: note.title,
-        description: note.summary,
-        datePublished: note.date,
-        dateModified: note.updated,
-        inLanguage: note.lang,
-        author: { '@type': 'Person', name: profile.person.name, url: build.siteUrl },
-        keywords: note.tags.join(', '),
-      },
-    });
-    await write(`notes/${note.slug}/index.html`, page);
-    pages.push({ path: `notes/${note.slug}/`, lang: note.lang });
+  // Posts: blog/<slug>/. Older and newer neighbours are linked at the bottom of each post.
+  for (const [i, post] of posts.entries()) {
+    const ctx = context(post.lang, '../../', '../../fr/blog/');
+    const postPath = `blog/${post.slug}/`;
+    const url = `${build.siteUrl}${postPath}`;
+    const ogFile = `og/${post.slug}.png`;
+    const hasOg = await exists(path.join(ROOT, 'src/static', ogFile));
+    if (!hasOg) console.warn(`  note: no social image for "${post.slug}" (run: node scripts/render-images.mjs)`);
+    const image = `${build.siteUrl}${hasOg ? ogFile : 'og.png'}`;
+    await write(
+      `${postPath}index.html`,
+      layout(ctx, {
+        blog: true,
+        path: postPath,
+        title: `${post.title} | ${profile.person.name}`,
+        description: post.summary,
+        ogType: 'article',
+        image,
+        imageAlt: post.title,
+        article: { published: post.date, modified: post.updated, tags: post.tags },
+        body: String(postBody(ctx, post, { older: posts[i + 1], newer: posts[i - 1], url })),
+        bodyClass: 'page-post',
+        jsonld: postJsonLd(ctx, post, { url, image }),
+      }),
+    );
+    pages.push({ path: postPath, lastmod: post.updated });
   }
 
   // 404: served at arbitrary paths, so every URL in it must be absolute.
   {
-    const ctx = {
-      profile,
-      lang: 'en',
-      ui: UI.en,
-      notes,
-      build,
-      assets,
-      root: build.basePath,
-      resumeSize,
-      resumeHref: `${build.basePath}${profile.site.resume}`,
-      themeScriptHash,
-      otherLangHref: `${build.basePath}fr/`,
-    };
+    const ctx = context('en', build.basePath, `${build.basePath}fr/`);
     await write(
       '404.html',
       layout(ctx, {
@@ -242,28 +250,29 @@ async function main() {
     );
   }
 
-  // Old URLs from the first version of the site (blog.html, posts/*.html) keep working.
+  // Older URLs keep working: blog.html and posts/*.html from the first version of the site,
+  // notes/<slug>/ from the second.
   const redirect = (to) =>
     `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><title>Moved</title><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0; url=${to}"><link rel="canonical" href="${to}"></head><body><p>Moved to <a href="${to}">${to}</a>.</p></body></html>\n`;
-  await write('blog.html', redirect('./#writing'));
+  await write('blog.html', redirect('blog/'));
+  const published = new Set(posts.map((p) => p.slug));
   for (const slug of ['zero-trust-5g', 'airgapped-kubernetes', 'gitops-multi-dc']) {
-    const published = notes.some((n) => n.slug === slug);
-    await write(`posts/${slug}.html`, redirect(published ? `../notes/${slug}/` : '../#writing'));
+    await write(`posts/${slug}.html`, redirect(published.has(slug) ? `../blog/${slug}/` : '../blog/'));
+  }
+  for (const slug of ['zero-trust-5g', 'this-site-is-a-pipeline']) {
+    if (published.has(slug)) await write(`notes/${slug}/index.html`, redirect(`../../blog/${slug}/`));
   }
 
   // Machine-readable extras.
   const today = build.date;
+  const alternatesFor = (p) => {
+    const en = p.path.replace(/^fr\//, '');
+    return `<xhtml:link rel="alternate" hreflang="en" href="${build.siteUrl}${en}"/><xhtml:link rel="alternate" hreflang="fr" href="${build.siteUrl}fr/${en}"/>`;
+  };
   await write(
     'sitemap.xml',
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${pages
-      .map(
-        (p) =>
-          `  <url><loc>${build.siteUrl}${p.path}</loc><lastmod>${today}</lastmod>${
-            p.path === '' || p.path === 'fr/'
-              ? `<xhtml:link rel="alternate" hreflang="en" href="${build.siteUrl}"/><xhtml:link rel="alternate" hreflang="fr" href="${build.siteUrl}fr/"/>`
-              : ''
-          }</url>`,
-      )
+      .map((p) => `  <url><loc>${build.siteUrl}${p.path}</loc><lastmod>${p.lastmod ?? today}</lastmod>${p.alternates ? alternatesFor(p) : ''}</url>`)
       .join('\n')}\n</urlset>\n`,
   );
   await write('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${build.siteUrl}sitemap.xml\n`);
@@ -276,7 +285,7 @@ async function main() {
   );
   await write(
     'humans.txt',
-    `/* TEAM */\n  Author: ${profile.person.name}\n  Role: ${t(profile.person.role, 'en')}\n  Contact: ${profile.person.email}\n  From: ${t(profile.person.location, 'en')}\n\n/* SITE */\n  Last update: ${today}\n  Language: English, French\n  Standards: HTML, CSS, a man page (roff)\n  Components: esbuild, marked, yaml, ajv\n  Fonts: Red Hat Display, Red Hat Text, Red Hat Mono (SIL Open Font License)\n  Source: https://github.com/${build.repository}\n`,
+    `/* TEAM */\n  Author: ${profile.person.name}\n  Role: ${t(profile.person.role, 'en')}\n  Contact: ${profile.person.email}\n  From: ${t(profile.person.location, 'en')}\n\n/* SITE */\n  Last update: ${today}\n  Language: English, French\n  Standards: HTML, CSS, a man page (roff)\n  Components: esbuild, marked, highlight.js, yaml, ajv\n  Fonts: Red Hat Display, Red Hat Text, Red Hat Mono (SIL Open Font License)\n  Source: https://github.com/${build.repository}\n`,
   );
   await write(
     'site.webmanifest',
@@ -298,30 +307,31 @@ async function main() {
       2,
     ),
   );
-  const atomEntries = notes
+  const atomEntries = posts
     .map(
-      (n) => `  <entry>
-    <title>${n.title.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</title>
-    <link href="${build.siteUrl}notes/${n.slug}/"/>
-    <id>${build.siteUrl}notes/${n.slug}/</id>
-    <published>${n.date}T00:00:00Z</published>
-    <updated>${n.updated}T00:00:00Z</updated>
-    <summary>${n.summary.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</summary>
+      (p) => `  <entry>
+    <title>${xml(p.title)}</title>
+    <link rel="alternate" type="text/html" href="${build.siteUrl}blog/${p.slug}/"/>
+    <id>${build.siteUrl}blog/${p.slug}/</id>
+    <published>${p.date}T00:00:00Z</published>
+    <updated>${p.updated}T00:00:00Z</updated>
+    <category term="${p.category}" label="${xml(UI.en.blog.categories[p.category])}"/>
+    <summary>${xml(p.summary)}</summary>
   </entry>`,
     )
     .join('\n');
   await write(
     'feed.xml',
-    `<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom">\n  <title>${profile.person.name}, field notes</title>\n  <link href="${build.siteUrl}"/>\n  <link rel="self" href="${build.siteUrl}feed.xml"/>\n  <id>${build.siteUrl}</id>\n  <updated>${(notes[0]?.updated ?? today)}T00:00:00Z</updated>\n  <author><name>${profile.person.name}</name></author>\n${atomEntries}\n</feed>\n`,
+    `<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">\n  <title>${xml(profile.person.name)}: ${xml(t(profile.blog.title, 'en'))}</title>\n  <subtitle>${xml(t(profile.blog.description, 'en'))}</subtitle>\n  <link rel="alternate" type="text/html" href="${build.siteUrl}blog/"/>\n  <link rel="self" type="application/atom+xml" href="${build.siteUrl}feed.xml"/>\n  <id>${build.siteUrl}blog/</id>\n  <updated>${posts.reduce((max, p) => (p.updated > max ? p.updated : max), posts[0]?.updated ?? today)}T00:00:00Z</updated>\n  <author><name>${xml(profile.person.name)}</name><uri>${build.siteUrl}</uri></author>\n  <icon>${build.siteUrl}favicon.svg</icon>\n${atomEntries}\n</feed>\n`,
   );
   await write(
     'build-info.json',
-    `${JSON.stringify({ ...build, assets: { js: assets.js, css: assets.css }, notes: notes.map((n) => n.slug), headline: plain(t(profile.person.headline, 'en')) }, null, 2)}\n`,
+    `${JSON.stringify({ ...build, assets: { js: assets.js, css: assets.css }, posts: posts.map((n) => n.slug), headline: plain(t(profile.person.headline, 'en')) }, null, 2)}\n`,
   );
 
   const total = Object.values(assets.sizes).reduce((a, b) => a + b, 0);
   const ms = Math.round(performance.now() - started);
-  console.log(`built ${pages.length} pages + 404 in ${ms} ms -> ${path.relative(ROOT, DIST)}/  (site: ${build.siteUrl})`);
+  console.log(`built ${pages.length} pages + 404 (${posts.length} posts) in ${ms} ms -> ${path.relative(ROOT, DIST)}/  (site: ${build.siteUrl})`);
   for (const [file, bytes] of Object.entries(assets.sizes)) console.log(`  ${file.padEnd(46)} ${String(bytes).padStart(7)} B`);
   console.log(`  ${'total assets'.padEnd(46)} ${String(total).padStart(7)} B`);
 }

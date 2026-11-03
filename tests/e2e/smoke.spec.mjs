@@ -40,11 +40,53 @@ test.describe('pages', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   });
 
-  test('article page renders', async ({ page, consoleErrors }) => {
-    await page.goto('notes/zero-trust-5g/');
+  test('blog index lists every post, the latest featured', async ({ page, consoleErrors }) => {
+    const response = await page.goto('blog/');
+    expect(response.status()).toBe(200);
+    await expect(page.locator('h1')).toHaveText('Notes from production');
+    await expect(page.locator('.feature-card')).toHaveCount(1);
+    await expect(page.locator('.feature-card h2')).toHaveText('Running Kubernetes behind an air gap');
+    await expect(page.locator('.post-grid .post-card')).toHaveCount(5);
+    await expect(page.locator('.post-grid .post-card svg.cover')).toHaveCount(5);
+    await expect(page.locator('.nav-links a[aria-current="page"]')).toHaveText('Blog');
+    await expect(page.locator('link[rel="alternate"][hreflang="fr"]')).toHaveAttribute('href', /\/fr\/blog\/$/);
+    const jsonld = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
+    expect(jsonld['@type']).toBe('Blog');
+    expect(jsonld.blogPost).toHaveLength(5);
+    expect(consoleErrors).toEqual([]);
+  });
+
+  test('French blog index says the posts are in English', async ({ page }) => {
+    await page.goto('fr/blog/');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
+    await expect(page.locator('h1')).toHaveText('Notes de production');
+    await expect(page.locator('.lang-note')).toHaveText('Les articles sont rédigés en anglais.');
+    await expect(page.locator('.post-card[lang="en"]').first()).toBeAttached();
+    await expect(page.locator('.post-card a[hreflang="en"]').first()).toHaveAttribute('href', /^\.\.\/\.\.\/blog\//);
+  });
+
+  test('home page shows the three latest posts', async ({ page }) => {
+    await page.goto('./');
+    await expect(page.locator('#writing .post-card')).toHaveCount(3);
+    await expect(page.locator('#writing a[href="blog/"]')).toBeVisible();
+  });
+
+  test('post page renders with diagrams, highlighted code and contents', async ({ page, consoleErrors }) => {
+    await page.goto('blog/zero-trust-5g/');
     await expect(page.locator('h1')).toContainText('Zero Trust microsegmentation');
-    await expect(page.locator('.article-body pre').first()).toContainText('CiliumNetworkPolicy');
+    await expect(page.locator('.post-body pre').first()).toContainText('CiliumNetworkPolicy');
+    await expect(page.locator('.post-body pre .hljs-attr').first()).toBeAttached();
+    await expect(page.locator('.post-body figure.diagram svg[role="img"]')).toHaveCount(2);
+    await expect(page.locator('.post-body .callout.is-note')).toHaveCount(1);
     await expect(page.locator('.toc li')).toHaveCount(4);
+    // The oldest post only links to a newer one.
+    await expect(page.locator('.post-nav a')).toHaveCount(1);
+    await expect(page.locator('.post-nav a')).toContainText('Next article');
+    await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'article');
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /\/og\/zero-trust-5g\.png$/);
+    const jsonld = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
+    expect(jsonld['@type']).toBe('BlogPosting');
+    expect(jsonld.datePublished).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(consoleErrors).toEqual([]);
   });
 
@@ -56,11 +98,13 @@ test.describe('pages', () => {
     await expect(page.locator('[data-404-suggest]')).toBeVisible();
   });
 
-  test('links from the previous version of the site still work', async ({ page }) => {
+  test('links from previous versions of the site still work', async ({ page }) => {
     await page.goto('posts/zero-trust-5g.html');
-    await expect(page).toHaveURL(/notes\/zero-trust-5g\/$/);
+    await expect(page).toHaveURL(/\/blog\/zero-trust-5g\/$/);
+    await page.goto('notes/this-site-is-a-pipeline/');
+    await expect(page).toHaveURL(/\/blog\/this-site-is-a-pipeline\/$/);
     await page.goto('blog.html');
-    await expect(page).toHaveURL(/#writing$/);
+    await expect(page).toHaveURL(/\/blog\/$/);
   });
 });
 
@@ -91,11 +135,24 @@ test.describe('files', () => {
       expect((await request.get(path)).status(), path).toBe(200);
     }
   });
+
+  test('the feed and the sitemap list every post, each with its social image', async ({ request }) => {
+    const feed = await (await request.get('feed.xml')).text();
+    const posts = [...feed.matchAll(/<id>([^<]+\/blog\/([a-z0-9-]+)\/)<\/id>/g)].map((m) => m[2]);
+    expect(posts).toHaveLength(5);
+    const sitemap = await (await request.get('sitemap.xml')).text();
+    for (const slug of posts) {
+      expect(sitemap).toContain(`/blog/${slug}/</loc>`);
+      const image = await request.get(`og/${slug}.png`);
+      expect(image.status(), slug).toBe(200);
+      expect(image.headers()['content-type']).toContain('image/png');
+    }
+  });
 });
 
 test.describe('layout', () => {
   test('nothing overflows horizontally', async ({ page }) => {
-    for (const path of ['./', 'fr/', 'notes/this-site-is-a-pipeline/', 'nope/']) {
+    for (const path of ['./', 'fr/', 'blog/', 'fr/blog/', 'blog/airgapped-kubernetes/', 'blog/kubernetes-operators/', 'nope/']) {
       await page.goto(path);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow, path).toBeLessThanOrEqual(0);
@@ -111,6 +168,13 @@ test.describe('layout', () => {
     await expect(page.locator('.nav-links a').first()).toBeVisible();
     await expect(page.locator('[data-menu]')).toBeHidden();
     await expect(page.locator('.copy-btn').first()).toBeHidden();
+    // The blog without JavaScript: every post listed once, no filter buttons, code still readable.
+    await page.goto(`${test.info().project.use.baseURL}blog/`);
+    await expect(page.locator('.filters')).toBeHidden();
+    await expect(page.locator('.post-grid .post-card:visible')).toHaveCount(4);
+    await page.goto(`${test.info().project.use.baseURL}blog/airgapped-kubernetes/`);
+    await expect(page.locator('.post-body figure.diagram')).toHaveCount(2);
+    await expect(page.locator('.code-copy').first()).toBeHidden();
     await context.close();
   });
 });

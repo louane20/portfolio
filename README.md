@@ -18,6 +18,11 @@ The site is simple to read; the repository behind it is built and shipped like p
   and contact, with a one-click CV download.
 - **A research diagram** that explains my IEEE WCNC 2025 paper in three steps: a flat network,
   network policies with Cilium, then a service mesh with Istio, each stopping the attack it can see.
+- **A blog** ([`/blog/`](https://louane20.github.io/portfolio/blog/)) with illustrated articles on
+  air-gapped Kubernetes, operators (CloudNativePG, Strimzi), Zero Trust for 5G, open source and this
+  pipeline. Topic filters, a table of contents that follows the reading, an Atom feed and a social
+  image per article. Diagrams are SVG and code is highlighted at build time: pages need no
+  JavaScript to read, and they follow the light and dark themes.
 - **Live delivery status.** The featured project reads the latest run of this repository's
   pipeline from the GitHub API.
 - Light and dark themes, works without JavaScript, no tracker and no third-party request,
@@ -78,16 +83,42 @@ Node 24 (see `.nvmrc`). `make zero-trust` needs Docker, and installs nothing beh
 ## Edit the content
 
 Everything you read on the site lives in [`content/profile.yaml`](content/profile.yaml), in
-English and French, validated by [`content/schema.json`](content/schema.json). Field notes
-are Markdown files in [`content/notes/`](content/notes/) (`draft: true` keeps one out of the
-build). Push to `main` and the pipeline does the rest.
+English and French, validated by [`content/schema.json`](content/schema.json). Blog posts are
+Markdown files in [`content/blog/`](content/blog/). Push to `main` and the pipeline does the rest.
+
+A post starts with front matter, checked at build time:
+
+```yaml
+---
+title: Running Kubernetes behind an air gap
+date: 2026-11-03
+category: platform        # platform, security, delivery or open-source
+cover: airgap             # an illustration from src/templates/blog/covers.mjs
+featured: true            # optional: pinned at the top of the blog
+draft: true               # optional: kept out of the build
+summary: One or two sentences for the cards, the feed and search engines.
+tags: [kubernetes, air-gapped]
+---
+```
+
+In the body, on top of standard Markdown:
+
+- ` ```yaml title="cluster.yaml" ` gives a code block a file name (any language works; the label
+  defaults to the language);
+- `> [!NOTE]`, `> [!TIP]`, `> [!WARNING]` and `> [!IMPORTANT]` make callouts;
+- a ` ```diagram ` block containing a name from
+  [`src/templates/blog/diagrams.mjs`](src/templates/blog/diagrams.mjs) inserts that diagram.
+
+After adding a post or changing a title, `node scripts/render-images.mjs --posts` regenerates the
+social images in `src/static/og/` (commit them with the post).
 
 ## Layout
 
 ```
-content/            profile.yaml (EN + FR), schema.json, notes/*.md
+content/            profile.yaml (EN + FR), schema.json, blog/*.md
 src/templates/      page sections and the research diagram, rendered at build time
-src/scripts/        theme, menu, copy buttons, local time, live pipeline status
+src/templates/blog/ blog pages, Markdown rendering, cover illustrations and article diagrams
+src/scripts/        theme, menu, copy buttons, local time, live pipeline status, blog filters
 src/styles/         design tokens (light and dark), layout, components
 scripts/            build.mjs, serve.mjs, check-links.mjs, ci/*.sh
 tests/              Playwright + axe (e2e/), k6 (load/)

@@ -5,7 +5,7 @@
   "description": "Schema for content/profile.yaml. Every translatable field must exist in English and French.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["site", "person", "glance", "about", "expertise", "experience", "education", "research", "projects", "credentials", "notes", "contact"],
+  "required": ["site", "person", "glance", "about", "expertise", "experience", "education", "research", "projects", "credentials", "blog", "contact"],
   "$defs": {
     "i18n": {
       "type": "object",
@@ -340,7 +340,19 @@
         "awards": { "type": "array", "items": { "$ref": "#/$defs/credential" } }
       }
     },
-    "notes": { "$ref": "#/$defs/section" },
+    "blog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "title", "lede", "description", "author_bio"],
+      "properties": {
+        "heading": { "$ref": "#/$defs/i18n" },
+        "intro": { "$ref": "#/$defs/i18n" },
+        "title": { "$ref": "#/$defs/i18n" },
+        "lede": { "$ref": "#/$defs/i18n" },
+        "description": { "$ref": "#/$defs/i18n" },
+        "author_bio": { "$ref": "#/$defs/i18n" }
+      }
+    },
     "contact": {
       "type": "object",
       "additionalProperties": false,

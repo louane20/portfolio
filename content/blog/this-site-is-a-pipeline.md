@@ -1,7 +1,8 @@
 ---
 title: This portfolio is a pipeline
 date: 2026-11-01
-category: platform
+category: delivery
+cover: pipeline
 summary: >-
   How a static portfolio became a small production platform: content as code, tests and
   budgets, a signed container image, and a kind cluster where Cilium has to prove the
@@ -19,15 +20,23 @@ Everything you read on the site, in English and in French, comes from one YAML f
 Schema validates it before anything is built, and a second pass checks the cross-references:
 a skill that cites a job that doesn't exist fails the build, exactly like a broken import.
 
-The generator is a few hundred lines of Node with four dependencies. It writes the two language
-versions, the field notes, an Atom feed, a sitemap, a `security.txt` that is regenerated on
-every build so it never expires, and the page you are reading as a real roff man page:
+The generator is a few hundred lines of Node with five dependencies. It writes the two language
+versions, this blog, an Atom feed, a sitemap, a `security.txt` that is regenerated on every
+build so it never expires, and the same profile as a real roff man page:
 
 ```sh
 curl -sL https://louane20.github.io/portfolio/guerd.1 | man -l -
 ```
 
+Even the diagrams and the syntax highlighting in these articles are produced at build time, as
+SVG and HTML. The browser receives finished pages: they read the same without JavaScript, and
+they follow the light or dark theme through CSS alone.
+
 ## What runs on every push
+
+```diagram
+pipeline-flow
+```
 
 | Stage | What it proves |
 | --- | --- |
@@ -66,6 +75,10 @@ ingress:
 ```
 
 Then the job tries to break in, and fails the build if any attempt succeeds:
+
+```diagram
+pipeline-zt-test
+```
 
 | Attempt | Expected |
 | --- | --- |

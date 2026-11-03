@@ -1,7 +1,8 @@
 ---
 title: Zero Trust microsegmentation for cloud-native 5G networks
-date: 2025-03-24
-category: research
+date: 2026-11-01
+category: security
+cover: zero-trust
 summary: >-
   What Zero Trust means once a 5G core runs as pods, and why the CNI and the service mesh
   have to enforce it together. The idea behind THAALOUB, our IEEE WCNC 2025 paper.
@@ -18,6 +19,15 @@ Inside a flat cluster network, every pod can open a connection to every other po
 compromised network function is enough to start querying subscriber data, registering fake
 functions with the NRF, or exfiltrating whatever it can reach.
 
+```diagram
+zt5g-sba
+```
+
+Not all of that traffic looks the same. The control-plane functions talk to each other over
+HTTP/2 APIs, the service-based interfaces. The radio side and the user plane do not: the gNB
+reaches the AMF over SCTP on N2, user traffic arrives over GTP-U on N3, and the SMF drives the UPF
+with PFCP over UDP on N4. Any security model for a cloud-native core has to cover both kinds.
+
 ## Never trust the network, verify every request
 
 Zero Trust, as NIST describes it in SP 800-207, drops the idea of a trusted inside. Every
@@ -30,6 +40,12 @@ already say which network function consumes which service operation. The UDM's s
 management service, for example, gives the AMF access and mobility data and gives the SMF
 session management data. An SMF that asks for access and mobility data is not doing its job.
 It is doing someone else's.
+
+> [!NOTE]
+> 3GPP already points this way. TS 33.501, the 5G security architecture, specifies TLS on the
+> service-based interfaces and OAuth 2.0 authorization between network functions, with the NRF
+> as the authorization server. Enforcing the same principles in the platform adds a layer that
+> does not depend on every network function implementing them correctly.
 
 ## Why one layer is not enough
 
@@ -49,6 +65,10 @@ nothing to say about UDP or SCTP.
 Put together, they cover each other's gaps: the CNI enforces who may open a connection at all,
 for every protocol, and the mesh decides which requests are allowed on the connections that
 remain.
+
+```diagram
+zt-gates
+```
 
 | Layer | Enforced by | Decides on | Covers |
 | --- | --- | --- | --- |

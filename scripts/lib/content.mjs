@@ -1,10 +1,11 @@
-// Loads content/profile.yaml and content/notes/*.md, validates them, and
+// Loads content/profile.yaml and content/blog/*.md, validates them, and
 // returns plain objects for the templates. Fails loudly on any problem.
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
 import Ajv2020 from 'ajv/dist/2020.js';
+import { COVERS } from '../../src/templates/blog/covers.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 export const CONTENT_DIR = path.join(ROOT, 'content');
@@ -73,38 +74,52 @@ export async function loadProfile() {
 }
 
 const FRONT_MATTER = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
-const NOTE_FIELDS = ['title', 'date', 'summary', 'tags'];
+const POST_FIELDS = ['title', 'date', 'summary', 'tags', 'category', 'cover'];
+export const CATEGORIES = ['platform', 'security', 'delivery', 'open-source'];
 
-export async function loadNotes({ drafts = false } = {}) {
-  const dir = path.join(CONTENT_DIR, 'notes');
+/** Blog posts: content/blog/<slug>.md with YAML front matter. Newest first. */
+export async function loadPosts({ drafts = false } = {}) {
+  const dir = path.join(CONTENT_DIR, 'blog');
   const files = (await readdir(dir)).filter((f) => f.endsWith('.md')).sort();
-  const notes = [];
+  const posts = [];
   for (const file of files) {
+    const where = `content/blog/${file}`;
     const source = await readFile(path.join(dir, file), 'utf8');
     const match = FRONT_MATTER.exec(source.replace(/\r\n/g, '\n'));
-    if (!match) throw new ContentError(`notes/${file}: missing front matter`);
+    if (!match) throw new ContentError(`${where}: missing front matter`);
     const meta = YAML.parse(match[1]);
-    for (const field of NOTE_FIELDS) {
-      if (meta[field] === undefined) throw new ContentError(`notes/${file}: missing "${field}" in front matter`);
+    if (meta.draft && !drafts) continue;
+    for (const field of POST_FIELDS) {
+      if (meta[field] === undefined) throw new ContentError(`${where}: missing "${field}" in front matter`);
     }
     const date = String(meta.date);
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new ContentError(`notes/${file}: date must be YYYY-MM-DD`);
-    if (meta.draft && !drafts) continue;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new ContentError(`${where}: date must be YYYY-MM-DD`);
+    if (!CATEGORIES.includes(meta.category)) {
+      throw new ContentError(`${where}: category must be one of ${CATEGORIES.join(', ')}`);
+    }
+    if (!COVERS.includes(meta.cover)) throw new ContentError(`${where}: cover must be one of ${COVERS.join(', ')}`);
     const body = match[2];
-    const words = body.replace(/```[\s\S]*?```/g, ' ').split(/\s+/).filter(Boolean).length;
-    notes.push({
+    const words = body
+      .replace(/```[\s\S]*?```/g, ' ')
+      .replace(/<[^>]+>/g, ' ')
+      .split(/\s+/)
+      .filter(Boolean).length;
+    posts.push({
       slug: file.replace(/\.md$/, ''),
       title: meta.title,
       date,
       updated: meta.updated ? String(meta.updated) : date,
       summary: meta.summary,
       tags: meta.tags,
-      category: meta.category ?? meta.tags[0],
+      category: meta.category,
+      cover: meta.cover,
       lang: meta.lang ?? 'en',
       draft: Boolean(meta.draft),
+      featured: Boolean(meta.featured),
+      words,
       minutes: Math.max(1, Math.round(words / 220)),
       body,
     });
   }
-  return notes.sort((a, b) => b.date.localeCompare(a.date));
+  return posts.sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
 }

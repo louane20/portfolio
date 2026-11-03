@@ -103,3 +103,55 @@ test.describe('featured project: live pipeline status', () => {
     await expect(page.locator('[data-pipe-run]')).toContainText('Live status is unavailable');
   });
 });
+
+test.describe('blog', () => {
+  test('topic filters narrow the list and update the address', async ({ page }) => {
+    await page.goto('blog/');
+    const visible = page.locator('.post-grid .post-card:visible');
+    await expect(visible).toHaveCount(4);
+    await page.getByRole('button', { name: /^Security/ }).click();
+    await expect(page.getByRole('button', { name: /^Security/ })).toHaveAttribute('aria-pressed', 'true');
+    await expect(visible).toHaveCount(1);
+    await expect(visible.first()).toContainText('Zero Trust');
+    await expect(page.locator('[data-featured-section]')).toBeHidden();
+    await expect(page).toHaveURL(/\?topic=security$/);
+    await expect(page.locator('[data-filter-status]')).toHaveText('1 article');
+    await page.getByRole('button', { name: /^All/ }).click();
+    await expect(visible).toHaveCount(4);
+    await expect(page.locator('[data-featured-section]')).toBeVisible();
+    await expect(page).toHaveURL(/\/blog\/$/);
+  });
+
+  test('a topic in the address is preselected, as linked from the breadcrumbs', async ({ page }) => {
+    await page.goto('blog/kubernetes-operators/');
+    await page.locator('.crumbs').getByRole('link', { name: 'Platform' }).click();
+    await expect(page).toHaveURL(/\/blog\/\?topic=platform$/);
+    await expect(page.getByRole('button', { name: /^Platform/ })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.post-grid .post-card:visible')).toHaveCount(2);
+  });
+
+  test('copy a code block', async ({ page, context, browserName }) => {
+    test.skip(browserName !== 'chromium', 'clipboard permissions are Chromium-only');
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.goto('blog/kubernetes-operators/');
+    const block = page.locator('.codeblock').filter({ hasText: 'kind: Cluster' }).first();
+    await block.locator('.code-copy').click();
+    await expect(block.locator('.code-copy')).toContainText('Copied');
+    await expect(page.locator('[data-toast]')).toHaveText('Code copied');
+    const copied = await page.evaluate(() => navigator.clipboard.readText());
+    expect(copied).toContain('apiVersion: postgresql.cnpg.io/v1');
+    expect(copied).not.toContain('Copy');
+  });
+
+  test('the table of contents follows the reading, and so does the progress bar', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'the contents become a sticky column on wide screens');
+    await page.goto('blog/airgapped-kubernetes/');
+    const bar = page.locator('[data-read-progress]');
+    await expect(bar).toHaveCSS('transform', /matrix\(0, /);
+    await page.evaluate(() => document.getElementById('point-the-nodes-at-the-mirror').scrollIntoView({ block: 'start' }));
+    await expect(page.locator('.toc a[href="#point-the-nodes-at-the-mirror"]')).toHaveAttribute('aria-current', 'true');
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await expect(page.locator('.toc a').last()).toHaveAttribute('aria-current', 'true');
+    await expect(bar).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
+  });
+});

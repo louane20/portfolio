@@ -1,0 +1,400 @@
+/* Article diagrams (src/templates/blog/diagrams.mjs): inline SVG drawn at build time and
+   coloured here, so they follow the theme. Sizes are in SVG user units. */
+.diagram {
+  margin-block: 2.25rem;
+}
+
+/* On narrow screens wide diagrams scroll sideways; edge shadows show that there is more. */
+.diagram-scroll {
+  overflow-x: auto;
+  background:
+    linear-gradient(to right, var(--bg) 30%, transparent) left / 2.5rem 100% no-repeat local,
+    linear-gradient(to left, var(--bg) 30%, transparent) right / 2.5rem 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, color-mix(in srgb, var(--ink) 22%, transparent), transparent) left / 0.9rem 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, color-mix(in srgb, var(--ink) 22%, transparent), transparent) right / 0.9rem 100% no-repeat scroll;
+  scrollbar-width: thin;
+}
+
+.diagram figcaption {
+  margin-top: 0.8rem;
+  color: var(--ink-3);
+  font-size: var(--step--1);
+  line-height: 1.55;
+}
+
+.diagram figcaption code {
+  white-space: nowrap;
+}
+
+.dg {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--font-text);
+}
+
+.dg-wide {
+  min-width: 40rem;
+}
+
+.dg-t {
+  fill: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dg-mono,
+.dg-code {
+  font-family: var(--font-mono);
+}
+
+.dg-mono {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.dg-code {
+  fill: var(--ink-2);
+  font-size: 12px;
+}
+
+.dg-sub {
+  fill: var(--ink-3);
+  font-size: 11.5px;
+}
+
+.dg-zl {
+  fill: var(--ink-3);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.dg-acc,
+.dg-sub.dg-acc,
+.dg-code.dg-acc {
+  fill: var(--accent);
+}
+
+.dg-ok {
+  fill: var(--ok);
+}
+
+.dg-bad {
+  fill: var(--bad);
+}
+
+/* Zones: networks, namespaces, trust boundaries. */
+.dg-zone rect {
+  fill: color-mix(in srgb, var(--surface-2) 75%, transparent);
+  stroke: var(--line);
+  stroke-width: 1.2;
+}
+
+.dg-zone.is-acc rect {
+  fill: color-mix(in srgb, var(--accent-soft) 50%, transparent);
+  stroke: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.dg-zone.is-warn rect {
+  fill: color-mix(in srgb, var(--warn-soft) 55%, transparent);
+  stroke: color-mix(in srgb, var(--warn) 40%, transparent);
+}
+
+.dg-zone.is-dashed rect {
+  fill: transparent;
+  stroke: var(--line-strong);
+  stroke-dasharray: 6 5;
+}
+
+/* Boxes. */
+.dg-box rect,
+.dg-band rect,
+.dg-cyl path,
+.dg-disk path {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.3;
+}
+
+.dg-box.is-dashed rect {
+  stroke-dasharray: 5 4;
+}
+
+.dg-box.is-acc rect {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+}
+
+.dg-box.is-acc .dg-t {
+  fill: var(--accent-soft-ink);
+}
+
+.dg-box.is-ok rect {
+  fill: var(--ok-soft);
+  stroke: var(--ok);
+}
+
+.dg-box.is-ok .dg-t {
+  fill: var(--ok);
+}
+
+.dg-box.is-warn rect {
+  fill: var(--warn-soft);
+  stroke: var(--warn);
+}
+
+.dg-box.is-warn .dg-t {
+  fill: var(--warn);
+}
+
+.dg-box.is-bad rect {
+  fill: var(--bad-soft);
+  stroke: var(--bad);
+}
+
+.dg-box.is-bad .dg-t {
+  fill: var(--bad);
+}
+
+.dg-box.is-mut rect {
+  fill: var(--bg);
+  stroke: var(--line-strong);
+}
+
+.dg-box.is-mut .dg-t {
+  fill: var(--ink-2);
+}
+
+.dg-box.is-acc .dg-sub,
+.dg-box.is-ok .dg-sub,
+.dg-box.is-warn .dg-sub,
+.dg-box.is-bad .dg-sub {
+  fill: var(--ink-2);
+}
+
+.dg-cyl .dg-cyl-top,
+.dg-disk path + path {
+  fill: none;
+}
+
+.dg-num {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+  stroke-width: 1.2;
+}
+
+.dg-numt {
+  fill: var(--accent-soft-ink);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.dg-lvl {
+  fill: var(--ink-3);
+  font: 700 20px var(--font-display);
+}
+
+.dg-level.is-acc .dg-lvl {
+  fill: var(--accent);
+}
+
+.dg-band .dg-band-mark {
+  stroke: none;
+  fill: var(--line-strong);
+}
+
+.dg-band.is-acc .dg-band-mark {
+  fill: var(--accent);
+}
+
+.dg-band.is-warn .dg-band-mark {
+  fill: var(--warn);
+}
+
+.dg-cell {
+  fill: color-mix(in srgb, var(--accent) 22%, var(--surface));
+}
+
+.dg-cell.is-lead {
+  fill: var(--accent);
+}
+
+.dg-gate rect {
+  stroke-width: 1.4;
+}
+
+.dg-gate.is-ok rect {
+  fill: color-mix(in srgb, var(--ok-soft) 80%, transparent);
+  stroke: var(--ok);
+}
+
+.dg-gate.is-acc rect {
+  fill: color-mix(in srgb, var(--accent-soft) 80%, transparent);
+  stroke: var(--accent);
+}
+
+/* Lines and arrowheads. */
+.dg-ln {
+  fill: none;
+  stroke: var(--ink-3);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+.dg-ln.is-acc {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.dg-ln.is-ok {
+  stroke: var(--ok);
+  stroke-width: 2;
+}
+
+.dg-ln.is-bad {
+  stroke: var(--bad);
+  stroke-width: 1.8;
+}
+
+.dg-ln.is-warn {
+  stroke: var(--warn);
+  stroke-width: 1.8;
+}
+
+.dg-ln.is-mut {
+  stroke: var(--line-strong);
+}
+
+.dg-ln.is-dashed {
+  stroke-dasharray: 5 5;
+}
+
+.dg-ln.is-thick {
+  stroke-width: 4;
+}
+
+.dg-mk path {
+  fill: var(--ink-3);
+}
+
+.dg-mk.is-acc path {
+  fill: var(--accent);
+}
+
+.dg-mk.is-ok path {
+  fill: var(--ok);
+}
+
+.dg-mk.is-bad path {
+  fill: var(--bad);
+}
+
+.dg-mk.is-warn path {
+  fill: var(--warn);
+}
+
+.dg-mk.is-mut path {
+  fill: var(--line-strong);
+}
+
+/* Labels sitting on lines. */
+.dg-pill rect {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.1;
+}
+
+.dg-pill text {
+  fill: var(--ink-2);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.dg-pill.is-acc rect {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+}
+
+.dg-pill.is-acc text {
+  fill: var(--accent-soft-ink);
+}
+
+.dg-pill.is-ok rect {
+  fill: var(--ok-soft);
+  stroke: var(--ok);
+}
+
+.dg-pill.is-ok text {
+  fill: var(--ok);
+}
+
+.dg-pill.is-bad rect {
+  fill: var(--bad-soft);
+  stroke: var(--bad);
+}
+
+.dg-pill.is-bad text {
+  fill: var(--bad);
+}
+
+.dg-pill.is-warn rect {
+  fill: var(--warn-soft);
+  stroke: var(--warn);
+}
+
+.dg-pill.is-warn text {
+  fill: var(--warn);
+}
+
+.dg-pill.is-mut rect {
+  fill: var(--bg);
+  stroke: var(--line);
+}
+
+.dg-pill.is-mut text {
+  fill: var(--ink-3);
+}
+
+/* Status badges. */
+.dg-badge circle {
+  fill: var(--surface);
+  stroke-width: 1.6;
+}
+
+.dg-badge path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
+}
+
+.dg-badge.is-ok circle,
+.dg-badge.is-ok path,
+.dg-badge.is-lock circle,
+.dg-badge.is-lock path {
+  stroke: var(--ok);
+}
+
+.dg-badge.is-lock rect {
+  fill: var(--ok);
+}
+
+.dg-badge.is-lock path {
+  stroke-width: 1.4;
+}
+
+.dg-badge.is-block circle,
+.dg-badge.is-block path {
+  stroke: var(--bad);
+}
+
+.dg-badge.is-shield circle {
+  stroke: var(--accent);
+}
+
+.dg-badge.is-shield path {
+  fill: var(--accent);
+  stroke: none;
+}

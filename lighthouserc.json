@@ -2,7 +2,7 @@
   "ci": {
     "collect": {
       "staticDistDir": "./dist",
-      "url": ["/", "/fr/", "/notes/zero-trust-5g/", "/notes/this-site-is-a-pipeline/"],
+      "url": ["/", "/fr/", "/blog/", "/blog/airgapped-kubernetes/", "/blog/kubernetes-operators/"],
       "numberOfRuns": 1,
       "settings": {
         "throttlingMethod": "simulate"

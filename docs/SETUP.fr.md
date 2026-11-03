@@ -68,11 +68,13 @@ Après le premier run de *Container image*, l'image apparaît dans *Packages*
 - Dans *Actions → Zero Trust e2e*, le résumé du job montre le tableau des contrôles
   (200, 403, timeouts) et les flux bloqués relevés par Hubble.
 - Dans un terminal : `curl -sL https://louane20.github.io/portfolio/guerd.1 | man -l -`
+- Le blog répond sur **https://louane20.github.io/portfolio/blog/** (et `/fr/blog/`), et le flux
+  sur `/feed.xml`.
 
 ## Modifier le contenu
 
-Tout le texte du site (anglais et français) est dans `content/profile.yaml`. Les articles sont
-dans `content/notes/*.md`. En local :
+Tout le texte du site (anglais et français) est dans `content/profile.yaml`. Les articles du
+blog sont dans `content/blog/*.md`. En local :
 
 ```sh
 npm ci --ignore-scripts
@@ -85,9 +87,61 @@ build avec un message clair : c'est voulu.
 
 Pour ajouter ta photo : place une image carrée dans `src/static/` (par exemple `photo.jpg`) et
 mets `photo: photo.jpg` dans la section `person` de `profile.yaml`. Elle remplace le monogramme
-« NG » dans l'encadré « En bref ».
+« NG » dans l'encadré « En bref » et dans les signatures du blog.
 
-## Ce qui a changé par rapport à la version précédente
+## Écrire un article
+
+Un article est un fichier Markdown dans `content/blog/`. Le nom du fichier donne l'adresse :
+`content/blog/mon-article.md` devient `/blog/mon-article/`. L'en-tête est vérifié au build :
+
+```yaml
+---
+title: Running Kubernetes behind an air gap
+date: 2026-11-03
+category: platform        # platform, security, delivery ou open-source
+cover: airgap             # airgap, operators, open-source, zero-trust, pipeline ou gitops
+featured: true            # facultatif : épinglé en haut du blog
+draft: true               # facultatif : brouillon, non publié
+summary: Une ou deux phrases pour les cartes, le flux RSS et les moteurs de recherche.
+tags: [kubernetes, air-gapped]
+---
+```
+
+Dans le texte, en plus du Markdown habituel :
+
+- un bloc de code peut avoir un nom de fichier : ` ```yaml title="cluster.yaml" ` ;
+- `> [!NOTE]`, `> [!TIP]`, `> [!WARNING]` et `> [!IMPORTANT]` créent des encadrés ;
+- un bloc ` ```diagram ` contenant le nom d'un schéma de `src/templates/blog/diagrams.mjs`
+  l'insère (par exemple `airgap-zones` ou `cnpg-cluster`).
+
+Après un nouvel article ou un titre modifié, régénère les images de partage (LinkedIn, etc.) :
+`node scripts/render-images.mjs --posts`, puis commite les fichiers de `src/static/og/`.
+
+## Ce qui a changé : le blog
+
+- La section « Articles » est devenue un vrai blog : une page d'accueil (`/blog/`, et `/fr/blog/`
+  en français) avec l'article à la une, des filtres par thème et des cartes illustrées ; une page
+  par article avec sommaire qui suit la lecture, barre de progression, encadrés, code coloré avec
+  bouton « Copier », boutons de partage (LinkedIn, e-mail, lien), encadré « Écrit par » et liens
+  vers l'article précédent et suivant. Le lien « Blog » est dans le menu.
+- Chaque article a sa propre illustration (claire et sombre) et sa propre image de partage, pour
+  que le lien soit beau quand tu le publies sur LinkedIn.
+- Trois nouveaux articles : *Running Kubernetes behind an air gap* (à la une), *Kubernetes
+  operators in production: CloudNativePG and Strimzi* et *From install parties to production:
+  why I build on open source* (qui part de ton expérience au club Openminds). Les deux articles
+  existants ont reçu des schémas.
+- Les schémas sont dessinés au build en SVG (13 au total) : zones d'un air gap, boucle d'un
+  opérateur, cluster CloudNativePG, Kafka en mode KRaft avec Strimzi, cœur 5G sur Kubernetes,
+  frise des changements de licence, pipeline et test Zero Trust.
+- **Relis les articles avant de pousser** : ils sont écrits à la première personne, en ton nom.
+  Les commandes et les versions ont été vérifiées (Kubernetes v1.36, Cilium v1.19, CloudNativePG
+  1.30, Strimzi 1.3 avec Kafka 4.3), mais c'est à toi de confirmer que tout correspond à ce que
+  tu fais vraiment. Les dates sont celles de la publication sur le site (1er et 3 novembre 2026) :
+  change le champ `date` si tu préfères.
+- L'article GitOps multi-datacenters reste en brouillon (`draft: true`) avec son plan.
+- Les anciennes adresses (`blog.html`, `posts/*.html`, `notes/*/`) redirigent vers le blog.
+
+## Ce qui avait changé avec la refonte
 
 - Nouveau design, plus sobre et pensé pour les recruteurs : profil, expertise (les outils que tu
   exploites en production sont mis en avant), expérience, recherche, projets, formation,
@@ -99,11 +153,11 @@ mets `photo: photo.jpg` dans la section `person` de `profile.yaml`. Elle remplac
 - Le lieu de WCNC 2025 est corrigé : **Milan, Italie** (l'ancienne page indiquait Dubaï).
   DOI ajouté : `10.1109/WCNC61545.2025.10978671`, avec un lien vers la version en accès libre.
 - Les fichiers `posts/*.html` n'étaient pas dans le dépôt, donc les liens « Read the article »
-  étaient cassés. Deux articles sont maintenant publiés : *Zero Trust microsegmentation for
+  étaient cassés. Deux articles avaient été publiés : *Zero Trust microsegmentation for
   cloud-native 5G networks* (fondé sur le résumé public de ton article) et *This portfolio is
   a pipeline*. **Relis-les** : ils sont écrits à la première personne, en ton nom.
-  Les deux autres (air gap, GitOps multi-DC) sont en brouillon avec un plan, non publiés :
-  enlève `draft: true` quand tu les auras écrits.
+  L'article GitOps multi-DC est en brouillon avec un plan : enlève `draft: true` quand tu l'auras
+  écrit (l'article sur l'air gap est maintenant publié, voir plus haut).
 - Les anciennes URL (`blog.html`, `posts/*.html`) redirigent vers les nouvelles.
 - Le KodeKloud CKA est présenté comme « cours de préparation », pour qu'un recruteur ne le
   confonde pas avec la certification CNCF.

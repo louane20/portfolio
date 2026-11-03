@@ -546,11 +546,38 @@ credentials:
       issuer: MOBORN Tourism
       date: 2021
 
-notes:
+# The blog (blog/ and fr/blog/). Posts are Markdown files in content/blog/.
+blog:
+  # Section of the home page that shows the latest posts.
   heading: { en: Writing, fr: Articles }
   intro:
-    en: Notes from production and from research.
-    fr: Des notes tirées de la production et de la recherche.
+    en: Notes from production and from research, with diagrams and working configuration.
+    fr: Des notes tirées de la production et de la recherche, avec des schémas et des configurations qui fonctionnent.
+  # The blog's own page.
+  title: { en: Notes from production, fr: Notes de production }
+  lede:
+    en: >-
+      Production Kubernetes, air-gapped platforms, operators, Zero Trust and open source. What I
+      build, what breaks, and what I would do again.
+    fr: >-
+      Kubernetes en production, plateformes isolées d'Internet, opérateurs, Zero Trust et open
+      source. Ce que je construis, ce qui casse, et ce que je referais.
+  description:
+    en: >-
+      Articles by Nawal Guerd on production Kubernetes, air-gapped platforms, Kubernetes operators,
+      Zero Trust security and open source.
+    fr: >-
+      Articles de Nawal Guerd sur Kubernetes en production, les plateformes air-gapped, les
+      opérateurs Kubernetes, la sécurité Zero Trust et l'open source.
+  author_bio:
+    en: >-
+      DevOps engineer at ATM Mobilis in Algiers. I build and secure production Kubernetes
+      platforms, often air-gapped, and I co-authored an IEEE WCNC 2025 paper on Zero Trust for
+      cloud-native 5G.
+    fr: >-
+      Ingénieure DevOps chez ATM Mobilis à Alger. Je construis et je sécurise des plateformes
+      Kubernetes en production, souvent isolées d'Internet, et je suis co-autrice d'un article
+      IEEE WCNC 2025 sur le Zero Trust pour la 5G cloud-native.
 
 contact:
   heading: { en: Let's talk, fr: Discutons }

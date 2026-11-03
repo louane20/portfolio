@@ -45,7 +45,7 @@ export function initMenu() {
       button.focus();
     }
   });
-  window.matchMedia('(width >= 1060px)').addEventListener('change', () => setOpen(false));
+  window.matchMedia('(width >= 1200px)').addEventListener('change', () => setOpen(false));
 }
 
 /** Highlights the section in view in the navigation, and keeps the language link on the same section. */
@@ -120,16 +120,23 @@ export async function copyText(text) {
   }
 }
 
+/** Copy buttons: `data-copy` holds the text; `data-copy-code` copies the code block it belongs to. */
 export function initCopy(strings, toast) {
   document.addEventListener('click', async (event) => {
-    const button = event.target.closest('button[data-copy]');
+    const button = event.target.closest('button[data-copy], button[data-copy-code]');
     if (!button) return;
-    const ok = await copyText(button.dataset.copy);
+    const isCode = button.hasAttribute('data-copy-code');
+    const text = isCode ? (button.closest('.codeblock')?.querySelector('code')?.textContent ?? '') : button.dataset.copy;
+    const ok = await copyText(text);
     const label = button.querySelector('span') ?? button;
     button.dataset.label ??= label.textContent;
     label.textContent = ok ? strings.copied : strings.copyFailed;
     button.dataset.state = ok ? 'done' : 'fail';
-    if (ok && button.dataset.copy.includes('@') && !button.dataset.copy.includes(' ')) toast(strings.emailCopied);
+    if (ok) {
+      if (isCode) toast(strings.codeCopied);
+      else if (button.dataset.toastText) toast(button.dataset.toastText);
+      else if (text.includes('@') && !text.includes(' ')) toast(strings.emailCopied);
+    }
     clearTimeout(Number(button.dataset.timer));
     button.dataset.timer = String(
       setTimeout(() => {

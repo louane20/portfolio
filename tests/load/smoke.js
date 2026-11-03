@@ -26,7 +26,7 @@ export const options = {
   },
 };
 
-const PAGES = ['/', '/fr/', '/notes/zero-trust-5g/', '/guerd.1'];
+const PAGES = ['/', '/fr/', '/blog/', '/blog/airgapped-kubernetes/', '/guerd.1'];
 
 export default function visit() {
   const page = PAGES[Math.floor(Math.random() * PAGES.length)];

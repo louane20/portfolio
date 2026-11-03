@@ -81,7 +81,8 @@
   color: var(--ink);
 }
 
-.nav-links a[aria-current="true"] {
+.nav-links a[aria-current="true"],
+.nav-links a[aria-current="page"] {
   color: var(--accent);
   background: var(--accent-soft);
 }
@@ -156,7 +157,7 @@
   display: none;
 }
 
-@media (width < 1060px) {
+@media (width < 1200px) {
   .header-row {
     flex-wrap: wrap;
   }

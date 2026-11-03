@@ -2,6 +2,7 @@
 title: GitOps across multiple datacenters with Argo CD
 date: 2024-12-10
 category: delivery
+cover: gitops
 draft: true
 summary: >-
   Patterns for keeping several clusters, several datacenters and one source of truth in

@@ -4,5 +4,9 @@
 @import url("./layout.css");
 @import url("./components.css");
 @import url("./sections.css");
+@import url("./blog.css");
+@import url("./covers.css");
+@import url("./diagrams.css");
 @import url("./article.css");
+@import url("./code.css");
 @import url("./print.css");

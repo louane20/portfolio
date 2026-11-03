@@ -1,7 +1,8 @@
 // Document shell: <head>, the site header with navigation, and the footer.
 import { html, raw, t, icon } from './common.mjs';
 
-export const NAV = ['about', 'expertise', 'experience', 'research', 'projects', 'contact'];
+// Sections of the home page, plus the blog, which has its own pages.
+export const NAV = ['about', 'expertise', 'experience', 'research', 'projects', 'blog', 'contact'];
 
 // Inline so the theme is applied before the first paint (no flash). Its hash is added to the CSP.
 export const THEME_SCRIPT =
@@ -27,16 +28,21 @@ export function csp(ctx) {
 export const monogram = (profile) =>
   html`<span class="monogram" aria-hidden="true">${profile.person.given_name[0]}${profile.person.family_name[0]}</span>`;
 
-function header(ctx, { home }) {
+function header(ctx, { home, blog }) {
   const { ui, profile, lang, root, resumeHref } = ctx;
   const homeHref = lang === 'en' ? root || './' : `${root}fr/`;
   const anchor = (id) => (home ? `#${id}` : `${homeHref}#${id}`);
+  const blogHref = lang === 'en' ? `${root}blog/` : `${root}fr/blog/`;
+  const item = (id) =>
+    id === 'blog'
+      ? html`<li><a href="${blogHref}"${blog ? raw(' aria-current="page"') : ''}${home ? raw(' data-nav-link="writing"') : ''}>${ui.nav.blog}</a></li>`
+      : html`<li><a href="${anchor(id)}" data-nav-link="${id}">${ui.nav[id]}</a></li>`;
   return html`
 <header class="site-header">
   <div class="container header-row">
     <a class="brand" href="${home ? '#top' : homeHref}">${monogram(profile)}<span class="brand-name">${profile.person.name}</span></a>
     <nav class="nav" id="site-nav" aria-label="${ui.navLabel}" data-nav>
-      <ul class="nav-links">${NAV.map((id) => html`<li><a href="${anchor(id)}" data-nav-link="${id}">${ui.nav[id]}</a></li>`)}</ul>
+      <ul class="nav-links">${NAV.map(item)}</ul>
       <div class="nav-tools">
         <a class="lang" href="${ctx.otherLangHref}" hreflang="${ui.otherLang}" lang="${ui.otherLang}" data-lang-link><span aria-hidden="true">${ui.otherLangShort}</span><span class="sr-only">${ui.otherLangName}</span></a>
         <button type="button" class="icon-btn theme-btn" data-theme-toggle data-label-light="${ui.theme.toLight}" data-label-dark="${ui.theme.toDark}" aria-label="${ui.theme.toDark}"><span class="i-moon">${icon.moon}</span><span class="i-sun">${icon.sun}</span></button>
@@ -88,7 +94,8 @@ export function layout(ctx, page) {
     email: profile.person.email,
     timezone: profile.person.timezone,
     home: lang === 'en' ? root || './' : `${root}fr/`,
-    notes: ctx.notes.map((n) => ({ title: n.title, href: `${root}notes/${n.slug}/` })),
+    blog: lang === 'en' ? `${root}blog/` : `${root}fr/blog/`,
+    posts: ctx.posts.map((n) => ({ slug: n.slug, title: n.title, href: `${root}blog/${n.slug}/` })),
     resume: ctx.resumeHref,
   };
   return `<!doctype html>
@@ -108,20 +115,28 @@ ${alternates.map((a) => html`<link rel="alternate" hreflang="${a.lang}" href="${
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f7fa">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b1320">
 <meta property="og:type" content="${page.ogType ?? 'profile'}">
+${
+  page.article
+    ? html`<meta property="article:published_time" content="${page.article.published}">
+<meta property="article:modified_time" content="${page.article.modified}">
+<meta property="article:author" content="${profile.person.name}">
+${page.article.tags.map((tag) => html`<meta property="article:tag" content="${tag}">`)}`
+    : ''
+}
 <meta property="og:title" content="${page.title}">
 <meta property="og:description" content="${page.description}">
 <meta property="og:url" content="${canonical}">
-<meta property="og:image" content="${build.siteUrl}og.png">
+<meta property="og:image" content="${page.image ?? `${build.siteUrl}og.png`}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${profile.person.name}, ${t(profile.person.role, lang)}">
+<meta property="og:image:alt" content="${page.imageAlt ?? `${profile.person.name}, ${t(profile.person.role, lang)}`}">
 <meta property="og:locale" content="${ui.ogLocale}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="${root}favicon.svg" type="image/svg+xml">
 <link rel="icon" href="${root}favicon.ico" sizes="32x32">
 <link rel="apple-touch-icon" href="${root}apple-touch-icon.png">
 <link rel="manifest" href="${root}site.webmanifest">
-<link rel="alternate" type="application/atom+xml" title="${profile.person.name}" href="${root}feed.xml">
+<link rel="alternate" type="application/atom+xml" title="${profile.person.name}: ${t(profile.blog.title, lang)}" href="${root}feed.xml">
 ${assets.fonts.map((f) => html`<link rel="preload" href="${root}${f}" as="font" type="font/woff2" crossorigin>`)}
 <link rel="stylesheet" href="${root}${assets.css}">
 <script>${raw(THEME_SCRIPT)}</script>
@@ -130,7 +145,7 @@ ${page.jsonld ? html`<script type="application/ld+json">${jsonForScript(page.jso
 </head>
 <body class="${page.bodyClass ?? ''}">
 <a class="skip" href="#main">${ui.skip}</a>
-${header(ctx, { home: page.home })}
+${header(ctx, { home: page.home, blog: page.blog })}
 <main id="main" tabindex="-1">
 ${raw(page.body)}
 </main>

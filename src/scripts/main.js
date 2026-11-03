@@ -1,8 +1,10 @@
 // Progressive enhancement. Every page works without JavaScript; this adds the theme switch,
-// the mobile menu, the active section in the navigation, copy buttons, the local time
-// and the live status of the delivery pipeline.
+// the mobile menu, the active section in the navigation, copy buttons, the local time,
+// the live status of the delivery pipeline and, on the blog, topic filters, the active
+// section in the table of contents and the reading progress.
 import { initTheme, initMenu, initScrollSpy, createToast, initCopy, initPhoneReveal, initLocalTime } from './ui.js';
 import { initPipeline } from './pipeline.js';
+import { initFilters, initToc, initProgress } from './blog.js';
 
 function siteData() {
   try {
@@ -18,13 +20,13 @@ function initNotFound(data) {
   const full = decodeURIComponent(window.location.pathname);
   const path = full.startsWith(data.home) ? full.slice(data.home.length) || '/' : full;
   for (const el of targets) el.textContent = path;
-  // Links from older versions of the site (blog.html, posts/*.html) point to the articles now.
+  // Links from older versions of the site (blog.html, posts/*.html, notes/) point to the blog now.
   const suggest = document.querySelector('[data-404-suggest]');
   const link = document.querySelector('[data-404-suggest-link]');
   let target = null;
-  const note = data.notes.find((n) => path.includes(n.href.split('/').filter(Boolean).pop()));
-  if (note) target = { href: note.href, text: note.title };
-  else if (/blog|post|notes?|article/i.test(path)) target = { href: `${data.home}#writing`, text: data.ui.notes };
+  const post = data.posts.find((p) => path.includes(p.slug));
+  if (post) target = { href: post.href, text: post.title };
+  else if (/blog|post|notes?|article/i.test(path)) target = { href: data.blog, text: data.ui.blog };
   else if (/cv|resume|r[eé]sum[eé]/i.test(path)) target = { href: data.resume, text: data.resume.split('/').pop() };
   if (target && suggest && link) {
     link.href = target.href;
@@ -44,6 +46,9 @@ function main() {
   initPhoneReveal();
   initLocalTime(data.lang);
   initNotFound(data);
+  initFilters(data.ui);
+  initToc();
+  initProgress();
   const pipe = document.querySelector('[data-pipeline]');
   if (pipe) {
     // The API call is not needed for the first screen: wait until the section comes close.

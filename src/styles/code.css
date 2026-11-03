@@ -1,0 +1,129 @@
+/* Code blocks in blog posts. Highlighting happens at build time (highlight.js); these are the
+   token colours, checked for WCAG AA contrast on the code background in both themes. */
+.codeblock {
+  overflow: hidden;
+  border: 1px solid var(--code-line);
+  border-radius: var(--radius);
+  background: var(--code-bg);
+}
+
+.code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.5rem;
+  padding: 0.3rem 0.45rem 0.3rem 1rem;
+  border-bottom: 1px solid var(--code-line);
+  background: var(--code-head);
+}
+
+.code-title {
+  color: var(--code-muted);
+  font: 600 0.78rem/1.3 var(--font-text);
+  letter-spacing: 0.02em;
+}
+
+.code-title.is-file {
+  color: var(--code-ink);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.code-copy {
+  border-color: var(--code-line);
+  background: transparent;
+  color: var(--code-muted);
+}
+
+.code-copy:hover {
+  border-color: var(--code-muted);
+  color: var(--code-ink);
+}
+
+.code-copy[data-state="done"] {
+  border-color: #7fe0a8;
+  color: #7fe0a8;
+}
+
+.codeblock pre {
+  margin: 0;
+  padding: 1rem 1.15rem 1.1rem;
+  overflow-x: auto;
+  color: var(--code-ink);
+  font-size: 0.875rem;
+  line-height: 1.65;
+  tab-size: 2;
+}
+
+.codeblock pre:focus-visible {
+  outline-offset: -3px;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #8c9cb3;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-doctag {
+  color: #c9adff;
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-addition {
+  color: #93e0b4;
+}
+
+.hljs-number,
+.hljs-symbol,
+.hljs-type {
+  color: #f6c177;
+}
+
+.hljs-attr,
+.hljs-attribute,
+.hljs-property,
+.hljs-variable,
+.hljs-template-variable {
+  color: #8fbcff;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-name,
+.hljs-built_in,
+.hljs-selector-class,
+.hljs-selector-id {
+  color: #7fd4e6;
+}
+
+.hljs-meta,
+.hljs-bullet,
+.hljs-punctuation,
+.hljs-tag {
+  color: #a3b3c8;
+}
+
+.hljs-deletion {
+  color: #ffa49c;
+}
+
+.hljs-addition,
+.hljs-deletion {
+  display: inline-block;
+  width: 100%;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: 700;
+}

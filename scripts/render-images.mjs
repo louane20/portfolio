@@ -2,12 +2,18 @@
 // Regenerates the raster images committed in src/static/ from their sources:
 //   favicon.svg -> favicon.ico (16/32/48), apple-touch-icon.png (180), icon-512.png
 //   scripts/og/og.html -> og.png (1200x630, social preview)
-// Run after changing the favicon or the social card: `node scripts/render-images.mjs`
+//   scripts/og/post.html + each post's cover -> og/<slug>.png (social preview of a post)
+// Run after changing the favicon, the social card or a post title:
+//   node scripts/render-images.mjs            everything
+//   node scripts/render-images.mjs --posts    only the post previews
 // (set PW_CHANNEL=chrome to use an installed Chrome instead of Playwright's Chromium).
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { chromium } from '@playwright/test';
+import { loadPosts } from './lib/content.mjs';
+import { coverSvg } from '../src/templates/blog/covers.mjs';
+import { UI } from '../src/i18n.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const STATIC = path.join(ROOT, 'src/static');
@@ -34,9 +40,30 @@ function ico(pngs) {
   return Buffer.concat([header, ...pngs.map((p) => p.data)]);
 }
 
+const postsOnly = process.argv.includes('--posts');
 const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || undefined });
 try {
   const page = await browser.newPage();
+  await mkdir(path.join(STATIC, 'og'), { recursive: true });
+  for (const post of await loadPosts()) {
+    await page.setViewportSize({ width: 1200, height: 630 });
+    await page.goto(pathToFileURL(path.join(ROOT, 'scripts/og/post.html')).href);
+    await page.evaluate(
+      ({ title, category, label, cover }) => {
+        // Runs in the browser page.
+        const { document } = globalThis;
+        document.getElementById('title').textContent = title;
+        document.getElementById('cat').classList.add(`cat-${category}`);
+        document.getElementById('cat-label').textContent = label;
+        document.getElementById('art').innerHTML = cover;
+      },
+      { title: post.title, category: post.category, label: UI.en.blog.categories[post.category], cover: coverSvg(post.cover, 'og') },
+    );
+    await page.evaluate('document.fonts.ready');
+    await page.screenshot({ path: path.join(STATIC, 'og', `${post.slug}.png`) });
+    console.log(`rendered og/${post.slug}.png`);
+  }
+  if (postsOnly) process.exit(0);
   const svg = await readFile(path.join(STATIC, 'favicon.svg'), 'utf8');
   const render = async (size, padding = 0) => {
     await page.setViewportSize({ width: size, height: size });
