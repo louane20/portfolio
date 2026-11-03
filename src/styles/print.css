@@ -1,52 +1,59 @@
-/* Printing the page gives a clean, paper-only manual. */
+/* Printing gives a clean, paper-friendly résumé. */
 @media print {
   :root,
   :root[data-theme="dark"] {
-    --paper: #fff;
-    --sheet: #fff;
+    --bg: #fff;
+    --surface: #fff;
+    --surface-2: #f3f5f8;
     --ink: #000;
-    --ink-2: #333;
+    --ink-2: #222;
     --ink-3: #555;
-    --bold: #000;
-    --arg: #000;
-    --font-body: var(--font-serif);
-    --font-display: var(--font-serif);
-    --sec-space: 1.5rem;
+    --line: #ccc;
+    --section-space: 1.25rem;
 
     color-scheme: light;
   }
 
-  body {
-    padding: 0 !important;
-    font-size: 10.5pt;
-  }
-
+  .site-header,
   .skip,
-  .runhead-bar,
-  .pager,
   .toast,
-  .copy,
-  .zt,
-  .verify,
-  .pipe,
-  dialog,
-  .cta,
-  .commit-details summary {
+  .copy-btn,
+  .actions,
+  .pipeline,
+  .hero-links,
+  .bibtex,
+  .site-footer .terminal {
     display: none !important;
   }
 
-  .commit-details ul {
-    display: block;
+  body {
+    font-size: 10.5pt;
   }
 
-  .sh {
-    position: static;
+  .band,
+  .glance,
+  .featured,
+  .figure,
+  .panel,
+  .project,
+  .article,
+  .aside-card {
+    border-color: #ccc;
+    background: #fff;
+    box-shadow: none;
   }
 
-  .sec,
-  .commit,
-  .example,
-  .opt {
+  .contact-box {
+    background: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+  }
+
+  .job,
+  .area,
+  .project,
+  .panel,
+  .edu-list li {
     break-inside: avoid;
   }
 

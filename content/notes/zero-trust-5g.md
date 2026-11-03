@@ -63,9 +63,9 @@ and the CNI into multi-layered microsegmentation, and it uses **intent-based acc
 instead of writing hundreds of rules by hand, operators declare which network functions must
 talk to which, and the policies for both layers are derived from those intents.
 
-The same idea drives Figure 1 on the [home page](../../#figure-1): the policies you can read
-there are generated from the declared flows, and the compromised pod's attempts are stopped at
-the layer that can see them.
+The diagram in the [Research section](../../#figure) of the home page shows the idea on a small
+example: a compromised worker and an over-curious frontend, each stopped by the layer that can
+see what they are doing.
 
 For the SMF and UDM example above, the two layers look like this:
 

@@ -1,8 +1,8 @@
 // Shared helpers for page templates.
-import { html, raw, md } from '../../scripts/lib/html.mjs';
+import { html, raw, md, attrs } from '../../scripts/lib/html.mjs';
 import { t } from '../../scripts/lib/content.mjs';
 
-export { html, raw, md, t };
+export { html, raw, md, attrs, t };
 
 /** "2024-11" -> "Nov 2024" (EN) / "nov. 2024" (FR); "2022" -> "2022". */
 export function fmtMonth(value, ui) {
@@ -19,29 +19,29 @@ export function fmtPeriod(item, ui) {
   return html`${start} – <time datetime="${String(item.end)}">${fmtMonth(item.end, ui)}</time>`;
 }
 
-/** Long date for notes: 2026-11-01 -> "1 Nov 2026". */
+/** Long date for articles: 2026-11-01 -> "1 November 2026" / "1 novembre 2026". */
 export function fmtDay(iso, ui) {
   const [y, mo, d] = iso.split('-').map(Number);
-  return `${d} ${ui.months[mo - 1]} ${y}`;
+  return `${d} ${ui.monthsLong[mo - 1]} ${y}`;
 }
 
-/** Gutter label used in front of every section: the man page section name. */
-export const gutter = (label) => html`<p class="sh" aria-hidden="true">${label}</p>`;
+const svg = (body, cls = 'ico') =>
+  raw(`<svg class="${cls}" viewBox="0 0 20 20" aria-hidden="true" focusable="false">${body}</svg>`);
+
+const stroke = 'fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
 
 export const icon = {
-  arrowDown: raw(
-    '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2v9m0 0 4-4m-4 4L4 7M3 14h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  ),
-  mail: raw(
-    '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 4h12v8H2zM2 4.5l6 4.5 6-4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
-  ),
-  external: raw(
-    '<svg class="ico ico-sm" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M9 3h4v4M13 3 7 9M11 10v3H3V5h3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  ),
-  paper: raw(
-    '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 1.75h5.5L12.5 4.75v9.5h-8.5zM9.25 1.75v3.25h3.25M6.25 8h4M6.25 10.5h4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
-  ),
-  terminal: raw(
-    '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M1.75 2.75h12.5v10.5H1.75zM4.5 6l2 2-2 2M8 10.25h3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  ),
+  download: svg(`<path ${stroke} d="M10 3v9m0 0 3.5-3.5M10 12 6.5 8.5M4 15.5h12"/>`),
+  mail: svg(`<path ${stroke} d="M3 5.5h14v9H3zM3.5 6l6.5 5 6.5-5"/>`),
+  external: svg(`<path ${stroke} d="M11.5 4.5H15.5V8.5M15.5 4.5 9 11M13.5 11.5V15.5H4.5V6.5H8.5"/>`, 'ico ico-sm'),
+  sun: svg(`<circle ${stroke} cx="10" cy="10" r="3.4"/><path ${stroke} d="M10 2.5v1.8M10 15.7v1.8M2.5 10h1.8M15.7 10h1.8M4.7 4.7l1.3 1.3M14 14l1.3 1.3M4.7 15.3 6 14M14 6l1.3-1.3"/>`),
+  moon: svg(`<path ${stroke} d="M15.8 12.6A6.5 6.5 0 0 1 7.4 4.2a6.5 6.5 0 1 0 8.4 8.4Z"/>`),
+  menu: svg(`<path ${stroke} d="M3.5 6h13M3.5 10h13M3.5 14h13"/>`),
+  close: svg(`<path ${stroke} d="M5 5l10 10M15 5 5 15"/>`),
+  copy: svg(`<rect ${stroke} x="7" y="7" width="9" height="9" rx="1.6"/><path ${stroke} d="M13 7V5.4c0-.9-.7-1.6-1.6-1.6H5.4c-.9 0-1.6.7-1.6 1.6v6c0 .9.7 1.6 1.6 1.6H7"/>`),
+  pin: svg(`<path ${stroke} d="M10 17s5-4.6 5-8.6A5 5 0 0 0 5 8.4C5 12.4 10 17 10 17Z"/><circle ${stroke} cx="10" cy="8.4" r="1.8"/>`),
+  phone: svg(`<path ${stroke} d="M6.2 3.5h-2a.7.7 0 0 0-.7.8A12.5 12.5 0 0 0 15.7 16.5a.7.7 0 0 0 .8-.7v-2l-3-1.3-1.5 1.5a8.6 8.6 0 0 1-4-4l1.5-1.5Z"/>`),
+  doc: svg(`<path ${stroke} d="M5.5 2.8h6l3 3v11.4h-9zM11.2 2.8V6h3.3M7.8 10h4.4M7.8 13h4.4"/>`),
+  code: svg(`<path ${stroke} d="M7 6 3 10l4 4M13 6l4 4-4 4"/>`),
+  pipeline: svg(`<circle ${stroke} cx="4.5" cy="10" r="2"/><circle ${stroke} cx="15.5" cy="10" r="2"/><path ${stroke} d="M6.5 10h7"/>`),
 };

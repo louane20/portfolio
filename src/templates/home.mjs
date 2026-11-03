@@ -1,198 +1,148 @@
-// The manual itself: every section of the home page, in man page order.
-import { html, raw, md, t, fmtMonth, fmtPeriod, fmtDay, gutter, icon } from './common.mjs';
-import { layoutGraph, commitHash } from '../../scripts/lib/gitgraph.mjs';
-import { SCENARIOS, MODES, VIEWBOX, svgMarkup, policyYaml, tally } from '../scripts/zt-model.js';
+// The home page, section by section.
+import { html, raw, md, t, fmtMonth, fmtPeriod, fmtDay, icon } from './common.mjs';
+import { monogram } from './layout.mjs';
+import { panelSvg, legendSwatch } from './figure.mjs';
 
-const LANE_GAP = 16;
-
-/** id -> { href, label } for every piece of evidence a skill can cite. */
-function evidenceIndex(profile, lang) {
-  const map = new Map();
-  for (const item of profile.experience.items) {
-    const label = item.id === 'wcnc-2025' ? profile.research.paper.short_venue : item.org === 'USTHB' ? `${t(item.title, lang)}, USTHB` : item.org;
-    map.set(item.id, { href: item.id === 'wcnc-2025' ? '#research' : `#exp-${item.id}`, label });
-  }
-  for (const item of profile.projects.items) map.set(item.id, { href: `#ex-${item.id}`, label: t(item.title, lang) });
-  for (const item of [...profile.credentials.certifications, ...profile.credentials.awards]) {
-    map.set(item.id, { href: `#file-${item.id}`, label: t(item.name, lang) });
-  }
-  return map;
-}
+const languagesLine = (profile, lang) =>
+  profile.person.languages.map((l) => `${t(l.name, lang)} (${t(l.level, lang)})`).join(', ');
 
 function hero(ctx) {
-  const { profile, lang, ui, root } = ctx;
+  const { profile, lang, ui, root, resumeHref, resumeSize } = ctx;
   const p = profile.person;
-  const skills = new Map(profile.skills.items.map((s) => [s.id, s]));
-  const zt = ui.zt;
-  const scenario = SCENARIOS.platform;
-  const mode = 'flat';
-  const counts = tally(scenario, mode);
-  const labels = { outside: zt.outside, identity: zt.identity, compromised: zt.compromised, compromisedShort: zt.compromisedShort };
+  const portrait = p.photo
+    ? html`<img class="portrait" src="${root}${p.photo}" alt="${p.name}" width="72" height="72">`
+    : html`<span class="portrait portrait-mono" aria-hidden="true">${p.given_name[0]}${p.family_name[0]}</span>`;
   return html`
-<section class="hero" id="top" aria-labelledby="name-h">
-  <div class="hero-text">
-    <div class="row">
-      ${gutter(ui.man.name)}
-      <div class="row-body">
-        <h1 id="name-h" class="name"><span class="name-full">${p.name}</span> <span class="name-role">— ${t(p.role, lang)}</span></h1>
-        <p class="tagline">${t(profile.hero.tagline, lang)}</p>
+<section class="hero" id="top" aria-labelledby="hero-name">
+  <div class="container hero-grid">
+    <div class="hero-main">
+      <p class="status"><span class="status-dot" aria-hidden="true"></span>${t(p.availability, lang)}</p>
+      <h1 class="hero-name" id="hero-name">${p.name}</h1>
+      <p class="hero-role">${t(p.role, lang)}</p>
+      <p class="hero-headline">${t(p.headline, lang)}</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="${resumeHref}" download>${icon.download}<span>${ui.downloadCv}</span><span class="btn-meta">${ui.pdf}, ${resumeSize}</span></a>
+        <a class="btn btn-secondary" href="#contact">${icon.mail}<span>${ui.contactMe}</span></a>
       </div>
+      <ul class="hero-links">
+        <li><a href="${p.links.linkedin}" rel="me noopener">LinkedIn</a></li>
+        <li><a href="${p.links.github}" rel="me noopener">GitHub</a></li>
+        <li><a href="mailto:${p.email}">${p.email}</a></li>
+      </ul>
     </div>
-    <div class="row">
-      ${gutter(ui.man.synopsis)}
-      <div class="row-body">
-        <p class="synopsis"><code><b>${profile.site.command}</b>${profile.hero.synopsis.map(
-          (id) => html` <span class="syn-opt">[<a href="#opt-${id}"><b>${skills.get(id).long}</b></a>]</span>`,
-        )} <span class="man-arg">${profile.hero.argument}</span> …</code></p>
-        <div class="cta">
-          <a class="btn btn-primary" href="${root}${profile.site.resume}" download>${icon.arrowDown}<span>${ui.downloadResume}</span> <span class="btn-meta">${ui.pdf}</span></a>
-          <a class="btn" href="mailto:${p.email}">${icon.mail}<span>${ui.emailMe}</span></a>
+    <aside class="glance" aria-labelledby="glance-title">
+      <div class="glance-head">
+        ${portrait}
+        <div>
+          <p class="glance-name">${p.name}</p>
+          <p class="glance-title" id="glance-title">${ui.atAGlance}</p>
         </div>
-        <p class="availability"><span class="led" aria-hidden="true"></span>${t(p.availability, lang)}</p>
       </div>
-    </div>
-  </div>
-  <figure class="zt" id="figure-1" data-zt data-scenario="${scenario.id}" data-mode="${mode}" aria-labelledby="zt-cap">
-    <div class="zt-head">
-      <p class="zt-title">${zt.title}</p>
-      <div class="zt-scenarios" role="group" aria-label="${zt.scenarioLabel}">
-        ${Object.keys(SCENARIOS).map(
-          (id) => html`<button type="button" data-zt-scenario="${id}" aria-pressed="${id === scenario.id ? 'true' : 'false'}">${zt.scenarios[id]}</button>`,
+      <dl class="glance-list">
+        ${profile.glance.map(
+          (g) => html`<div><dt>${t(g.label, lang)}</dt><dd>${t(g.value, lang)}${g.note ? html`<span class="glance-note">${t(g.note, lang)}</span>` : ''}</dd></div>`,
         )}
-      </div>
-    </div>
-    <div class="zt-modes" role="group" aria-label="${zt.modeLabel}">
-      ${MODES.map(
-        (m, i) =>
-          html`<button type="button" data-zt-mode="${m}" aria-pressed="${m === mode ? 'true' : 'false'}" aria-describedby="zt-hint"><span class="zt-step" aria-hidden="true">${i}</span>${zt.modes[m]}</button>`,
-      )}
-    </div>
-    <p class="zt-hint" id="zt-hint" data-zt-hint>${zt.modeHints[mode]}</p>
-    <div class="zt-stage">
-      <svg class="zt-svg" viewBox="${VIEWBOX}" role="group" aria-label="${zt.svgLabel}" data-zt-svg>${raw(svgMarkup(scenario, mode, labels))}</svg>
-    </div>
-    <ul class="zt-stats">
-      ${['forwarded', 'dropped', 'denied', 'breach'].map(
-        (k) => html`<li data-stat="${k}">${zt.stats[k === 'denied' ? 'l7' : k]} <b data-zt-count="${k}">${counts[k]}</b></li>`,
-      )}
-      <li class="zt-pause"><button type="button" data-zt-pause aria-pressed="false">${zt.pause}</button></li>
-    </ul>
-    <div class="zt-log" role="log" aria-label="${zt.logLabel}" data-zt-log tabindex="0"></div>
-    <details class="zt-policy" data-zt-policy>
-      <summary>${zt.policyFor} <b data-zt-selected>api</b></summary>
-      <pre tabindex="0"><code data-zt-yaml>${policyYaml(scenario, 'api', mode, zt.noPolicy)}</code></pre>
-    </details>
-    <p class="sr-only" aria-live="polite" data-zt-live></p>
-    <figcaption id="zt-cap">${zt.caption}</figcaption>
-  </figure>
-</section>`;
-}
-
-function about(ctx) {
-  const { profile, lang, ui } = ctx;
-  return html`
-<section class="sec" id="about" aria-labelledby="about-h">
-  ${gutter(ui.sections.about.man)}
-  <div class="sec-body sec-split">
-    <div class="prose">
-      <h2 id="about-h">${t(profile.about.heading, lang)}</h2>
-      ${profile.about.paragraphs.map((para) => html`<p>${md(t(para, lang))}</p>`)}
-    </div>
-    <aside class="env" aria-label="${ui.man.environment}">
-      <p class="env-title" aria-hidden="true">${ui.man.environment}</p>
-      <dl>${profile.about.environment.map((e) => html`<div><dt>${e.key}</dt><dd>${t(e.value, lang)}</dd></div>`)}</dl>
-      <p class="env-interests"><span class="env-key">${ui.interests}</span> ${md(t(profile.interests, lang))}</p>
+        <div><dt>${ui.location}</dt><dd>${t(p.location, lang)}<span class="glance-note" data-local-time data-tz="${p.timezone}" data-suffix="${ui.localTime}">UTC+1</span></dd></div>
+        <div><dt>${ui.languages}</dt><dd>${languagesLine(profile, lang)}</dd></div>
+      </dl>
     </aside>
   </div>
 </section>`;
 }
 
-function skills(ctx) {
-  const { profile, lang, ui } = ctx;
-  const evidence = evidenceIndex(profile, lang);
+function about(ctx) {
+  const { profile, lang } = ctx;
+  const a = profile.about;
   return html`
-<section class="sec" id="skills" aria-labelledby="skills-h">
-  ${gutter(ui.sections.skills.man)}
-  <div class="sec-body">
-    <h2 id="skills-h">${t(profile.skills.heading, lang)}</h2>
-    ${profile.skills.intro ? html`<p class="lede">${t(profile.skills.intro, lang)}</p>` : ''}
-    <dl class="options">
-      ${profile.skills.items.map(
-        (opt) => html`
-      <div class="opt" id="opt-${opt.id}">
-        <dt><code>${opt.short ? html`<b>${opt.short}</b>, ` : ''}<b>${opt.long}</b> <span class="man-arg">${opt.args.join(',')}</span></code></dt>
-        <dd>
-          <p>${md(t(opt.text, lang))}</p>
-          ${
-            opt.evidence?.length
-              ? html`<p class="evidence"><span>${ui.usedIn}</span> ${opt.evidence.map((id, i) => {
-                  const e = evidence.get(id);
-                  return html`${i ? ', ' : ''}<a href="${e.href}">${e.label}</a>`;
-                })}</p>`
-              : ''
-          }
-        </dd>
-      </div>`,
-      )}
-    </dl>
+<section class="section" id="about" aria-labelledby="about-h">
+  <div class="container about-grid">
+    <div class="prose">
+      <h2 class="section-title" id="about-h">${t(a.heading, lang)}</h2>
+      ${a.paragraphs.map((para) => html`<p>${md(t(para, lang))}</p>`)}
+    </div>
+    <aside class="aside-card" aria-labelledby="community-h">
+      <h3 id="community-h">${t(a.community.heading, lang)}</h3>
+      <ul class="plain-list">${a.community.items.map((item) => html`<li>${md(t(item, lang))}</li>`)}</ul>
+    </aside>
   </div>
 </section>`;
 }
 
-function curveSvg(type, lane) {
-  const w = lane * LANE_GAP;
-  const d = type === 'fork' ? `M${w} 0C${w} 14 0 12 0 26` : `M${w} 26C${w} 12 0 14 0 0`;
-  return raw(`<svg class="curve" data-type="${type}" data-lane="${lane}" width="${w}" height="26" viewBox="0 0 ${w} 26" aria-hidden="true" focusable="false"><path d="${d}"/></svg>`);
+const chips = (items, strong) => html`<ul class="chips">${items.map((name) => html`<li class="chip${strong ? ' chip-strong' : ''}">${name}</li>`)}</ul>`;
+
+function expertise(ctx) {
+  const { profile, lang, ui } = ctx;
+  const e = profile.expertise;
+  return html`
+<section class="section band" id="expertise" aria-labelledby="expertise-h">
+  <div class="container">
+    <header class="section-head">
+      <h2 class="section-title" id="expertise-h">${t(e.heading, lang)}</h2>
+      ${e.intro ? html`<p class="lede">${t(e.intro, lang)}</p>` : ''}
+    </header>
+    <div class="areas">
+      ${e.areas.map(
+        (area) => html`
+      <article class="area" id="area-${area.id}" aria-labelledby="area-${area.id}-h">
+        <h3 id="area-${area.id}-h">${t(area.title, lang)}</h3>
+        <p>${md(t(area.text, lang))}</p>
+        <dl class="tools">
+          ${area.production.length ? html`<div><dt>${ui.inProduction}</dt><dd>${chips(area.production, true)}</dd></div>` : ''}
+          ${area.other?.length ? html`<div><dt>${ui.alsoUsed}</dt><dd>${chips(area.other, false)}</dd></div>` : ''}
+        </dl>
+      </article>`,
+      )}
+    </div>
+    ${
+      e.also?.length
+        ? html`<dl class="also">${e.also.map((g) => html`<div><dt>${t(g.label, lang)}</dt><dd>${g.items.join(', ')}</dd></div>`)}</dl>`
+        : ''
+    }
+  </div>
+</section>`;
 }
 
 function experience(ctx) {
   const { profile, lang, ui } = ctx;
-  const { items, lanes } = profile.experience;
-  const rows = layoutGraph(items, lanes);
-  const refClass = (ref) => (ref.startsWith('HEAD') ? 'ref-head' : ref.startsWith('tag:') ? 'ref-tag' : 'ref-branch');
+  const x = profile.experience;
   return html`
-<section class="sec" id="experience" aria-labelledby="experience-h">
-  ${gutter(ui.sections.experience.man)}
-  <div class="sec-body">
-    <h2 id="experience-h">${t(profile.experience.heading, lang)}</h2>
-    <p class="gitlog-cmd" aria-hidden="true"><code>$ git log --graph --decorate --all</code></p>
-    <ol class="gitlog" data-lanes="${lanes.length}">
-      ${items.map((item, i) => {
-        const row = rows[i];
-        return html`
-      <li class="commit" id="exp-${item.id}" data-lane="${row.lane}">
-        <div class="graph" aria-hidden="true">
-          ${row.segments.map((s) => html`<span class="seg" data-lane="${s.lane}" data-kind="${s.kind}"></span>`)}
-          ${row.curves.map((c) => curveSvg(c.type, c.lane))}
-          <span class="dot" data-lane="${row.lane}"${item.refs?.some((r) => r.startsWith('HEAD')) ? raw(' data-head="true"') : ''}></span>
+<section class="section" id="experience" aria-labelledby="experience-h">
+  <div class="container">
+    <header class="section-head">
+      <h2 class="section-title" id="experience-h">${t(x.heading, lang)}</h2>
+    </header>
+    <ol class="timeline">
+      ${x.items.map(
+        (job) => html`
+      <li class="job${job.end === 'present' ? ' is-current' : ''}" id="job-${job.id}">
+        <div class="job-when">
+          <p class="job-dates">${fmtPeriod(job, ui)}</p>
+          ${job.place ? html`<p class="job-place">${t(job.place, lang)}</p>` : ''}
         </div>
-        <div class="commit-body">
-          <p class="commit-meta"><code class="hash">${commitHash(item)}</code>${
-            item.refs?.length ? html` <span class="refs">(${item.refs.map((r, j) => html`${j ? ', ' : ''}<span class="${refClass(r)}">${r}</span>`)})</span>` : ''
-          } <span class="when">${fmtPeriod(item, ui)}${item.place ? html`, ${t(item.place, lang)}` : ''}</span></p>
-          <h3 class="commit-title">${t(item.title, lang)}<span class="commit-org">${item.org}</span></h3>
-          <p class="commit-subject"><code>${item.commit}</code></p>
+        <div class="job-body">
+          <h3 class="job-role">${t(job.role, lang)}</h3>
+          <p class="job-org">${job.org}</p>
+          ${job.tags?.length ? html`<ul class="tags">${job.tags.map((tag) => html`<li>${t(tag, lang)}</li>`)}</ul>` : ''}
           ${
-            item.details?.length
-              ? item.details.length > 1
-                ? html`<details class="commit-details"${item.open ? raw(' open') : ''}><summary>${ui.showDetails} <span class="count">${item.details.length}</span></summary><ul>${item.details.map((d) => html`<li>${md(t(d, lang))}</li>`)}</ul></details>`
-                : html`<p class="commit-text">${md(t(item.details[0], lang))}</p>`
-              : ''
+            job.highlights.length > 1
+              ? html`<ul class="bullets">${job.highlights.map((h) => html`<li>${md(t(h, lang))}</li>`)}</ul>`
+              : html`<p class="job-text">${md(t(job.highlights[0], lang))}</p>`
           }
         </div>
-      </li>`;
-      })}
+      </li>`,
+      )}
     </ol>
   </div>
 </section>`;
 }
 
 export function bibtex(paper) {
+  const tex = (s) => s.replace('ï', '{\\"i}');
   const authors = paper.authors
     .map((a) => {
       const parts = a.split(' ');
       const last = parts.pop();
-      return `${last.replace('ï', '{\\"i}')}, ${parts.join(' ').replace('ï', '{\\"i}')}`;
+      return `${tex(last)}, ${tex(parts.join(' '))}`;
     })
     .join(' and ');
   return [
@@ -202,8 +152,8 @@ export function bibtex(paper) {
     `  booktitle = {${paper.venue}},`,
     `  year      = {${paper.year}},`,
     paper.pages ? `  pages     = {${paper.pages.replace('–', '--')}},` : null,
-    `  address   = {Milan, Italy},`,
-    `  publisher = {IEEE},`,
+    '  address   = {Milan, Italy},',
+    '  publisher = {IEEE},',
     `  doi       = {${paper.doi}}`,
     '}',
   ]
@@ -213,165 +163,172 @@ export function bibtex(paper) {
 
 function research(ctx) {
   const { profile, lang, ui } = ctx;
-  const paper = profile.research.paper;
-  const thesis = profile.research.thesis;
+  const r = profile.research;
+  const paper = r.paper;
   const bib = bibtex(paper);
+  const fig = r.figure;
+  const tone = { flat: 'is-bad', network: 'is-warn', mesh: 'is-good' };
   return html`
-<section class="sec" id="research" aria-labelledby="research-h">
-  ${gutter(ui.sections.research.man)}
-  <div class="sec-body">
-    <h2 id="research-h">${t(profile.research.heading, lang)}</h2>
-    <div class="research">
-      <article class="paper">
-        <p class="paper-venue"><b>${paper.short_venue}</b> ${t(paper.location, lang)}, ${t(paper.dates, lang)}</p>
-        <h3 class="paper-title"><cite>${paper.title}</cite></h3>
-        <p class="paper-authors"><span class="sr-only">${ui.paperAuthors}: </span>${paper.authors.map(
+<section class="section band" id="research" aria-labelledby="research-h">
+  <div class="container">
+    <header class="section-head">
+      <h2 class="section-title" id="research-h">${t(r.heading, lang)}</h2>
+      ${r.intro ? html`<p class="lede">${t(r.intro, lang)}</p>` : ''}
+    </header>
+    <div class="research-grid">
+      <article class="paper" aria-labelledby="paper-h">
+        <p class="paper-venue"><span class="venue">${paper.short_venue}</span><span>${t(paper.location, lang)}, ${t(paper.dates, lang)}</span></p>
+        <h3 class="paper-title" id="paper-h">${paper.title}</h3>
+        <p class="paper-authors"><span class="sr-only">${ui.authors}: </span>${paper.authors.map(
           (a, i) => html`${i ? ', ' : ''}${a === profile.person.name ? html`<strong>${a}</strong>` : a}`,
         )}</p>
-        <ul class="paper-summary">${paper.summary.map((s) => html`<li>${md(t(s, lang))}</li>`)}</ul>
-        <p class="paper-links">
-          <a class="btn btn-primary" href="${paper.open_access}" rel="noopener">${ui.readPaper} <span class="btn-meta">${ui.openAccess}, ${paper.open_access_license}</span></a>
-          <a class="doi" href="https://doi.org/${paper.doi}" rel="noopener">${ui.doi} ${paper.doi}</a>
-        </p>
+        <ul class="bullets">${paper.summary.map((s) => html`<li>${md(t(s, lang))}</li>`)}</ul>
+        <div class="actions">
+          <a class="btn btn-primary" href="${paper.open_access}" rel="noopener">${icon.doc}<span>${ui.readPaper}</span><span class="btn-meta">${ui.openAccess}</span></a>
+          <a class="btn btn-secondary" href="https://doi.org/${paper.doi}" rel="noopener"><span>DOI ${paper.doi}</span>${icon.external}</a>
+        </div>
         <details class="bibtex">
-          <summary>BibTeX</summary>
+          <summary>${ui.citation}</summary>
           <pre tabindex="0"><code>${bib}</code></pre>
-          <button type="button" class="copy" data-copy="${bib}">${ui.copyBibtex}</button>
+          <button type="button" class="copy-btn" data-copy="${bib}">${ui.copyBibtex}</button>
         </details>
-        ${paper.funding ? html`<p class="paper-funding">${t(paper.funding, lang)}</p>` : ''}
+        ${paper.funding ? html`<p class="fineprint">${t(paper.funding, lang)}</p>` : ''}
       </article>
-      <aside class="thesis" aria-label="${ui.thesis}">
-        <p class="thesis-label">${ui.thesis}, ${thesis.institution} ${thesis.year}</p>
-        <h3 class="thesis-title"><cite>${thesis.title}</cite></h3>
-        <p>${t(thesis.text, lang)}</p>
-        <p><a href="#figure-1">${ui.ztLink}</a></p>
+      <aside class="aside-card thesis" aria-labelledby="thesis-h">
+        <p class="aside-label">${ui.thesis}, ${r.thesis.institution}, ${r.thesis.year}</p>
+        <h3 id="thesis-h"><cite>${r.thesis.title}</cite></h3>
+        <p>${t(r.thesis.text, lang)}</p>
       </aside>
     </div>
+    <figure class="figure" id="figure" aria-labelledby="figure-h">
+      <figcaption class="figure-head">
+        <h3 id="figure-h">${t(fig.title, lang)}</h3>
+        <p>${t(fig.caption, lang)}</p>
+      </figcaption>
+      <ol class="panels">
+        ${fig.panels.map(
+          (panel, i) => html`
+        <li class="panel" data-panel="${panel.id}">
+          <h4 class="panel-title"><span class="panel-step"><span class="sr-only">${ui.figure.step} </span>${i + 1}</span>${t(panel.title, lang)}</h4>
+          ${panelSvg(panel.id, ui.figure)}
+          <p class="panel-text">${t(panel.text, lang)}</p>
+          <p class="outcome ${tone[panel.id]}">${ui.figure.outcome[panel.id]}</p>
+        </li>`,
+        )}
+      </ol>
+      <ul class="legend">
+        ${['allowed', 'attack', 'blocked', 'mtls'].map((k) => html`<li>${legendSwatch[k]}<span>${ui.figure.legend[k]}</span></li>`)}
+      </ul>
+    </figure>
   </div>
 </section>`;
 }
 
 function projects(ctx) {
   const { profile, lang, ui, build } = ctx;
-  return html`
-<section class="sec" id="projects" aria-labelledby="projects-h">
-  ${gutter(ui.sections.projects.man)}
-  <div class="sec-body">
-    <h2 id="projects-h">${t(profile.projects.heading, lang)}</h2>
-    <ol class="examples">
-      ${profile.projects.items.map((ex) => {
-        const href = ex.link === 'repository' ? `https://github.com/${build.repository}` : ex.link;
-        return html`
-      <li class="example" id="ex-${ex.id}">
-        <p class="example-cmd"><code><span class="ps1" aria-hidden="true">$ </span>${ex.command}</code></p>
-        <h3 class="example-title">${t(ex.title, lang)} <span class="example-year">${ex.year}</span></h3>
-        <p>${md(t(ex.text, lang))}</p>
-        <p class="tags">${ex.tags.map((tag) => html`<span>${tag}</span>`)}</p>
-        ${href ? html`<p><a href="${href}" rel="noopener">${ui.projectRepo}${icon.external}</a></p>` : ''}
-      </li>`;
-      })}
-    </ol>
-  </div>
-</section>`;
-}
-
-function credentials(ctx) {
-  const { profile, lang, ui, root, resumeSize } = ctx;
-  const row = (f) => html`
-        <tr id="file-${f.id}">
-          <th scope="row"><code>${f.path}</code></th>
-          <td class="files-name">${t(f.name, lang)}</td>
-          <td class="files-issuer">${f.issuer}</td>
-          <td class="files-date"><time datetime="${String(f.date)}">${fmtMonth(f.date, ui)}</time></td>
-        </tr>`;
-  return html`
-<section class="sec" id="credentials" aria-labelledby="credentials-h">
-  ${gutter(ui.sections.credentials.man)}
-  <div class="sec-body">
-    <h2 id="credentials-h">${t(profile.credentials.heading, lang)}</h2>
-    <p class="resume-file" id="file-resume"><code>~/${profile.site.resume}</code> <span>${ui.resumeFile}</span> <a class="btn" href="${root}${profile.site.resume}" download>${icon.arrowDown}<span>${ui.downloadResume}</span> <span class="btn-meta">${ui.pdf}, ${resumeSize}</span></a></p>
-    <table class="files">
-      <caption class="sr-only">${ui.certifications}, ${ui.awards}</caption>
-      <tbody>
-        <tr class="files-group"><th colspan="4" scope="colgroup">${ui.certifications}</th></tr>${profile.credentials.certifications.map(row)}
-      </tbody>
-      <tbody>
-        <tr class="files-group"><th colspan="4" scope="colgroup">${ui.awards}</th></tr>${profile.credentials.awards.map(row)}
-      </tbody>
-    </table>
-  </div>
-</section>`;
-}
-
-function pipeline(ctx) {
-  const { profile, lang, ui, build } = ctx;
-  const repo = build.repository;
-  const owner = repo.split('/')[0];
-  const image = `ghcr.io/${repo.toLowerCase()}`;
-  const manUrl = `${build.siteUrl}${lang === 'fr' ? 'fr/' : ''}${profile.site.command}.1`;
-  const verify = [
-    [
-      ui.verifyCosign,
-      `cosign verify ${image}:latest \\\n  --certificate-identity "https://github.com/${repo}/.github/workflows/container.yml@refs/heads/main" \\\n  --certificate-oidc-issuer https://token.actions.githubusercontent.com`,
-    ],
-    [ui.verifyAttest, `gh attestation verify oci://${image}:latest --owner ${owner}`],
-    [ui.verifyMan, `curl -sL ${manUrl} | man -l -`],
-  ];
+  const pr = profile.projects;
+  const repo = `https://github.com/${build.repository}`;
   const ci = ['lint', 'build', 'test', 'lighthouse', 'audit', 'deploy'];
+  const side = ['image', 'zero-trust', 'codeql'];
   const stage = (key) => html`
-        <li class="stage" data-stage="${key}" data-state="unknown"><span class="stage-led" aria-hidden="true"></span><b>${ui.stages[key][0]}</b><span class="stage-desc">${ui.stages[key][1]}</span><span class="stage-state" data-stage-state>${ui.client.pipe.unknown}</span></li>`;
+            <li class="stage" data-stage="${key}" data-state="unknown">
+              <span class="stage-dot" aria-hidden="true"></span>
+              <span class="stage-name">${ui.stages[key]}</span>
+              <span class="stage-hint">${ui.stageHints[key]}</span>
+              <span class="stage-state" data-stage-state>${ui.client.pipe.unknown}</span>
+            </li>`;
   return html`
-<section class="sec" id="pipeline" aria-labelledby="pipeline-h">
-  ${gutter(ui.sections.pipeline.man)}
-  <div class="sec-body">
-    <h2 id="pipeline-h">${t(profile.pipeline.heading, lang)}</h2>
-    <p class="lede">${t(profile.pipeline.intro, lang)}</p>
-    <dl class="exit-codes">${ui.exitCodes.map(([code, text]) => html`<div><dt><code>${code}</code></dt><dd>${text}</dd></div>`)}</dl>
-    <div class="pipe" data-pipeline data-repo="${repo}">
-      <p class="pipe-run" data-pipe-run aria-live="polite">${ui.client.pipe.checking}</p>
-      <div class="pipe-flow">
-        <ol class="pipe-dag" aria-label="ci-cd.yml">
-          <li class="pipe-col"><ol>${stage('lint')}</ol></li>
-          <li class="pipe-col"><ol>${stage('build')}</ol></li>
-          <li class="pipe-col"><ol>${stage('test')}${stage('lighthouse')}${stage('audit')}</ol></li>
-          <li class="pipe-col"><ol>${stage('deploy')}</ol></li>
-        </ol>
-        <ol class="pipe-side" aria-label="container.yml, zero-trust-e2e.yml, codeql.yml">${['image', 'zero-trust', 'codeql'].map(stage)}</ol>
+<section class="section" id="projects" aria-labelledby="projects-h">
+  <div class="container">
+    <header class="section-head">
+      <h2 class="section-title" id="projects-h">${t(pr.heading, lang)}</h2>
+      ${pr.intro ? html`<p class="lede">${t(pr.intro, lang)}</p>` : ''}
+    </header>
+    <article class="featured" aria-labelledby="featured-h">
+      <div class="featured-text">
+        <p class="featured-label">${ui.featured}</p>
+        <h3 id="featured-h">${t(pr.featured.title, lang)}</h3>
+        <p>${md(t(pr.featured.text, lang))}</p>
+        <ul class="tag-list">${pr.featured.tags.map((tag) => html`<li>${tag}</li>`)}</ul>
+        <div class="actions">
+          <a class="btn btn-secondary" href="${repo}" rel="noopener">${icon.code}<span>${ui.viewSource}</span></a>
+          <a class="btn btn-ghost" href="${repo}/actions" rel="noopener">${icon.pipeline}<span>${ui.viewPipeline}</span>${icon.external}</a>
+        </div>
       </div>
-      <p class="pipe-links"><a href="https://github.com/${repo}/actions" rel="noopener">github.com/${repo}/actions${icon.external}</a></p>
-      <noscript><p>${ui.client.pipe.unavailable}</p></noscript>
-    </div>
-    <div class="verify">
-      <h3>${ui.verifyHeading}</h3>
-      <p>${ui.verifyIntro}</p>
-      ${verify.map(
-        ([label, cmd]) => html`
-      <div class="cmd">
-        <p class="cmd-label">${label}</p>
-        <pre tabindex="0"><code>${cmd}</code></pre>
-        <button type="button" class="copy" data-copy="${cmd.replace(/\\\n\s+/g, '')}">${ui.copy}</button>
-      </div>`,
+      <div class="pipeline" data-pipeline data-repo="${build.repository}">
+        <p class="pipeline-title">${ui.pipelineLabel}</p>
+        <ol class="stages">${ci.map(stage)}</ol>
+        <ol class="stages stages-side">${side.map(stage)}</ol>
+        <p class="pipeline-run" data-pipe-run aria-live="polite">${ui.client.pipe.checking}</p>
+      </div>
+    </article>
+    <ul class="project-grid">
+      ${pr.items.map(
+        (p) => html`
+      <li class="project" id="project-${p.id}">
+        <p class="project-year">${p.year}</p>
+        <h3>${p.link ? html`<a href="${p.link}" rel="noopener">${t(p.title, lang)}</a>` : t(p.title, lang)}</h3>
+        <p>${md(t(p.text, lang))}</p>
+        <ul class="tag-list">${p.tags.map((tag) => html`<li>${tag}</li>`)}</ul>
+      </li>`,
       )}
-    </div>
-    <script type="application/json" id="pipeline-stages">${raw(JSON.stringify({ ci, side: ['image', 'zero-trust', 'codeql'] }))}</script>
+    </ul>
   </div>
 </section>`;
 }
 
-function notes(ctx) {
+function education(ctx) {
+  const { profile, lang, ui } = ctx;
+  const ed = profile.education;
+  const c = profile.credentials;
+  const cred = (item) => html`
+          <li id="cred-${item.id}">
+            <span class="cred-name">${t(item.name, lang)}</span>
+            <span class="cred-meta">${item.issuer}, <time datetime="${String(item.date)}">${fmtMonth(item.date, ui)}</time></span>
+          </li>`;
+  return html`
+<section class="section band" id="education" aria-labelledby="education-h">
+  <div class="container edu-grid">
+    <div>
+      <h2 class="section-title" id="education-h">${t(ed.heading, lang)}</h2>
+      <ol class="edu-list">
+        ${ed.items.map(
+          (item) => html`
+        <li id="edu-${item.id}">
+          <p class="edu-dates"><time datetime="${String(item.start)}">${item.start}</time> – <time datetime="${String(item.end)}">${item.end}</time></p>
+          <h3>${t(item.degree, lang)}</h3>
+          <p class="edu-school"><abbr title="${t(ed.school_name, lang)}">${item.school}</abbr>, ${t(ed.school_name, lang).split(', ').pop()}</p>
+          <p>${md(t(item.text, lang))}</p>
+        </li>`,
+        )}
+      </ol>
+    </div>
+    <div class="creds">
+      <h2 class="section-title" id="certifications-h">${t(c.certifications_heading, lang)}</h2>
+      <ul class="cred-list" aria-labelledby="certifications-h">${c.certifications.map(cred)}</ul>
+      <h2 class="section-title" id="awards-h">${t(c.awards_heading, lang)}</h2>
+      <ul class="cred-list" aria-labelledby="awards-h">${c.awards.map(cred)}</ul>
+    </div>
+  </div>
+</section>`;
+}
+
+function writing(ctx) {
   const { profile, lang, ui, root } = ctx;
   if (!ctx.notes.length) return '';
   return html`
-<section class="sec" id="notes" aria-labelledby="notes-h">
-  ${gutter(ui.sections.notes.man)}
-  <div class="sec-body">
-    <h2 id="notes-h">${t(profile.notes.heading, lang)}</h2>
-    <ul class="notes-list">
+<section class="section" id="writing" aria-labelledby="writing-h">
+  <div class="container">
+    <header class="section-head">
+      <h2 class="section-title" id="writing-h">${t(profile.notes.heading, lang)}</h2>
+      ${profile.notes.intro ? html`<p class="lede">${t(profile.notes.intro, lang)}</p>` : ''}
+    </header>
+    <ul class="articles">
       ${ctx.notes.map(
         (n) => html`
-      <li>
-        <p class="note-meta"><span class="note-cat">${n.category}</span> <time datetime="${n.date}">${fmtDay(n.date, ui)}</time>, ${n.minutes} ${ui.minRead}${n.lang !== lang ? html`, <span lang="${n.lang}">${n.lang.toUpperCase()}</span>` : ''}</p>
-        <h3 class="note-title"><a href="${root}notes/${n.slug}/" hreflang="${n.lang}">${n.title}</a></h3>
+      <li class="article">
+        <p class="article-meta"><time datetime="${n.date}">${fmtDay(n.date, ui)}</time><span>${n.minutes} ${ui.minRead}</span>${n.lang !== lang ? html`<span lang="${n.lang}">${n.lang === 'en' ? 'English' : 'Français'}</span>` : ''}</p>
+        <h3><a href="${root}notes/${n.slug}/" hreflang="${n.lang}">${n.title}</a></h3>
         <p>${n.summary}</p>
       </li>`,
       )}
@@ -380,74 +337,42 @@ function notes(ctx) {
 </section>`;
 }
 
-function bugs(ctx) {
-  const { profile, lang, ui } = ctx;
-  return html`
-<section class="sec sec-small" id="bugs" aria-labelledby="bugs-h">
-  ${gutter(ui.sections.bugs.man)}
-  <div class="sec-body">
-    <h2 id="bugs-h" class="sr-only">${ui.sections.bugs.label}</h2>
-    <ul class="bugs">${profile.bugs.map((b) => html`<li>${md(t(b, lang))}</li>`)}</ul>
-    <p>${ui.reportBugs} <a href="mailto:${profile.person.email}">${profile.person.email}</a>.</p>
-  </div>
-</section>`;
-}
-
 function contact(ctx) {
-  const { profile, lang, ui, root } = ctx;
+  const { profile, lang, ui, resumeHref } = ctx;
   const p = profile.person;
-  const phoneDigits = p.phone ? p.phone.replace(/\s+/g, '') : '';
   const phone =
     !p.phone || p.phone_display === 'hidden'
       ? ''
       : p.phone_display === 'visible'
-        ? html`<div><dt>${lang === 'fr' ? 'Téléphone' : 'Phone'}</dt><dd><a href="tel:${phoneDigits}">${p.phone}</a></dd></div>`
-        : html`<div><dt>${lang === 'fr' ? 'Téléphone' : 'Phone'}</dt><dd><button type="button" class="linkish" data-reveal-phone="${Buffer.from(p.phone).toString('base64')}">${ui.showPhone}</button></dd></div>`;
+        ? html`<div><dt>${ui.phone}</dt><dd><a href="tel:${p.phone.replace(/\s+/g, '')}">${p.phone}</a></dd></div>`
+        : html`<div><dt>${ui.phone}</dt><dd><button type="button" class="link-btn" data-reveal-phone="${Buffer.from(p.phone).toString('base64')}">${ui.showPhone}</button></dd></div>`;
   return html`
-<section class="sec" id="contact" aria-labelledby="contact-h">
-  ${gutter(ui.sections.contact.man)}
-  <div class="sec-body">
-    <h2 id="contact-h">${t(profile.contact.heading, lang)}</h2>
-    <p class="lede">${t(profile.contact.text, lang)}</p>
-    <p class="mail"><a href="mailto:${p.email}">${p.email}</a> <button type="button" class="copy" data-copy="${p.email}">${ui.copyEmail}</button></p>
-    <dl class="contact-list">
-      <div><dt>GitHub</dt><dd><a href="${p.links.github}" rel="me noopener">${p.links.github.replace('https://', '')}</a></dd></div>
-      <div><dt>LinkedIn</dt><dd><a href="${p.links.linkedin}" rel="me noopener">${p.links.linkedin.replace('https://www.', '')}</a></dd></div>
-      ${phone}
-      <div><dt>${lang === 'fr' ? 'Lieu' : 'Location'}</dt><dd>${t(p.location, lang)}</dd></div>
-      <div><dt>${lang === 'fr' ? 'CV' : 'Résumé'}</dt><dd><a href="${root}${profile.site.resume}" download>${profile.site.resume}</a></dd></div>
-    </dl>
-  </div>
-</section>`;
-}
-
-function seeAlso(ctx) {
-  const { profile, lang, ui } = ctx;
-  return html`
-<section class="sec sec-small" id="see-also" aria-labelledby="see-also-h">
-  ${gutter(ui.sections['see-also'].man)}
-  <div class="sec-body">
-    <h2 id="see-also-h" class="sr-only">${ui.sections['see-also'].label}</h2>
-    <p>${t(profile.see_also.intro, lang)}</p>
-    <p class="see-also">${profile.see_also.items.map(
-      (x, i, all) => html`<a href="${x.url}" rel="noopener"><b>${x.name}</b>(${x.section})</a>${i < all.length - 1 ? ', ' : ''}`,
-    )}</p>
+<section class="section contact" id="contact" aria-labelledby="contact-h">
+  <div class="container">
+    <div class="contact-box">
+      <div class="contact-main">
+        <h2 class="section-title" id="contact-h">${t(profile.contact.heading, lang)}</h2>
+        <p class="lede">${t(profile.contact.text, lang)}</p>
+        <p class="contact-email"><a href="mailto:${p.email}">${p.email}</a><button type="button" class="copy-btn" data-copy="${p.email}" aria-label="${ui.copyEmail}">${icon.copy}<span>${ui.copy}</span></button></p>
+        <div class="actions">
+          <a class="btn btn-primary" href="${resumeHref}" download>${icon.download}<span>${ui.downloadCv}</span></a>
+          <a class="btn btn-secondary" href="${p.links.linkedin}" rel="me noopener"><span>LinkedIn</span>${icon.external}</a>
+          <a class="btn btn-secondary" href="${p.links.github}" rel="me noopener"><span>GitHub</span>${icon.external}</a>
+        </div>
+      </div>
+      <dl class="contact-details">
+        <div><dt>${ui.email}</dt><dd><a href="mailto:${p.email}">${p.email}</a></dd></div>
+        ${phone}
+        <div><dt>${ui.location}</dt><dd>${t(p.location, lang)}</dd></div>
+        <div><dt>${ui.languages}</dt><dd>${languagesLine(profile, lang)}</dd></div>
+      </dl>
+    </div>
   </div>
 </section>`;
 }
 
 export function homeBody(ctx) {
-  return [hero, about, skills, experience, research, projects, credentials, pipeline, notes, bugs, contact, seeAlso]
-    .map((fn) => String(fn(ctx)))
-    .join('\n');
-}
-
-export function homeSections(ctx) {
-  const { ui, notes: list } = ctx;
-  const ids = ['about', 'skills', 'experience', 'research', 'projects', 'credentials', 'pipeline', 'notes', 'bugs', 'contact', 'see-also'];
-  return [{ id: 'top', label: ui.man.name, man: ui.man.name }].concat(
-    ids.filter((id) => id !== 'notes' || list.length).map((id) => ({ id, label: ui.sections[id].label, man: ui.sections[id].man })),
-  );
+  return [hero, about, expertise, experience, research, projects, education, writing, contact].map((fn) => String(fn(ctx))).join('\n');
 }
 
 export function personJsonLd(ctx) {
@@ -464,13 +389,14 @@ export function personJsonLd(ctx) {
         givenName: p.given_name,
         familyName: p.family_name,
         jobTitle: t(p.role, lang),
+        description: t(p.headline, lang),
         worksFor: { '@type': 'Organization', name: p.employer },
         address: { '@type': 'PostalAddress', addressLocality: lang === 'fr' ? 'Alger' : 'Algiers', addressCountry: 'DZ' },
         email: `mailto:${p.email}`,
         url: build.siteUrl,
         sameAs: [p.links.github, p.links.linkedin],
-        alumniOf: { '@type': 'CollegeOrUniversity', name: 'USTHB, University of Science and Technology Houari Boumediene' },
-        knowsAbout: ['Kubernetes', 'GitOps', 'Argo CD', 'Cilium', 'Istio', 'Zero Trust', 'Ansible', 'Prometheus', '5G security'],
+        alumniOf: { '@type': 'CollegeOrUniversity', name: t(profile.education.school_name, 'en').split(',')[0] },
+        knowsAbout: profile.expertise.areas.flatMap((a) => a.production),
         knowsLanguage: ['ar', 'fr', 'en'],
       },
       {
@@ -485,3 +411,5 @@ export function personJsonLd(ctx) {
     ],
   };
 }
+
+export { monogram, raw };

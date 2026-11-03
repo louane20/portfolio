@@ -1,0 +1,280 @@
+/* ---------- Buttons ---------- */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.875rem;
+  padding: 0.65rem 1.15rem;
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+  font-family: var(--font-text);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  color: var(--accent-ink);
+}
+
+.btn-secondary {
+  border-color: var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.btn-secondary:hover {
+  border-color: var(--ink-3);
+  color: var(--ink);
+}
+
+.btn-ghost {
+  color: var(--accent);
+}
+
+.btn-ghost:hover {
+  background: var(--accent-soft);
+  color: var(--accent-soft-ink);
+}
+
+.btn-sm {
+  min-height: 2.5rem;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.875rem;
+}
+
+.btn-meta {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  opacity: 0.78;
+}
+
+.icon-btn {
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: var(--surface);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.icon-btn .ico {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.copy-btn {
+  display: none;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: var(--ink-2);
+  font: 600 0.8125rem/1.3 var(--font-text);
+  cursor: pointer;
+}
+
+.js .copy-btn {
+  display: inline-flex;
+}
+
+.copy-btn:hover {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.copy-btn[data-state="done"] {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+/* ---------- Chips and tags ---------- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  padding: 0.22rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.45rem;
+  color: var(--ink-2);
+  font-size: var(--step--1);
+  line-height: 1.4;
+}
+
+.chip-strong {
+  border-color: transparent;
+  background: var(--accent-soft);
+  color: var(--accent-soft-ink);
+  font-weight: 600;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tags li {
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1rem;
+  color: var(--ink-3);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.tag-list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tag-list li::before {
+  width: 0.3rem;
+  height: 0.3rem;
+  border-radius: 1px;
+  background: var(--line-strong);
+  content: "";
+}
+
+/* ---------- Lists ---------- */
+.bullets {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.bullets li {
+  position: relative;
+  padding-left: 1.25rem;
+  color: var(--ink-2);
+}
+
+.bullets li::before {
+  position: absolute;
+  top: 0.68em;
+  left: 0.2rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--accent);
+  content: "";
+  opacity: 0.75;
+}
+
+.plain-list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.plain-list li {
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+}
+
+/* ---------- Cards ---------- */
+.aside-card {
+  padding: 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.band .aside-card {
+  background: var(--bg);
+}
+
+.aside-card h3 {
+  margin-bottom: 0.9rem;
+  font-size: var(--step-1);
+  font-weight: 700;
+}
+
+.aside-label {
+  margin-bottom: 0.5rem;
+  color: var(--ink-3);
+  font-size: var(--step--1);
+  font-weight: 600;
+}
+
+.fineprint {
+  margin-top: 1.25rem;
+  color: var(--ink-3);
+  font-size: var(--step--1);
+}
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  z-index: 50;
+  max-width: min(32rem, calc(100vw - 2rem));
+  padding: 0.65rem 1rem;
+  border-radius: 0.65rem;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: var(--step--1);
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 0.5rem);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.toast[data-show="true"] {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}

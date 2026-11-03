@@ -11,8 +11,8 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  scroll-padding-top: 1.5rem;
-  background: var(--paper);
+  scroll-padding-top: calc(var(--header-h) + env(safe-area-inset-top, 0px) + 1rem);
+  background: var(--bg);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -24,20 +24,15 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--paper);
+  background: var(--bg);
   color: var(--ink);
-  font-family: var(--font-body);
-  font-size: var(--fs-base);
-  line-height: var(--lh-body);
+  font-family: var(--font-text);
+  font-size: var(--step-0);
+  line-height: 1.6;
   font-kerning: normal;
-  font-variant-numeric: oldstyle-nums proportional-nums;
   text-rendering: optimizelegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.js body {
-  padding-bottom: calc(var(--pager-h) + env(safe-area-inset-bottom, 0px));
 }
 
 h1,
@@ -46,7 +41,7 @@ h3,
 h4 {
   margin: 0;
   font-family: var(--font-display);
-  line-height: var(--lh-tight);
+  line-height: 1.2;
   text-wrap: balance;
 }
 
@@ -54,13 +49,21 @@ p,
 ul,
 ol,
 dl,
+dd,
 pre,
 figure,
 blockquote {
   margin: 0;
 }
 
-p {
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+p,
+li {
   text-wrap: pretty;
 }
 
@@ -70,65 +73,56 @@ svg {
 }
 
 a {
-  color: inherit;
-  text-decoration-line: underline;
+  color: var(--accent);
   text-decoration-thickness: 1px;
-  text-underline-offset: 0.18em;
-  text-decoration-color: var(--rule-strong);
-  transition: color 120ms ease, text-decoration-color 120ms ease;
+  text-underline-offset: 0.2em;
+  transition: color 0.15s ease;
 }
 
 a:hover {
-  color: var(--accent);
-  text-decoration-color: currentcolor;
+  color: var(--accent-hover);
 }
 
 :focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
-  border-radius: 1px;
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 ::selection {
-  background: var(--invert-bg);
-  color: var(--invert-ink);
+  background: var(--accent-soft);
+  color: var(--ink);
 }
 
 code,
 kbd,
-pre,
-samp {
+pre {
   font-family: var(--font-mono);
-  font-size: var(--fs-mono);
-  font-variant-numeric: normal;
+  font-size: 0.875em;
 }
 
-kbd {
-  display: inline-block;
-  min-width: 1.6em;
-  padding: 0 0.35em;
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--radius);
-  font-size: 0.8em;
-  line-height: 1.5;
-  text-align: center;
+pre code {
+  font-size: 1em;
 }
 
 strong,
 b {
   font-weight: 700;
+  color: var(--ink);
+}
+
+abbr[title] {
+  text-decoration: underline dotted;
+  text-underline-offset: 0.2em;
 }
 
 cite {
   font-style: italic;
 }
 
-/* man(7): bold is literal text; italic arguments are underlined on a terminal. */
-.man-arg {
-  color: var(--arg);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.2em;
+time,
+.tabular {
+  font-variant-numeric: tabular-nums;
 }
 
 .sr-only {
@@ -145,14 +139,14 @@ cite {
 
 .skip {
   position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
+  top: 0.75rem;
+  left: 0.75rem;
   z-index: 100;
-  padding: 0.5rem 0.875rem;
-  background: var(--invert-bg);
-  color: var(--invert-ink);
-  font-family: var(--font-ui);
-  font-size: var(--fs-sm);
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--ink);
+  color: var(--bg);
+  font-weight: 600;
   transform: translateY(-200%);
 }
 
@@ -165,46 +159,22 @@ main:focus {
 }
 
 .ico {
-  width: 1em;
-  height: 1em;
   flex: none;
-  vertical-align: -0.125em;
+  width: 1.15em;
+  height: 1.15em;
 }
 
 .ico-sm {
-  width: 0.8em;
-  height: 0.8em;
-  margin-left: 0.2em;
-  vertical-align: 0;
+  width: 0.95em;
+  height: 0.95em;
 }
 
-/* Terminal rendering: italics do not exist on a tty, they become underlines. */
-:root[data-theme="dark"] em,
-:root[data-theme="dark"] cite,
-:root[data-theme="dark"] i {
-  font-style: normal;
-  text-decoration: underline;
-  text-decoration-color: var(--arg);
-  text-underline-offset: 0.2em;
-}
-
-:root[data-theme="dark"] strong,
-:root[data-theme="dark"] b {
-  color: var(--bold);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) em,
-  :root:not([data-theme="light"]) cite,
-  :root:not([data-theme="light"]) i {
-    font-style: normal;
-    text-decoration: underline;
-    text-decoration-color: var(--arg);
-    text-underline-offset: 0.2em;
-  }
-
-  :root:not([data-theme="light"]) strong,
-  :root:not([data-theme="light"]) b {
-    color: var(--bold);
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
   }
 }

@@ -45,31 +45,27 @@ function inline(text) {
 
 const SECTIONS = {
   en: {
-    name: 'NAME', synopsis: 'SYNOPSIS', description: 'DESCRIPTION', options: 'OPTIONS', history: 'HISTORY',
-    research: 'RESEARCH', examples: 'EXAMPLES', files: 'FILES', environment: 'ENVIRONMENT', exit: 'EXIT STATUS',
-    notes: 'NOTES', bugs: 'BUGS', author: 'AUTHOR', seeAlso: 'SEE ALSO',
-    present: 'present', thesis: 'Thesis', reportBugs: 'Report bugs, job offers and pull requests to',
-    exit0: 'Every check passed and the commit was deployed.',
-    exit1: 'A check failed, so nothing was deployed.',
-    notesText: 'Field notes are published at',
-    web: 'The web version of this page, with a live Zero Trust simulator, is at',
+    name: 'NAME', synopsis: 'SYNOPSIS', description: 'DESCRIPTION', options: 'EXPERTISE', experience: 'EXPERIENCE',
+    education: 'EDUCATION', research: 'RESEARCH', projects: 'PROJECTS', certifications: 'CERTIFICATIONS',
+    awards: 'AWARDS', languages: 'LANGUAGES', author: 'AUTHOR', seeAlso: 'SEE ALSO',
+    present: 'present', thesis: 'Thesis', production: 'In production', also: 'Also',
+    web: 'The web version, with diagrams and the live pipeline status, is at',
+    notes: 'Articles',
   },
   fr: {
-    name: 'NOM', synopsis: 'SYNOPSIS', description: 'DESCRIPTION', options: 'OPTIONS', history: 'HISTORIQUE',
-    research: 'RECHERCHE', examples: 'EXEMPLES', files: 'FICHIERS', environment: 'ENVIRONNEMENT', exit: 'CODE DE RETOUR',
-    notes: 'NOTES', bugs: 'BOGUES', author: 'AUTEUR', seeAlso: 'VOIR AUSSI',
-    present: 'aujourd\u2019hui', thesis: 'M\u00E9moire', reportBugs: 'Signalez bugs, offres d\u2019emploi et pull requests \u00E0',
-    exit0: 'Toutes les v\u00E9rifications sont pass\u00E9es et le commit a \u00E9t\u00E9 d\u00E9ploy\u00E9.',
-    exit1: 'Une v\u00E9rification a \u00E9chou\u00E9, rien n\u2019a \u00E9t\u00E9 d\u00E9ploy\u00E9.',
-    notesText: 'Les notes de terrain sont publi\u00E9es sur',
-    web: 'La version web de cette page, avec un simulateur Zero Trust interactif, se trouve sur',
+    name: 'NOM', synopsis: 'SYNOPSIS', description: 'DESCRIPTION', options: 'EXPERTISE', experience: 'EXPÉRIENCE',
+    education: 'FORMATION', research: 'RECHERCHE', projects: 'PROJETS', certifications: 'CERTIFICATIONS',
+    awards: 'DISTINCTIONS', languages: 'LANGUES', author: 'AUTEUR', seeAlso: 'VOIR AUSSI',
+    present: 'aujourd’hui', thesis: 'Mémoire', production: 'En production', also: 'Également',
+    web: 'La version web, avec les schémas et le statut du pipeline en direct, se trouve sur',
+    notes: 'Articles',
   },
 };
 
 const period = (item, s) => {
   const start = String(item.start);
   if (!item.end) return start;
-  return `${start} \u2013 ${item.end === 'present' ? s.present : String(item.end)}`;
+  return `${start} – ${item.end === 'present' ? s.present : String(item.end)}`;
 };
 
 export function renderManPage(profile, lang, { date, version, siteUrl, notes }) {
@@ -82,33 +78,38 @@ export function renderManPage(profile, lang, { date, version, siteUrl, notes }) 
   line(
     `.\\" Generated from content/profile.yaml by scripts/build.mjs. Do not edit by hand.`,
     `.\\" Read it with: man -l ${cmd}.1`,
-    `.TH ${cmd.toUpperCase()} ${profile.site.section} ${date} "${roffText(`portfolio ${version}`)}" "${roffText(t(profile.site.manual, lang))}"`,
+    `.TH ${cmd.toUpperCase()} 1 ${date} "${roffText(`portfolio ${version}`)}" "${roffText(`${p.name}, ${t(p.role, lang)}`)}"`,
     `.SH ${s.name}`,
-    `${cmd} \\- ${roffText(`${p.name}, ${t(p.role, lang).toLowerCase()}`)}`,
+    `${cmd} \\- ${roffText(`${p.name}, ${t(p.role, lang)}`)}`,
     `.SH ${s.synopsis}`,
     `.B ${cmd}`,
   );
-  const skills = new Map(profile.skills.items.map((i) => [i.id, i]));
-  for (const id of profile.hero.synopsis) line(`.RB [ ${roffText(skills.get(id).long)} ]`);
-  line(`.IR ${roffText(profile.hero.argument)} \\&...`);
+  for (const area of profile.expertise.areas) line(`.RB [ \\-\\-${roffText(area.id)} ]`);
+  line('.I platform');
 
-  line(`.SH ${s.description}`, inline(t(profile.hero.tagline, lang)));
+  line(`.SH ${s.description}`, inline(t(p.headline, lang)));
   for (const para of profile.about.paragraphs) line('.PP', inline(t(para, lang)));
 
   line(`.SH ${s.options}`);
-  for (const opt of profile.skills.items) {
-    const flags = [opt.short, opt.long].filter(Boolean).map((f) => `\\fB${roffText(f)}\\fR`).join(', ');
-    line('.TP', `${flags} \\fI${roffText(opt.args.join(','))}\\fR`, inline(t(opt.text, lang)));
+  for (const area of profile.expertise.areas) {
+    line('.TP', `\\fB\\-\\-${roffText(area.id)}\\fR`, `\\fB${roffText(t(area.title, lang))}.\\fR ${inline(t(area.text, lang))}`);
+    if (area.production.length) line('.br', `${roffText(s.production)}: ${roffText(area.production.join(', '))}.`);
+    if (area.other?.length) line('.br', `${roffText(s.also)}: ${roffText(area.other.join(', '))}.`);
   }
 
-  line(`.SH ${s.history}`);
-  for (const item of profile.experience.items) {
+  line(`.SH ${s.experience}`);
+  for (const job of profile.experience.items) {
     line(
       '.TP',
-      `.B ${roffText(period(item, s))}`,
-      `\\fB${roffText(t(item.title, lang))}\\fR, ${roffText(item.org)}${item.place ? `, ${roffText(t(item.place, lang))}` : ''}`,
+      `.B ${roffText(period(job, s))}`,
+      `\\fB${roffText(t(job.role, lang))}\\fR, ${roffText(job.org)}${job.place ? `, ${roffText(t(job.place, lang))}` : ''}`,
     );
-    for (const d of item.details ?? []) line('.RS', '.IP \\(bu 2', inline(t(d, lang)), '.RE');
+    for (const h of job.highlights) line('.RS', '.IP \\(bu 2', inline(t(h, lang)), '.RE');
+  }
+
+  line(`.SH ${s.education}`);
+  for (const ed of profile.education.items) {
+    line('.TP', `.B ${roffText(`${ed.start} – ${ed.end}`)}`, `\\fB${roffText(t(ed.degree, lang))}\\fR, ${roffText(ed.school)}`, inline(t(ed.text, lang)));
   }
 
   const paper = profile.research.paper;
@@ -122,39 +123,31 @@ export function renderManPage(profile, lang, { date, version, siteUrl, notes }) 
   for (const point of paper.summary) line('.IP \\(bu 2', inline(t(point, lang)));
   line('.PP', `${s.thesis}: \\fI${roffText(profile.research.thesis.title)}\\fR (${roffText(profile.research.thesis.institution)}, ${profile.research.thesis.year}).`);
 
-  line(`.SH ${s.examples}`);
-  profile.projects.items.forEach((ex, i) => {
-    if (i > 0) line('.PP');
-    line(`.B "${roffText(`$ ${ex.command}`)}"`, '.RS 4', `\\fB${roffText(t(ex.title, lang))}\\fR (${ex.year}). ${inline(t(ex.text, lang))}`, '.RE');
-  });
+  line(`.SH ${s.projects}`);
+  const featured = profile.projects.featured;
+  line('.TP', `.B ${roffText(t(featured.title, lang))}`, inline(t(featured.text, lang)));
+  for (const pr of profile.projects.items) line('.TP', `.B ${roffText(`${t(pr.title, lang)} (${pr.year})`)}`, inline(t(pr.text, lang)));
 
-  line(`.SH ${s.files}`, '.TP', `.I ~/${roffText(profile.site.resume)}`, roffText(siteUrl + profile.site.resume));
-  for (const f of [...profile.credentials.certifications, ...profile.credentials.awards]) {
-    line('.TP', `.I ${roffText(f.path)}`, `${roffText(t(f.name, lang))}, ${roffText(f.issuer)}, ${roffText(String(f.date))}.`);
-  }
+  line(`.SH ${s.certifications}`);
+  for (const c of profile.credentials.certifications) line('.IP \\(bu 2', `${roffText(t(c.name, lang))}, ${roffText(c.issuer)}, ${roffText(String(c.date))}.`);
+  line(`.SH ${s.awards}`);
+  for (const a of profile.credentials.awards) line('.IP \\(bu 2', `${roffText(t(a.name, lang))}, ${roffText(a.issuer)}, ${roffText(String(a.date))}.`);
 
-  line(`.SH ${s.environment}`);
-  for (const env of profile.about.environment) line('.TP', `.B ${env.key}`, roffText(t(env.value, lang)));
-
-  line(`.SH ${s.exit}`, '.TP', '.B 0', roffText(s.exit0), '.TP', '.B 1', roffText(s.exit1));
-
-  line(`.SH ${s.notes}`, `${roffText(s.notesText)} ${roffText(`${siteUrl}notes/`)}`);
-  for (const n of notes) line('.IP \\(bu 2', `${roffText(n.title)} (${n.date})`);
-  line('.PP', `${roffText(s.web)} ${roffText(lang === 'fr' ? `${siteUrl}fr/` : siteUrl)}`);
-
-  line(`.SH ${s.bugs}`);
-  for (const bug of profile.bugs) line('.IP \\(bu 2', inline(t(bug, lang)));
-  line('.PP', `${roffText(s.reportBugs)} \\fI${roffText(p.email)}\\fR.`);
+  line(`.SH ${s.languages}`, roffText(p.languages.map((l) => `${t(l.name, lang)} (${t(l.level, lang)})`).join(', ')) + '.');
 
   line(
     `.SH ${s.author}`,
     `${roffText(p.name)} <${roffText(p.email)}>`,
     '.br',
-    roffText(p.links.github),
-    '.br',
     roffText(p.links.linkedin),
+    '.br',
+    roffText(p.links.github),
     `.SH ${s.seeAlso}`,
-    profile.see_also.items.map((x, i, all) => `.BR ${x.name} (${x.section})${i < all.length - 1 ? ',' : ''}`).join('\n'),
+    `${roffText(s.web)} ${roffText(lang === 'fr' ? `${siteUrl}fr/` : siteUrl)}`,
   );
+  if (notes.length) {
+    line('.PP', `${roffText(s.notes)}:`);
+    for (const n of notes) line('.IP \\(bu 2', `${roffText(n.title)} (${n.date})`);
+  }
   return `${out.join('\n')}\n`;
 }

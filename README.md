@@ -1,4 +1,4 @@
-# guerd(1)
+# Nawal Guerd, DevOps Engineer
 
 [![CI/CD](https://github.com/louane20/portfolio/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/louane20/portfolio/actions/workflows/ci-cd.yml)
 [![Container image](https://github.com/louane20/portfolio/actions/workflows/container.yml/badge.svg)](https://github.com/louane20/portfolio/actions/workflows/container.yml)
@@ -6,32 +6,24 @@
 [![CodeQL](https://github.com/louane20/portfolio/actions/workflows/codeql.yml/badge.svg)](https://github.com/louane20/portfolio/actions/workflows/codeql.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/louane20/portfolio/badge)](https://scorecard.dev/viewer/?uri=github.com/louane20/portfolio)
 
-The portfolio of **Nawal Guerd**, DevOps engineer, typeset as a Linux manual page and shipped
-like production software.
+My portfolio: production Kubernetes, GitOps delivery and Zero Trust network security.
+The site is simple to read; the repository behind it is built and shipped like production software.
 
 **Live:** https://louane20.github.io/portfolio/ &nbsp;·&nbsp; **Français :** https://louane20.github.io/portfolio/fr/
 
-```sh
-# The site is also a real man page:
-curl -sL https://louane20.github.io/portfolio/guerd.1 | man -l -
-```
-
 ## What is in it
 
-- **A man page you can read in a browser.** NAME, SYNOPSIS, OPTIONS (skills, each tied to
-  where it was used), HISTORY (the career as `git log --graph`), EXAMPLES (projects as
-  commands), FILES, EXIT STATUS, BUGS, SEE ALSO. Two renderings of the same document:
-  *Paper* (groff-style, STIX Two) and *Terminal* (Ubuntu aubergine, Tango palette, bold in
-  yellow and arguments underlined, the way `LESS_TERMCAP` users like it).
-- **Figure 1, a live Zero Trust simulator.** A platform and a 5G core under attack from a
-  compromised pod. Switch the policy layers (flat network, Cilium L3/L4, Istio L7 + mTLS) and
-  watch the flows in a Hubble-style log. Policies are generated from declared intents, like
-  the intent-based access control of the IEEE WCNC 2025 paper.
-- **`less` keys.** `/` searches, `n`/`N` cycle matches, `j`/`k`/`g`/`G` scroll, `]`/`[` jump
-  between sections, `Ctrl K` opens an fzf-style palette, `h` shows help.
-- **EXIT STATUS, live.** The page reads its own pipeline status from the GitHub API.
-- English and French, no framework, no tracker, no third-party request, works without
-  JavaScript, WCAG 2.2 AA (axe), Lighthouse 99/100/100/100 on mobile.
+- **A professional one-page portfolio** in English and French: profile, expertise (with the tools
+  I run in production marked as such), experience, research, projects, education, certifications
+  and contact, with a one-click CV download.
+- **A research diagram** that explains my IEEE WCNC 2025 paper in three steps: a flat network,
+  network policies with Cilium, then a service mesh with Istio, each stopping the attack it can see.
+- **Live delivery status.** The featured project reads the latest run of this repository's
+  pipeline from the GitHub API.
+- Light and dark themes, works without JavaScript, no tracker and no third-party request,
+  WCAG 2.2 AA (axe), Lighthouse 100 on performance, accessibility, best practices and SEO.
+- For terminal lovers, the same profile as a real man page:
+  `curl -sL https://louane20.github.io/portfolio/guerd.1 | man -l -`
 
 ## The pipeline
 
@@ -94,9 +86,9 @@ build). Push to `main` and the pipeline does the rest.
 
 ```
 content/            profile.yaml (EN + FR), schema.json, notes/*.md
-src/templates/      the man page sections, rendered at build time
-src/scripts/        pager, fzf palette, Figure 1 (zt-model.js is shared with the build)
-src/styles/         Paper and Terminal renderings
+src/templates/      page sections and the research diagram, rendered at build time
+src/scripts/        theme, menu, copy buttons, local time, live pipeline status
+src/styles/         design tokens (light and dark), layout, components
 scripts/            build.mjs, serve.mjs, check-links.mjs, ci/*.sh
 tests/              Playwright + axe (e2e/), k6 (load/)
 deploy/             nginx config, kustomize base and overlays, kind, Argo CD
@@ -105,7 +97,7 @@ deploy/             nginx config, kustomize base and overlays, kind, Argo CD
 
 ## Credits
 
-Typeset in [STIX Two](https://github.com/stipub/stixfonts) and [Iosevka](https://github.com/be5invis/Iosevka)
+Typeset in [Red Hat Display, Text and Mono](https://github.com/RedHatOfficial/RedHatFont)
 (SIL Open Font License). Built on the shoulders of Kubernetes, Cilium, Istio, Argo CD, kind,
 Sigstore, Trivy, Playwright, axe and Lighthouse.
 

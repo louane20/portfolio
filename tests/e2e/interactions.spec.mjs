@@ -1,128 +1,96 @@
 import { test, expect } from './fixtures.mjs';
 
-test.describe('interactions', () => {
-  test.skip(({ isMobile }) => isMobile, 'keyboard-driven features are tested on desktop');
-
-  test('paper / terminal rendering switch persists', async ({ page }) => {
+test.describe('header', () => {
+  test('theme switch persists across visits', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'light' });
     await page.goto('./');
-    await page.getByRole('button', { name: 'Terminal' }).click();
+    const toggle = page.locator('[data-theme-toggle]').first();
+    if (await page.locator('[data-menu]').isVisible()) await page.locator('[data-menu]').click();
+    await expect(toggle).toHaveAttribute('aria-label', 'Switch to dark theme');
+    await toggle.click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(toggle).toHaveAttribute('aria-label', 'Switch to light theme');
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-    await expect(page.getByRole('button', { name: 'Terminal' })).toHaveAttribute('aria-pressed', 'true');
-    await page.keyboard.press('t');
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   });
 
-  test('fzf palette jumps to a section', async ({ page }) => {
+  test('mobile menu opens, navigates and closes', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'the menu button only exists on small screens');
     await page.goto('./');
-    await page.keyboard.press('Control+k');
-    const dialog = page.locator('dialog[data-palette]');
-    await expect(dialog).toBeVisible();
-    await page.keyboard.type('skil');
-    await expect(dialog.locator('[aria-selected="true"]')).toContainText('Skills');
-    await page.keyboard.press('Enter');
-    await expect(dialog).toBeHidden();
-    await expect(page).toHaveURL(/#skills$/);
+    const menu = page.locator('[data-menu]');
+    const nav = page.locator('[data-nav]');
+    await expect(nav).toBeHidden();
+    await menu.click();
+    await expect(menu).toHaveAttribute('aria-expanded', 'true');
+    await expect(nav).toBeVisible();
+    await nav.getByRole('link', { name: 'Research' }).click();
+    await expect(page).toHaveURL(/#research$/);
+    await expect(menu).toHaveAttribute('aria-expanded', 'false');
+    await expect(nav).toBeHidden();
   });
 
-  test('less-style search highlights matches and cycles with n', async ({ page }) => {
+  test('navigation follows the section in view, and so does the language link', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'the navigation is collapsed on small screens');
     await page.goto('./');
-    await page.keyboard.press('/');
-    await page.locator('#pager-q').fill('cilium');
-    await page.keyboard.press('Enter');
-    const hits = page.locator('mark.hit');
-    expect(await hits.count()).toBeGreaterThan(3);
-    await expect(page.locator('[data-pager-msg]')).toContainText('matches');
-    const first = await page.locator('mark.hit[data-current="true"]').evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
-    await page.keyboard.press('n');
-    const second = await page.locator('mark.hit[data-current="true"]').evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
-    expect(second).not.toBe(first);
-    await page.keyboard.press('Escape');
-    await expect(hits).toHaveCount(0);
+    await page.locator('#research').scrollIntoViewIfNeeded();
+    await page.evaluate(() => window.scrollBy(0, 200));
+    await expect(page.locator('[data-nav-link="research"]')).toHaveAttribute('aria-current', 'true');
+    await expect(page.locator('[data-lang-link]')).toHaveAttribute('href', 'fr/#research');
   });
+});
 
-  test('help opens with h', async ({ page }) => {
-    await page.goto('./');
-    await page.keyboard.press('h');
-    await expect(page.locator('dialog[data-help]')).toBeVisible();
-    await page.keyboard.press('Escape');
-    await expect(page.locator('dialog[data-help]')).toBeHidden();
-  });
-
-  test('copy email and reveal the phone number', async ({ page, context }) => {
+test.describe('contact', () => {
+  test('copy the email address', async ({ page, context, browserName }) => {
+    test.skip(browserName !== 'chromium', 'clipboard permissions are Chromium-only');
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto('./#contact');
-    const copy = page.locator('#contact .mail .copy');
+    const copy = page.locator('#contact .contact-email .copy-btn');
     await copy.click();
-    await expect(copy).toHaveText('Copied');
+    await expect(copy).toContainText('Copied');
+    await expect(page.locator('[data-toast]')).toHaveText('Email address copied');
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('guerd.nawal@gmail.com');
+  });
+
+  test('phone number is revealed on request', async ({ page }) => {
+    await page.goto('./#contact');
+    await expect(page.locator('#contact a[href^="tel:"]')).toHaveCount(0);
     await page.getByRole('button', { name: 'Show phone number' }).click();
     await expect(page.locator('#contact a[href^="tel:"]')).toHaveAttribute('href', 'tel:+213661908059');
   });
-});
 
-test.describe('Figure 1: Zero Trust simulator', () => {
-  test('policy layers stop the attacks, layer by layer', async ({ page }) => {
+  test('local time is shown next to the location', async ({ page }) => {
     await page.goto('./');
-    const figure = page.locator('[data-zt]');
-    const log = figure.locator('[data-zt-log]');
-    await expect(log.locator('.v-breach').first()).toBeVisible({ timeout: 10_000 });
-
-    await figure.getByRole('button', { name: 'Cilium L3/L4' }).click();
-    await expect(figure).toHaveAttribute('data-mode', 'l4');
-    await expect(log.locator('.v-dropped').first()).toBeVisible({ timeout: 10_000 });
-    await expect(figure.locator('[data-zt-live]')).toContainText('flows dropped');
-
-    await figure.getByRole('button', { name: '+ Istio L7, mTLS' }).click();
-    await expect(log.locator('.v-denied').first()).toContainText('http-request DROPPED', { timeout: 12_000 });
-    await expect(figure.locator('[data-zt-live]')).toContainText('Every malicious flow is now stopped');
-    await expect(figure.locator('.zt-edge[data-state="breach"]')).toHaveCount(0);
-  });
-
-  test('selecting a workload shows its generated policy', async ({ page }) => {
-    await page.goto('./');
-    const figure = page.locator('[data-zt]');
-    await figure.getByRole('button', { name: 'Cilium L3/L4' }).click();
-    await figure.locator('.zt-node[data-node="postgres"]').click();
-    await expect(figure.locator('[data-zt-selected]')).toHaveText('postgres');
-    await figure.locator('[data-zt-policy] summary').click();
-    const yaml = figure.locator('[data-zt-yaml]');
-    await expect(yaml).toContainText('kind: CiliumNetworkPolicy');
-    await expect(yaml).toContainText('app: api');
-    await expect(yaml).not.toContainText('app: worker');
-  });
-
-  test('5G core scenario applies 3GPP least privilege at L7', async ({ page }) => {
-    await page.goto('./');
-    const figure = page.locator('[data-zt]');
-    await figure.getByRole('button', { name: '5G core' }).click();
-    await expect(figure.locator('.zt-node[data-node="amf"]')).toHaveCount(1);
-    await figure.getByRole('button', { name: '+ Istio L7, mTLS' }).click();
-    await figure.locator('[data-zt-policy] summary').click();
-    await expect(figure.locator('[data-zt-yaml]')).toContainText('*/sm-data');
-    await expect(figure.locator('[data-zt-log] .v-denied').first()).toContainText('am-data', { timeout: 15_000 });
-  });
-
-  test('reduced motion shows the verdicts without animation', async ({ browser }) => {
-    const context = await browser.newContext({ reducedMotion: 'reduce' });
-    const page = await context.newPage();
-    await page.route('https://api.github.com/**', (route) => route.abort());
-    await page.goto(test.info().project.use.baseURL);
-    const figure = page.locator('[data-zt]');
-    await expect(figure.locator('[data-zt-log] .ln')).toHaveCount(12);
-    await expect(figure.locator('.zt-packet')).toHaveCount(0);
-    await expect(figure.locator('[data-zt-count="breach"]')).toHaveText('4');
-    await context.close();
+    await expect(page.locator('[data-local-time]')).toHaveText(/^\d{2}:\d{2} local time$/);
   });
 });
 
-test.describe('EXIT STATUS: live pipeline', () => {
+test.describe('research figure', () => {
+  test('each layer stops the attack it can see', async ({ page }) => {
+    await page.goto('./#research');
+    const panel = (id) => page.locator(`.panel[data-panel="${id}"]`);
+    await expect(page.locator('.panel')).toHaveCount(3);
+
+    await expect(panel('flat').locator('.fig-edge.is-attack')).toHaveCount(1);
+    await expect(panel('flat').locator('.fig-request.is-attack')).toContainText('200');
+    await expect(panel('flat').locator('.outcome')).toHaveText('2 of 2 attacks succeed');
+
+    await expect(panel('network').locator('.fig-edge.is-attack')).toHaveCount(0);
+    await expect(panel('network').locator('.fig-cross')).toHaveCount(1);
+    await expect(panel('network').locator('.fig-request.is-attack')).toHaveCount(1);
+
+    await expect(panel('mesh').locator('.fig-request.is-blocked')).toContainText('403');
+    await expect(panel('mesh').locator('.fig-lock')).toHaveCount(2);
+    await expect(panel('mesh').locator('.outcome')).toHaveText('2 of 2 attacks blocked');
+    await expect(panel('mesh').locator('svg')).toHaveAttribute('aria-label', /Both attacks are blocked/);
+  });
+});
+
+test.describe('featured project: live pipeline status', () => {
   test('shows the latest run from the GitHub API', async ({ page }) => {
-    await page.goto('./#pipeline');
+    await page.goto('./#projects');
     const pipe = page.locator('[data-pipeline]');
     await expect(pipe.locator('[data-pipe-run]')).toContainText('#42');
-    await expect(pipe.locator('[data-pipe-run]')).toContainText('exit 0');
+    await expect(pipe.locator('[data-pipe-run]')).toContainText('passed');
     await expect(pipe.locator('[data-stage="lint"]')).toHaveAttribute('data-state', 'success');
     await expect(pipe.locator('[data-stage="test"]')).toHaveAttribute('data-state', 'success');
     await expect(pipe.locator('[data-stage="deploy"]')).toHaveAttribute('data-state', 'skipped');
@@ -131,7 +99,7 @@ test.describe('EXIT STATUS: live pipeline', () => {
 
   test('degrades gracefully when the API is unavailable', async ({ page, githubApi }) => {
     githubApi.mode = 'down';
-    await page.goto('./#pipeline');
-    await expect(page.locator('[data-pipe-run]')).toContainText('unreachable or rate-limited');
+    await page.goto('./#projects');
+    await expect(page.locator('[data-pipe-run]')).toContainText('Live status is unavailable');
   });
 });

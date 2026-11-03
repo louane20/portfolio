@@ -64,7 +64,7 @@ Après le premier run de *Container image*, l'image apparaît dans *Packages*
 ## Vérifier que tout marche
 
 - Les badges du README sont verts.
-- La section **CODE DE RETOUR / EXIT STATUS** du site affiche le dernier run en direct.
+- Dans la section **Projets** du site, le projet « Ce site » affiche le dernier run du pipeline en direct.
 - Dans *Actions → Zero Trust e2e*, le résumé du job montre le tableau des contrôles
   (200, 403, timeouts) et les flux bloqués relevés par Hubble.
 - Dans un terminal : `curl -sL https://louane20.github.io/portfolio/guerd.1 | man -l -`
@@ -80,11 +80,22 @@ npm run dev        # http://127.0.0.1:4173/ , reconstruit à chaque modification
 make help          # toutes les autres tâches
 ```
 
-Un champ manquant dans une des deux langues, ou une compétence qui cite une expérience
-inexistante, fait échouer le build avec un message clair : c'est voulu.
+Un champ manquant dans une des deux langues, ou une expérience mal ordonnée, fait échouer le
+build avec un message clair : c'est voulu.
+
+Pour ajouter ta photo : place une image carrée dans `src/static/` (par exemple `photo.jpg`) et
+mets `photo: photo.jpg` dans la section `person` de `profile.yaml`. Elle remplace le monogramme
+« NG » dans l'encadré « En bref ».
 
 ## Ce qui a changé par rapport à la version précédente
 
+- Nouveau design, plus sobre et pensé pour les recruteurs : profil, expertise (les outils que tu
+  exploites en production sont mis en avant), expérience, recherche, projets, formation,
+  certifications et contact. Thème clair et sombre, police open source Red Hat.
+- Ta recherche est expliquée par un schéma en trois étapes (réseau à plat, Cilium, Istio).
+- Le pipeline reste la preuve technique : il est présenté comme projet à la une, avec son statut
+  en direct. La version « page de manuel » existe toujours, mais seulement en lien discret en bas
+  de page, pour les curieux.
 - Le lieu de WCNC 2025 est corrigé : **Milan, Italie** (l'ancienne page indiquait Dubaï).
   DOI ajouté : `10.1109/WCNC61545.2025.10978671`, avec un lien vers la version en accès libre.
 - Les fichiers `posts/*.html` n'étaient pas dans le dépôt, donc les liens « Read the article »

@@ -1,8 +1,8 @@
 {
   "name": "guerd-portfolio",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": true,
-  "description": "Nawal Guerd's portfolio, typeset as a Linux man page. Built, tested, scanned, signed and deployed by its own pipeline.",
+  "description": "Nawal Guerd's professional portfolio (English and French), built, tested, scanned, signed and deployed by its own pipeline.",
   "license": "MIT",
   "author": "Nawal Guerd <guerd.nawal@gmail.com>",
   "homepage": "https://louane20.github.io/portfolio/",

@@ -7,8 +7,8 @@ try {
   const notes = await loadNotes({ drafts: true });
   const published = notes.filter((n) => !n.draft).length;
   console.log(
-    `content OK: ${profile.skills.items.length} options, ${profile.experience.items.length} history entries, ` +
-      `${profile.projects.items.length} projects, ${published} published notes (${notes.length - published} drafts)`,
+    `content OK: ${profile.expertise.areas.length} expertise areas, ${profile.experience.items.length} positions, ` +
+      `${profile.projects.items.length + 1} projects, ${published} published notes (${notes.length - published} drafts)`,
   );
 } catch (error) {
   if (error instanceof ContentError) {

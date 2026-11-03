@@ -1,35 +1,92 @@
-// Small shared UI helpers: theme switch, toast, copy buttons, phone reveal, help dialog.
+// Small UI behaviours: theme, mobile menu, active section, copy buttons, phone reveal, local time.
 
-const THEME_KEY = 'guerd-theme';
+const THEME_KEY = 'ng-theme';
 
 export function initTheme() {
   const root = document.documentElement;
-  const buttons = [...document.querySelectorAll('[data-theme-set]')];
+  const button = document.querySelector('[data-theme-toggle]');
   const system = window.matchMedia('(prefers-color-scheme: dark)');
   const current = () => root.dataset.theme || (system.matches ? 'dark' : 'light');
   const sync = () => {
-    for (const b of buttons) b.setAttribute('aria-pressed', String(b.dataset.themeSet === current()));
+    if (!button) return;
+    const dark = current() === 'dark';
+    button.setAttribute('aria-label', dark ? button.dataset.labelLight : button.dataset.labelDark);
   };
   const set = (theme) => {
     root.dataset.theme = theme;
     try {
       localStorage.setItem(THEME_KEY, theme);
     } catch {
-      /* storage can be unavailable (private mode); the choice then lasts for this page only */
+      /* storage can be unavailable (private mode); the choice then lasts for this page */
     }
     sync();
-    document.dispatchEvent(new CustomEvent('themechange', { detail: theme }));
   };
-  for (const b of buttons) b.addEventListener('click', () => set(b.dataset.themeSet));
+  button?.addEventListener('click', () => set(current() === 'dark' ? 'light' : 'dark'));
   system.addEventListener('change', sync);
   sync();
-  return { set, current, toggle: () => set(current() === 'dark' ? 'light' : 'dark') };
+}
+
+export function initMenu() {
+  const button = document.querySelector('[data-menu]');
+  const nav = document.querySelector('[data-nav]');
+  if (!button || !nav) return;
+  const setOpen = (open) => {
+    button.setAttribute('aria-expanded', String(open));
+    button.setAttribute('aria-label', open ? button.dataset.labelClose : button.dataset.labelOpen);
+    nav.dataset.open = String(open);
+  };
+  button.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
+  nav.addEventListener('click', (event) => {
+    if (event.target.closest('a')) setOpen(false);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') {
+      setOpen(false);
+      button.focus();
+    }
+  });
+  window.matchMedia('(width >= 1060px)').addEventListener('change', () => setOpen(false));
+}
+
+/** Highlights the section in view in the navigation, and keeps the language link on the same section. */
+export function initScrollSpy() {
+  const links = new Map([...document.querySelectorAll('[data-nav-link]')].map((a) => [a.dataset.navLink, a]));
+  const langLink = document.querySelector('[data-lang-link]');
+  const sections = [...links.keys()].map((id) => document.getElementById(id)).filter(Boolean);
+  if (!sections.length) return;
+  const langBase = langLink?.getAttribute('href').split('#')[0];
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const probe = window.innerHeight * 0.35;
+    let active = null;
+    for (const section of sections) {
+      if (section.getBoundingClientRect().top <= probe) active = section.id;
+    }
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) active = sections.at(-1).id;
+    for (const [id, a] of links) {
+      if (id === active) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    }
+    if (langLink) langLink.setAttribute('href', active ? `${langBase}#${active}` : langBase);
+  };
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    },
+    { passive: true },
+  );
+  update();
 }
 
 export function createToast() {
   const el = document.querySelector('[data-toast]');
   let timer;
-  return (message, ms = 3200) => {
+  return (message, ms = 2600) => {
     if (!el) return;
     el.textContent = message;
     el.dataset.show = 'true';
@@ -63,25 +120,27 @@ export async function copyText(text) {
   }
 }
 
-export function initCopy(strings) {
+export function initCopy(strings, toast) {
   document.addEventListener('click', async (event) => {
     const button = event.target.closest('button[data-copy]');
     if (!button) return;
     const ok = await copyText(button.dataset.copy);
-    button.dataset.label ??= button.textContent;
-    button.textContent = ok ? strings.copied : strings.copyFailed;
+    const label = button.querySelector('span') ?? button;
+    button.dataset.label ??= label.textContent;
+    label.textContent = ok ? strings.copied : strings.copyFailed;
     button.dataset.state = ok ? 'done' : 'fail';
+    if (ok && button.dataset.copy.includes('@') && !button.dataset.copy.includes(' ')) toast(strings.emailCopied);
     clearTimeout(Number(button.dataset.timer));
     button.dataset.timer = String(
       setTimeout(() => {
-        button.textContent = button.dataset.label;
+        label.textContent = button.dataset.label;
         delete button.dataset.state;
       }, 1800),
     );
   });
 }
 
-/** The phone number ships base64-encoded and is only decoded on request. */
+/** The phone number ships base64-encoded and is decoded only on request. */
 export function initPhoneReveal() {
   for (const button of document.querySelectorAll('[data-reveal-phone]')) {
     button.addEventListener('click', () => {
@@ -95,20 +154,23 @@ export function initPhoneReveal() {
   }
 }
 
-export function initHelp() {
-  const dialog = document.querySelector('[data-help]');
-  return {
-    open() {
-      if (dialog && !dialog.open) dialog.showModal();
-    },
-  };
-}
-
-/** A key event the page shortcuts should ignore (typing, modifiers, open dialogs). */
-export function isTyping(event) {
-  const el = event.target;
-  if (event.altKey || event.ctrlKey || event.metaKey) return true;
-  if (document.querySelector('dialog[open]')) return true;
-  if (!(el instanceof Element)) return false;
-  return Boolean(el.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"]'));
+/** "09:14 local time" next to the location, updated every minute. */
+export function initLocalTime(lang) {
+  for (const el of document.querySelectorAll('[data-local-time]')) {
+    let format;
+    try {
+      format = new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: el.dataset.tz,
+      });
+    } catch {
+      continue;
+    }
+    const tick = () => {
+      el.textContent = `${format.format(new Date())} ${el.dataset.suffix}`;
+    };
+    tick();
+    setInterval(tick, 30_000);
+  }
 }

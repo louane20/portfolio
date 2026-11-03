@@ -27,28 +27,27 @@ function crossCheck(profile) {
     ids.set(id, where);
   };
   profile.experience.items.forEach((i) => register(i.id, 'experience'));
+  profile.education.items.forEach((i) => register(i.id, 'education'));
   profile.projects.items.forEach((i) => register(i.id, 'projects'));
   profile.credentials.certifications.forEach((i) => register(i.id, 'credentials.certifications'));
   profile.credentials.awards.forEach((i) => register(i.id, 'credentials.awards'));
 
-  const skillIds = new Set();
-  for (const skill of profile.skills.items) {
-    if (skillIds.has(skill.id)) problems.push(`duplicate skill id "${skill.id}"`);
-    skillIds.add(skill.id);
-    for (const ev of skill.evidence ?? []) {
-      if (!ids.has(ev)) problems.push(`skill "${skill.id}" cites unknown evidence "${ev}"`);
+  const areaIds = new Set();
+  for (const area of profile.expertise.areas) {
+    if (areaIds.has(area.id)) problems.push(`duplicate expertise area id "${area.id}"`);
+    areaIds.add(area.id);
+    const seen = new Set();
+    for (const tool of [...area.production, ...(area.other ?? [])]) {
+      if (seen.has(tool)) problems.push(`expertise area "${area.id}" lists "${tool}" twice`);
+      seen.add(tool);
     }
   }
-  for (const flag of profile.hero.synopsis) {
-    if (!skillIds.has(flag)) problems.push(`hero.synopsis references unknown skill "${flag}"`);
+  const panels = profile.research.figure.panels.map((p) => p.id).join(',');
+  if (panels !== 'flat,network,mesh') problems.push('research.figure.panels must be, in order: flat, network, mesh');
+  const sorted = [...profile.experience.items].sort((a, b) => String(b.start).localeCompare(String(a.start)));
+  if (sorted.some((item, i) => item !== profile.experience.items[i])) {
+    problems.push('experience.items must be listed newest first');
   }
-  const lanes = new Set(profile.experience.lanes.map((l) => l.id));
-  if (!lanes.has('main')) problems.push('experience.lanes must contain a "main" lane');
-  for (const item of profile.experience.items) {
-    if (!lanes.has(item.lane)) problems.push(`experience item "${item.id}" uses unknown lane "${item.lane}"`);
-  }
-  const mainItems = profile.experience.items.filter((i) => i.lane === 'main');
-  if (mainItems.length === 0) problems.push('the "main" lane needs at least one item');
   return problems;
 }
 

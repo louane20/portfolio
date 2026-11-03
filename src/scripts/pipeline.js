@@ -22,10 +22,11 @@ function stateOf(status, conclusion) {
 
 function ago(iso, units) {
   const s = Math.max(0, (Date.now() - Date.parse(iso)) / 1000);
-  if (s < 60) return `${Math.round(s)}${units.s}`;
-  if (s < 3600) return `${Math.round(s / 60)}${units.m}`;
-  if (s < 86400) return `${Math.round(s / 3600)}${units.h}`;
-  return `${Math.round(s / 86400)}${units.d}`;
+  const fill = (tpl, n) => tpl.replace('{n}', String(n));
+  if (s < 60) return fill(units.s, Math.round(s));
+  if (s < 3600) return fill(units.m, Math.round(s / 60));
+  if (s < 86400) return fill(units.h, Math.round(s / 3600));
+  return fill(units.d, Math.round(s / 86400));
 }
 
 async function getJson(url, signal) {
@@ -114,22 +115,20 @@ export async function initPipeline(root, ui) {
     }
     const state = stateOf(data.ci.status, data.ci.conclusion);
     const tone = state === 'success' ? 'success' : state === 'failure' ? 'failure' : 'running';
+    // "Latest run #42 on main (a1b2c3d): passed, 3 h ago. View run"
     runEl.replaceChildren();
-    const label = document.createElement('span');
-    label.textContent = `${ui.latest} #${data.ci.number}, main, ${ui.commit} `;
+    const label = document.createTextNode(`${ui.latest} #${data.ci.number} ${ui.onMain} (`);
     const sha = document.createElement('code');
     sha.textContent = data.ci.sha.slice(0, 7);
     const verdict = document.createElement('span');
-    verdict.className = 'state';
     verdict.dataset.tone = tone;
-    verdict.textContent = ` ${ui[state] ?? state}`;
-    const when = document.createElement('span');
-    when.textContent = `, ${ago(data.ci.updated, ui.ago)}. `;
+    verdict.textContent = ui[state] ?? state;
+    const when = document.createTextNode(`, ${ago(data.ci.updated, ui.ago)}. `);
     const link = document.createElement('a');
     link.href = data.ci.url;
     link.rel = 'noopener';
     link.textContent = ui.viewRun;
-    runEl.append(label, sha, verdict, when, link);
+    runEl.append(label, sha, document.createTextNode('): '), verdict, when, link);
   } catch {
     runEl.textContent = ui.unavailable;
   }

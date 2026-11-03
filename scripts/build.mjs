@@ -21,7 +21,7 @@ import { renderManPage } from './lib/roff.mjs';
 import { plain } from './lib/html.mjs';
 import { UI } from '../src/i18n.mjs';
 import { layout, csp, THEME_SCRIPT } from '../src/templates/layout.mjs';
-import { homeBody, homeSections, personJsonLd } from '../src/templates/home.mjs';
+import { homeBody, personJsonLd } from '../src/templates/home.mjs';
 import { noteBody, notFoundBody } from '../src/templates/pages.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -97,14 +97,8 @@ async function bundle() {
   };
   if (!js || !css) throw new Error('esbuild did not produce the expected outputs');
   const sizes = Object.fromEntries(outputs.map(([p, m]) => [rel(p), m.bytes]));
-  // Fonts used above the fold, preloaded to avoid layout shifts when they swap in.
-  // The serif only renders in the paper (light) rendering.
-  const fonts = [
-    { href: font('iosevka-400') },
-    { href: font('iosevka-700') },
-    { href: font('stix-two-text-roman'), media: '(prefers-color-scheme: light)' },
-    { href: font('stix-two-text-italic'), media: '(prefers-color-scheme: light)' },
-  ];
+  // Fonts used above the fold, preloaded so text does not shift when they swap in.
+  const fonts = [font('red-hat-display'), font('red-hat-text')];
   return { js: rel(js), css: rel(css), fonts, sizes };
 }
 
@@ -155,6 +149,7 @@ async function main() {
       assets,
       root,
       resumeSize,
+      resumeHref: `${root}${profile.site.resume}`,
       themeScriptHash,
       otherLangHref: lang === 'en' ? 'fr/' : '../',
     };
@@ -169,7 +164,6 @@ async function main() {
         { lang: 'x-default', path: '' },
       ],
       body: homeBody(ctx),
-      sections: homeSections(ctx),
       jsonld: personJsonLd(ctx),
       bodyClass: 'page-home',
     });
@@ -193,6 +187,7 @@ async function main() {
       assets,
       root: '../../',
       resumeSize,
+      resumeHref: `../../${profile.site.resume}`,
       themeScriptHash,
       otherLangHref: '../../fr/',
     };
@@ -202,7 +197,6 @@ async function main() {
       description: note.summary,
       ogType: 'article',
       body: String(noteBody(ctx, note)),
-      sections: [],
       bodyClass: 'page-note',
       jsonld: {
         '@context': 'https://schema.org',
@@ -231,6 +225,7 @@ async function main() {
       assets,
       root: build.basePath,
       resumeSize,
+      resumeHref: `${build.basePath}${profile.site.resume}`,
       themeScriptHash,
       otherLangHref: `${build.basePath}fr/`,
     };
@@ -250,10 +245,10 @@ async function main() {
   // Old URLs from the first version of the site (blog.html, posts/*.html) keep working.
   const redirect = (to) =>
     `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><title>Moved</title><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0; url=${to}"><link rel="canonical" href="${to}"></head><body><p>Moved to <a href="${to}">${to}</a>.</p></body></html>\n`;
-  await write('blog.html', redirect('./#notes'));
+  await write('blog.html', redirect('./#writing'));
   for (const slug of ['zero-trust-5g', 'airgapped-kubernetes', 'gitops-multi-dc']) {
     const published = notes.some((n) => n.slug === slug);
-    await write(`posts/${slug}.html`, redirect(published ? `../notes/${slug}/` : '../#notes'));
+    await write(`posts/${slug}.html`, redirect(published ? `../notes/${slug}/` : '../#writing'));
   }
 
   // Machine-readable extras.
@@ -281,18 +276,18 @@ async function main() {
   );
   await write(
     'humans.txt',
-    `/* TEAM */\n  Author: ${profile.person.name}\n  Role: ${t(profile.person.role, 'en')}\n  Contact: ${profile.person.email}\n  From: ${t(profile.person.location, 'en')}\n\n/* SITE */\n  Last update: ${today}\n  Language: English, French\n  Standards: HTML, CSS, a man page (roff)\n  Components: esbuild, marked, yaml, ajv\n  Fonts: STIX Two Text, Iosevka (SIL Open Font License)\n  Source: https://github.com/${build.repository}\n`,
+    `/* TEAM */\n  Author: ${profile.person.name}\n  Role: ${t(profile.person.role, 'en')}\n  Contact: ${profile.person.email}\n  From: ${t(profile.person.location, 'en')}\n\n/* SITE */\n  Last update: ${today}\n  Language: English, French\n  Standards: HTML, CSS, a man page (roff)\n  Components: esbuild, marked, yaml, ajv\n  Fonts: Red Hat Display, Red Hat Text, Red Hat Mono (SIL Open Font License)\n  Source: https://github.com/${build.repository}\n`,
   );
   await write(
     'site.webmanifest',
     JSON.stringify(
       {
         name: `${profile.person.name}, ${t(profile.person.role, 'en')}`,
-        short_name: 'guerd(1)',
+        short_name: 'Nawal Guerd',
         start_url: './',
         display: 'standalone',
-        background_color: '#f8f8f4',
-        theme_color: '#2a0b21',
+        background_color: '#f5f7fa',
+        theme_color: '#1a55a6',
         icons: [
           { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml' },
           { src: 'apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
@@ -321,7 +316,7 @@ async function main() {
   );
   await write(
     'build-info.json',
-    `${JSON.stringify({ ...build, assets: { js: assets.js, css: assets.css }, notes: notes.map((n) => n.slug), plainTagline: plain(t(profile.hero.tagline, 'en')) }, null, 2)}\n`,
+    `${JSON.stringify({ ...build, assets: { js: assets.js, css: assets.css }, notes: notes.map((n) => n.slug), headline: plain(t(profile.person.headline, 'en')) }, null, 2)}\n`,
   );
 
   const total = Object.values(assets.sizes).reduce((a, b) => a + b, 0);

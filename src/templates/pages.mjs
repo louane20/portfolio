@@ -1,6 +1,6 @@
-// Field note pages (man section 7) and the 404 page ("No manual entry for ...").
+// Article pages (content/notes/*.md) and the 404 page.
 import { Marked } from 'marked';
-import { html, raw, fmtDay, gutter } from './common.mjs';
+import { html, raw, fmtDay } from './common.mjs';
 import { esc } from '../../scripts/lib/html.mjs';
 
 const slugify = (text) =>
@@ -35,7 +35,6 @@ export function renderMarkdown(source) {
         return `<div class="codeblock">${label}<pre tabindex="0"><code${cls}>${esc(text)}</code></pre></div>\n`;
       },
       table(token) {
-        // Wrap tables so they can scroll horizontally on small screens.
         const header = token.header.map((cell) => `<th scope="col">${this.parser.parseInline(cell.tokens)}</th>`).join('');
         const rows = token.rows
           .map((row) => `<tr>${row.map((cell) => `<td>${this.parser.parseInline(cell.tokens)}</td>`).join('')}</tr>`)
@@ -50,48 +49,44 @@ export function renderMarkdown(source) {
 export function noteBody(ctx, note) {
   const { ui, root, lang } = ctx;
   const { html: body, toc } = renderMarkdown(note.body);
-  const name = note.slug.toUpperCase();
+  const home = lang === 'fr' ? `${root}fr/` : root;
   return html`
-<article class="note" lang="${note.lang}">
-  <p class="note-runhead" aria-hidden="true"><span>${name}(7)</span><span>Field Notes</span><span>${name}(7)</span></p>
-  <header class="sec note-head">
-    ${gutter(lang === 'fr' ? 'NOM' : 'NAME')}
-    <div class="sec-body">
-      <p class="note-meta"><span class="note-cat">${note.category}</span> <time datetime="${note.date}">${fmtDay(note.date, ui)}</time>, ${note.minutes} ${ui.minRead}</p>
+<article class="article-page" lang="${note.lang}">
+  <div class="container article-wrap">
+    <p class="back"><a href="${home}#writing">${ui.backHome}</a></p>
+    <header class="article-head">
+      <p class="article-meta"><span class="article-cat">${note.category}</span><time datetime="${note.date}">${fmtDay(note.date, ui)}</time><span>${note.minutes} ${ui.minRead}</span></p>
       <h1>${note.title}</h1>
       <p class="lede">${note.summary}</p>
-      ${
-        toc.length > 2
-          ? html`<nav class="toc" aria-label="Contents"><ol>${toc.map((h) => html`<li><a href="#${h.id}">${h.text}</a></li>`)}</ol></nav>`
-          : ''
-      }
-    </div>
-  </header>
-  <div class="sec">
-    ${gutter('DESCRIPTION')}
-    <div class="sec-body prose note-body">${raw(body)}</div>
+    </header>
+    ${
+      toc.length > 2
+        ? html`<nav class="toc" aria-label="${lang === 'fr' ? 'Sommaire' : 'Contents'}"><ol>${toc.map((h) => html`<li><a href="#${h.id}">${h.text}</a></li>`)}</ol></nav>`
+        : ''
+    }
+    <div class="prose article-body">${raw(body)}</div>
+    <footer class="article-foot">
+      <ul class="tag-list">${note.tags.map((tag) => html`<li>${tag}</li>`)}</ul>
+      <p><a class="btn btn-secondary" href="${home}">${ui.backHome}</a></p>
+    </footer>
   </div>
-  <footer class="sec note-foot">
-    ${gutter(lang === 'fr' ? 'VOIR AUSSI' : 'SEE ALSO')}
-    <div class="sec-body">
-      <p><a href="${lang === 'fr' ? `${root}fr/` : root}">${ui.backToManual}: guerd(1)</a></p>
-      <p class="tags">${note.tags.map((tag) => html`<span>${tag}</span>`)}</p>
-    </div>
-  </footer>
 </article>`;
 }
 
 export function notFoundBody(ctx) {
   const { ui, root } = ctx;
   return html`
-<section class="sec notfound">
-  ${gutter('ERRORS')}
-  <div class="sec-body">
-    <p class="notfound-cmd"><code>$ man <span data-404-path>…</span></code></p>
-    <h1>${ui.notFound.lead} <span class="notfound-path" data-404-path>…</span></h1>
+<section class="section notfound">
+  <div class="container">
+    <p class="notfound-code">${ui.notFound.code}</p>
+    <h1>${ui.notFound.title}</h1>
     <p class="lede">${ui.notFound.body}</p>
-    <p class="notfound-suggest" data-404-suggest hidden>${ui.notFound.suggest} <a href="${root}" data-404-suggest-link>guerd(1)</a>?</p>
-    <p><a class="btn btn-primary" href="${root}">${ui.notFound.home}</a> <a class="btn" href="${root}fr/" lang="fr" hreflang="fr">Version française</a></p>
+    <p class="notfound-path"><code data-404-path></code></p>
+    <p class="notfound-suggest" data-404-suggest hidden>${ui.notFound.suggest} <a href="${root}" data-404-suggest-link>${ui.notFound.home}</a></p>
+    <div class="actions">
+      <a class="btn btn-primary" href="${root}">${ui.notFound.home}</a>
+      <a class="btn btn-secondary" href="${root}fr/" lang="fr" hreflang="fr">Version française</a>
+    </div>
   </div>
 </section>`;
 }
