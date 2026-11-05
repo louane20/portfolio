@@ -3,6 +3,7 @@ import { html, raw, md, t, fmtMonth, fmtPeriod, icon, cmd } from './common.mjs';
 import { monogram } from './layout.mjs';
 import { panelSvg, legendSwatch } from './figure.mjs';
 import { postCard, blogHref } from './blog/pages.mjs';
+import { shipSection } from './ship.mjs';
 
 const languagesLine = (profile, lang) =>
   profile.person.languages.map((l) => `${t(l.name, lang)} (${t(l.level, lang)})`).join(lang === 'ar' ? '، ' : ', ');
@@ -18,7 +19,7 @@ function hero(ctx) {
   <div class="container hero-grid">
     <div class="hero-main">
       <p class="status"><span class="status-dot" aria-hidden="true"></span>${t(p.availability, lang)}</p>
-      ${cmd('whoami')}
+      ${cmd('whoami', { typed: true })}
       <h1 class="hero-name" id="hero-name">${p.name}</h1>
       <p class="hero-role">${t(p.role, lang)}<span class="cursor" aria-hidden="true"></span></p>
       <p class="hero-headline">${t(p.headline, lang)}</p>
@@ -381,7 +382,7 @@ function contact(ctx) {
 }
 
 export function homeBody(ctx) {
-  return [hero, about, expertise, experience, research, projects, education, writing, contact].map((fn) => String(fn(ctx))).join('\n');
+  return [hero, shipSection, about, expertise, experience, research, projects, education, writing, contact].map((fn) => String(fn(ctx))).join('\n');
 }
 
 export function personJsonLd(ctx) {

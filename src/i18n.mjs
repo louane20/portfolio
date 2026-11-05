@@ -98,6 +98,11 @@ export const UI = {
     phone: 'Phone',
     email: 'Email',
     backHome: 'Back to the portfolio',
+    ship: {
+      title: 'How I ship',
+      lede: 'From a commit to production, and back. Every step is automated, verified and observable: this is the platform I build and run.',
+      alt: 'The delivery flow in six stages: git push; a CI pipeline that lints, tests and scans; a registry with signed images and SBOMs; GitOps with Argo CD; Kubernetes built with kubeadm and secured with Cilium under Zero Trust; and observability with Prometheus, Grafana and Loki. Underneath run Trivy, cosign and Playwright, HashiCorp Vault for secrets, and Ansible for nodes and configuration. Alerts become issues and the next commit.',
+    },
     blog: {
       kicker: 'Blog',
       latest: 'Latest articles',
@@ -266,6 +271,11 @@ export const UI = {
     phone: 'Téléphone',
     email: 'E-mail',
     backHome: 'Retour au portfolio',
+    ship: {
+      title: 'Comment je livre',
+      lede: 'Du commit à la production, et retour. Chaque étape est automatisée, vérifiée et observable : c’est la plateforme que je construis et que j’exploite.',
+      alt: 'Le flux de livraison en six étapes : git push ; un pipeline CI qui vérifie, teste et scanne ; un registre d’images signées avec SBOM ; GitOps avec Argo CD ; Kubernetes monté avec kubeadm et sécurisé par Cilium en Zero Trust ; et l’observabilité avec Prometheus, Grafana et Loki. En dessous : Trivy, cosign et Playwright, HashiCorp Vault pour les secrets, Ansible pour les nœuds et la configuration. Les alertes deviennent des tickets, puis le prochain commit.',
+    },
     blog: {
       kicker: 'Blog',
       latest: 'Derniers articles',
@@ -434,6 +444,11 @@ export const UI = {
     phone: 'الهاتف',
     email: 'البريد الإلكتروني',
     backHome: 'العودة إلى الملف الشخصي',
+    ship: {
+      title: 'كيف أُسلِّم',
+      lede: 'من الإيداع إلى الإنتاج، ثم العودة. كل خطوة مؤتمتة وموثّقة وقابلة للمراقبة: هذه هي المنصة التي أبنيها وأشغّلها.',
+      alt: 'مسار التسليم في ست مراحل: git push؛ خط CI يدقق ويختبر ويفحص؛ سجل صور موقّعة مع SBOM؛ GitOps باستخدام Argo CD؛ Kubernetes مبني بـ kubeadm ومؤمّن بـ Cilium وفق Zero Trust؛ والمراقبة باستخدام Prometheus وGrafana وLoki. وفي الأسفل: Trivy وcosign وPlaywright، وHashiCorp Vault للأسرار، وAnsible للعقد والإعداد. تتحول التنبيهات إلى تذاكر ثم إلى الإيداع التالي.',
+    },
     blog: {
       kicker: 'المدوّنة',
       latest: 'أحدث المقالات',

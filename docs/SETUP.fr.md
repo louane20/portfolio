@@ -119,6 +119,18 @@ Dans le texte, en plus du Markdown habituel :
 Après un nouvel article ou un titre modifié, régénère les images de partage (LinkedIn, etc.) :
 `node scripts/render-images.mjs --posts`, puis commite les fichiers de `src/static/og/`.
 
+## Ce qui a changé : version plus DevOps
+
+- Nouvelle section **« Comment je livre »** juste après l'en-tête : une carte animée de ta chaîne
+  de livraison en six étapes (git push → pipeline CI → registre d'images signées → GitOps avec
+  Argo CD → Kubernetes avec Cilium en Zero Trust → observabilité), avec des paquets qui circulent,
+  la boucle de retour (alertes → tickets → prochain commit) et, en dessous, Trivy/cosign, Vault et
+  Ansible. Les animations s'arrêtent si le visiteur a demandé moins d'animations.
+- Le menu fonctionne comme les étapes d'un pipeline : les sections déjà lues passent au vert, la
+  section en cours est « en cours d'exécution » (orange).
+- L'expérience est affichée comme un `git log --graph` : une ligne verticale et un commit par poste.
+- La commande `whoami` se tape toute seule au chargement.
+
 ## Ce qui a changé : le design « console »
 
 - Nouveau look inspiré du terminal, pensé pour ton profil DevOps, Linux, open source et sécurité :

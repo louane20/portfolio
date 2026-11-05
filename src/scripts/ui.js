@@ -62,9 +62,13 @@ export function initScrollSpy() {
       if (section.getBoundingClientRect().top <= probe) active = section.id;
     }
     if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) active = sections.at(-1).id;
+    const order = sections.map((s) => s.id);
+    const reached = order.indexOf(active);
     for (const [id, a] of links) {
       if (id === active) a.setAttribute('aria-current', 'true');
       else a.removeAttribute('aria-current');
+      // Like stages of a pipeline: sections above the current one are "passed".
+      a.classList.toggle('is-done', reached > -1 && order.indexOf(id) > -1 && order.indexOf(id) < reached);
     }
     for (const [a, base] of langLinks) a.setAttribute('href', active ? `${base}#${active}` : base);
   };

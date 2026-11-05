@@ -51,8 +51,8 @@ h4 {
 }
 
 .brand {
+  flex: none;
   gap: 0.75rem;
-  min-width: 0;
   font-family: var(--font-mono);
   font-size: 0.9375rem;
   font-weight: 700;
@@ -90,8 +90,17 @@ h4 {
 }
 
 .nav-links a {
+  padding-inline: 0.5rem;
   font-family: var(--font-mono);
-  font-size: 0.875rem;
+  font-size: 0.84rem;
+}
+
+.nav-links {
+  gap: 0;
+}
+
+.nav {
+  gap: 1rem;
 }
 
 .nav-links a[aria-current="true"],
@@ -178,6 +187,25 @@ h4 {
   animation: blink 1.1s steps(1) infinite;
 }
 
+/* The hero command types itself once (6 characters: "whoami"). */
+.typed {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  white-space: nowrap;
+  animation: typing 0.7s steps(6) 0.35s backwards;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 6ch;
+  }
+}
+
 @keyframes blink {
   50% {
     opacity: 0;
@@ -185,7 +213,8 @@ h4 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cursor {
+  .cursor,
+  .typed {
     animation: none;
   }
 }
@@ -451,4 +480,224 @@ h4 {
   .toast {
     bottom: calc(var(--statusbar-h) + 1.25rem);
   }
+}
+
+/* Navigation as pipeline stages (home page): passed, running, pending. */
+.page-home .nav-links a[data-nav-link] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.page-home .nav-links a[data-nav-link]::before {
+  flex: none;
+  width: 0.45rem;
+  height: 0.45rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 50%;
+  content: "";
+}
+
+.page-home .nav-links a.is-done::before {
+  border-color: var(--ok);
+  background: var(--ok);
+}
+
+.page-home .nav-links a[aria-current="true"]::before {
+  border-color: var(--warn);
+  background: var(--warn);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--warn) 25%, transparent);
+  animation: running 1.4s ease-in-out infinite;
+}
+
+@keyframes running {
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--warn) 0%, transparent);
+  }
+}
+
+/* Experience as a git log graph. */
+@media (width >= 820px) {
+  .job {
+    position: relative;
+    border-top: 0;
+  }
+
+  .job::before {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    inset-inline-start: calc(13rem + 1.15rem);
+    width: 2px;
+    background: var(--line-strong);
+    content: "";
+  }
+
+  .job::after {
+    position: absolute;
+    top: 2.35rem;
+    inset-inline-start: calc(13rem + 0.75rem);
+    width: 0.95rem;
+    height: 0.95rem;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    background: var(--bg);
+    content: "";
+  }
+
+  .job:first-child::after {
+    top: 0.35rem;
+  }
+
+  .job.is-current::after {
+    background: var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+
+  .job:first-child::before {
+    top: 0.8rem;
+  }
+
+  .job:last-child::before {
+    bottom: auto;
+    height: 2.8rem;
+  }
+
+  .job-body {
+    padding-inline-start: 1rem;
+  }
+}
+
+/* "How I ship": the animated delivery map. */
+.ship {
+  padding-top: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+}
+
+.ship-figure {
+  padding: clamp(0.75rem, 0.5rem + 1vw, 1.5rem);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(color-mix(in srgb, var(--accent) 14%, transparent) 1px, transparent 1.2px) 0 0 / 20px 20px,
+    var(--surface-2);
+}
+
+.ship-figure .diagram-scroll {
+  direction: ltr;
+  background: none;
+}
+
+.ship-figure .dg-wide {
+  min-width: 56rem;
+}
+
+.ship-box {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.4;
+}
+
+.ship-stage.is-prod .ship-box {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.ship-step {
+  fill: var(--accent);
+  font: 700 12px var(--font-mono);
+  letter-spacing: 0.08em;
+}
+
+.ship-ico {
+  fill: none;
+  stroke: var(--accent);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.ship-label {
+  fill: var(--ink);
+  font: 700 15px var(--font-mono);
+}
+
+.ship-sub {
+  fill: var(--ink-3);
+  font: 500 11px var(--font-mono);
+}
+
+.ship-flow {
+  fill: none;
+  stroke: var(--accent-hover);
+  stroke-dasharray: 2 14;
+  stroke-linecap: round;
+  stroke-width: 4;
+  animation: flow 1.2s linear infinite;
+}
+
+@keyframes flow {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+
+.ship-pkt {
+  fill: var(--accent);
+  stroke: var(--bg);
+  stroke-width: 2;
+}
+
+.ship-lane rect {
+  fill: color-mix(in srgb, var(--surface) 80%, transparent);
+  stroke: var(--line);
+  stroke-dasharray: 5 4;
+}
+
+.ship-lane text {
+  fill: var(--ink-2);
+  font: 500 12px var(--font-mono);
+}
+
+.ship-loop-pill {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+}
+
+.ship-loop {
+  fill: var(--ink-2);
+  font: 600 12px var(--font-mono);
+}
+
+.ship-shield path {
+  fill: var(--accent);
+}
+
+.ship-shield .ship-shield-check {
+  fill: none;
+  stroke: var(--accent-ink);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
+}
+
+.ship-tag {
+  fill: var(--accent);
+  font: 600 11px var(--font-mono);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ship-pkt {
+    display: none;
+  }
+
+  .ship-flow,
+  .page-home .nav-links a[aria-current="true"]::before {
+    animation: none;
+  }
+}
+
+.prose p.cmd {
+  color: var(--ink-3);
+  font-size: 0.875rem;
+  line-height: 1.5;
 }

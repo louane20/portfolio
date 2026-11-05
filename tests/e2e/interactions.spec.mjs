@@ -157,3 +157,24 @@ test.describe('blog', () => {
     await expect(bar).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
   });
 });
+
+test.describe('delivery map and navigation', () => {
+  test('the delivery map shows the six stages, and moves only without reduced motion', async ({ page }) => {
+    await page.goto('./#pipeline-map');
+    const map = page.locator('#pipeline-map svg[role="img"]');
+    await expect(map).toHaveAttribute('aria-label', /git push/);
+    await expect(page.locator('#pipeline-map .ship-stage')).toHaveCount(6);
+    await expect(page.locator('#pipeline-map .ship-pkt').first()).toBeVisible();
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(page.locator('#pipeline-map .ship-pkt').first()).toBeHidden();
+  });
+
+  test('sections already read are marked as passed stages', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'the navigation is collapsed on small screens');
+    await page.goto('./');
+    await page.evaluate(() => document.getElementById('projects').scrollIntoView({ block: 'start' }));
+    await expect(page.locator('[data-nav-link="projects"]')).toHaveAttribute('aria-current', 'true');
+    await expect(page.locator('[data-nav-link="about"]')).toHaveClass(/is-done/);
+    await expect(page.locator('[data-nav-link="contact"]')).not.toHaveClass(/is-done/);
+  });
+});
