@@ -15,6 +15,7 @@ export function notFoundBody(ctx) {
       <a class="btn btn-primary" href="${root}">${ui.notFound.home}</a>
       <a class="btn btn-secondary" href="${root}blog/">${ui.nav.blog}</a>
       <a class="btn btn-secondary" href="${root}fr/" lang="fr" hreflang="fr">Version française</a>
+      <a class="btn btn-secondary" href="${root}ar/" lang="ar" hreflang="ar" dir="rtl">النسخة العربية</a>
     </div>
   </div>
 </section>`;

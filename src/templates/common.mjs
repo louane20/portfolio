@@ -47,7 +47,7 @@ export const icon = {
   rss: svg(`<path ${stroke} d="M4.5 9a6.5 6.5 0 0 1 6.5 6.5M4.5 4.5a11 11 0 0 1 11 11"/><circle cx="5.2" cy="14.8" r="1.4" fill="currentColor"/>`),
   share: svg(`<circle ${stroke} cx="14.5" cy="5" r="2"/><circle ${stroke} cx="5.5" cy="10" r="2"/><circle ${stroke} cx="14.5" cy="15" r="2"/><path ${stroke} d="m7.3 9 5.4-3M7.3 11l5.4 3"/>`),
   link: svg(`<path ${stroke} d="M8.6 11.4a3 3 0 0 0 4.2 0l2.6-2.6a3 3 0 0 0-4.2-4.2l-.9.9M11.4 8.6a3 3 0 0 0-4.2 0l-2.6 2.6a3 3 0 0 0 4.2 4.2l.9-.9"/>`),
-  arrowRight: svg(`<path ${stroke} d="M4 10h12m0 0-4.5-4.5M16 10l-4.5 4.5"/>`),
-  arrowLeft: svg(`<path ${stroke} d="M16 10H4m0 0 4.5-4.5M4 10l4.5 4.5"/>`),
+  arrowRight: svg(`<path ${stroke} d="M4 10h12m0 0-4.5-4.5M16 10l-4.5 4.5"/>`, 'ico ico-dir'),
+  arrowLeft: svg(`<path ${stroke} d="M16 10H4m0 0 4.5-4.5M4 10l4.5 4.5"/>`, 'ico ico-dir'),
   clock: svg(`<circle ${stroke} cx="10" cy="10" r="6.8"/><path ${stroke} d="M10 6.2V10l2.6 1.6"/>`, 'ico ico-sm'),
 };

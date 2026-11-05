@@ -44,7 +44,7 @@ function main() {
   initScrollSpy();
   initCopy(data.ui, toast);
   initPhoneReveal();
-  initLocalTime(data.lang);
+  initLocalTime(data.locale);
   initNotFound(data);
   initFilters(data.ui);
   initToc();

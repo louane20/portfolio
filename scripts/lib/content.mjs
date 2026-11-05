@@ -9,7 +9,9 @@ import { COVERS } from '../../src/templates/blog/covers.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 export const CONTENT_DIR = path.join(ROOT, 'content');
-export const LANGS = ['en', 'fr'];
+export const LANGS = ['en', 'fr', 'ar'];
+/** URL prefix of a language: '' for English (the default), 'fr/', 'ar/'. */
+export const langPrefix = (lang) => (lang === 'en' ? '' : `${lang}/`);
 
 export class ContentError extends Error {}
 

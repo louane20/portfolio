@@ -2,12 +2,13 @@
 // shared with the home page.
 import { html, raw, t, fmtDay, icon } from '../common.mjs';
 import { coverSvg } from './covers.mjs';
+import { UI } from '../../i18n.mjs';
 import { renderMarkdown } from './markdown.mjs';
-import { CATEGORIES } from '../../../scripts/lib/content.mjs';
+import { CATEGORIES, langPrefix } from '../../../scripts/lib/content.mjs';
 
-export const blogHref = (ctx) => (ctx.lang === 'en' ? `${ctx.root}blog/` : `${ctx.root}fr/blog/`);
+export const blogHref = (ctx) => `${ctx.root}${langPrefix(ctx.lang)}blog/`;
 export const postHref = (ctx, post) => `${ctx.root}blog/${post.slug}/`;
-const homeHref = (ctx) => (ctx.lang === 'en' ? ctx.root || './' : `${ctx.root}fr/`);
+const homeHref = (ctx) => `${ctx.root}${langPrefix(ctx.lang)}` || './';
 
 function avatar(ctx, cls = 'avatar') {
   const p = ctx.profile.person;
@@ -28,7 +29,7 @@ export function postCard(ctx, post, { level = 3, uid, hidden = false } = {}) {
   const other = post.lang !== ctx.lang;
   const h = (inner) => (level === 2 ? html`<h2 class="card-title">${inner}</h2>` : html`<h3 class="card-title">${inner}</h3>`);
   return html`
-      <li class="post-card" data-category="${post.category}"${hidden ? raw(' data-featured') : ''}${other ? raw(` lang="${post.lang}"`) : ''}>
+      <li class="post-card" data-category="${post.category}"${hidden ? raw(' data-featured') : ''}${other ? raw(` lang="${post.lang}" dir="${UI[post.lang].dir}"`) : ''}>
         <div class="card-cover">${raw(coverSvg(post.cover, uid))}</div>
         <div class="card-body">
           ${meta(ctx, post)}
@@ -42,7 +43,7 @@ function featureCard(ctx, post) {
   const { ui } = ctx;
   const other = post.lang !== ctx.lang;
   return html`
-    <article class="feature-card" data-category="${post.category}"${other ? raw(` lang="${post.lang}"`) : ''}>
+    <article class="feature-card" data-category="${post.category}"${other ? raw(` lang="${post.lang}" dir="${UI[post.lang].dir}"`) : ''}>
       <div class="feature-cover">${raw(coverSvg(post.cover, `f-${post.slug}`))}</div>
       <div class="feature-body">
         <p class="feature-label">${ui.blog.featured}</p>
@@ -57,7 +58,7 @@ function featureCard(ctx, post) {
 function authorChip(ctx) {
   const { profile, lang } = ctx;
   const p = profile.person;
-  return html`<a class="author-chip" href="${homeHref(ctx)}">${avatar(ctx)}<span><strong>${p.name}</strong><span>${t(p.role, lang)}, ${t(p.location, lang).split(',')[0]}</span></span></a>`;
+  return html`<a class="author-chip" href="${homeHref(ctx)}">${avatar(ctx)}<span><strong>${p.name}</strong><span>${t(p.role, lang)}${lang === 'ar' ? '، ' : ', '}${t(p.location, lang).split(/[,،]/)[0]}</span></span></a>`;
 }
 
 /** Blog index. Posts are written in English; the French index says so. */

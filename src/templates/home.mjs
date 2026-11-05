@@ -5,7 +5,7 @@ import { panelSvg, legendSwatch } from './figure.mjs';
 import { postCard, blogHref } from './blog/pages.mjs';
 
 const languagesLine = (profile, lang) =>
-  profile.person.languages.map((l) => `${t(l.name, lang)} (${t(l.level, lang)})`).join(', ');
+  profile.person.languages.map((l) => `${t(l.name, lang)} (${t(l.level, lang)})`).join(lang === 'ar' ? '، ' : ', ');
 
 function hero(ctx) {
   const { profile, lang, ui, root, resumeHref, resumeSize } = ctx;
@@ -390,7 +390,7 @@ export function personJsonLd(ctx) {
         jobTitle: t(p.role, lang),
         description: t(p.headline, lang),
         worksFor: { '@type': 'Organization', name: p.employer },
-        address: { '@type': 'PostalAddress', addressLocality: lang === 'fr' ? 'Alger' : 'Algiers', addressCountry: 'DZ' },
+        address: { '@type': 'PostalAddress', addressLocality: { fr: 'Alger', ar: 'الجزائر' }[lang] ?? 'Algiers', addressCountry: 'DZ' },
         email: `mailto:${p.email}`,
         url: build.siteUrl,
         sameAs: [p.links.github, p.links.linkedin],

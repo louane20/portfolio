@@ -1,0 +1,59 @@
+/* Right-to-left (Arabic) pages. Most of the layout uses logical properties and follows
+   dir="rtl" by itself; these rules handle what does not. */
+
+/* Technical content stays left to right: code, diagrams, illustrations, the research figure. */
+.cover,
+.dg,
+.fig-svg,
+pre,
+.codeblock,
+.terminal code {
+  direction: ltr;
+}
+
+pre {
+  text-align: left;
+}
+
+[dir="rtl"] :not(pre) > code,
+[dir="rtl"] a[href^="mailto:"],
+[dir="rtl"] a[href^="tel:"] {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Arrows point the way the text reads. */
+.ico-dir:dir(rtl) {
+  transform: scaleX(-1);
+}
+
+.feature-card:hover .feature-more .ico:dir(rtl) {
+  transform: translateX(-3px) scaleX(-1);
+}
+
+[dir="rtl"] .crumbs li + li::before {
+  transform: rotate(-135deg);
+}
+
+[dir="rtl"] .read-progress span {
+  transform-origin: 100% 50%;
+}
+
+/* Arabic script: no tracking (it breaks the joins), and more room for the letter forms. */
+html[lang="ar"] body {
+  line-height: 1.8;
+}
+
+html[lang="ar"] body * {
+  letter-spacing: normal;
+}
+
+html[lang="ar"] :is(h1, h2, h3, h4) {
+  line-height: 1.4;
+}
+
+/* An Arabic word on an English or French page (the language link) uses a system font, so those
+   pages never download the Arabic web font. */
+html:not([lang="ar"]) [lang="ar"] {
+  font-family: system-ui, "Segoe UI", sans-serif;
+}

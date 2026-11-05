@@ -10,10 +10,11 @@
     "i18n": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["en", "fr"],
+      "required": ["en", "fr", "ar"],
       "properties": {
         "en": { "type": "string", "minLength": 1 },
-        "fr": { "type": "string", "minLength": 1 }
+        "fr": { "type": "string", "minLength": 1 },
+        "ar": { "type": "string", "minLength": 1 }
       }
     },
     "text": {

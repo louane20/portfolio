@@ -16,7 +16,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as esbuild from 'esbuild';
 
-import { loadProfile, loadPosts, t, LANGS, ContentError } from './lib/content.mjs';
+import { loadProfile, loadPosts, t, LANGS, langPrefix, ContentError } from './lib/content.mjs';
 import { renderManPage } from './lib/roff.mjs';
 import { plain } from './lib/html.mjs';
 import { UI } from '../src/i18n.mjs';
@@ -106,7 +106,9 @@ async function bundle() {
   const sizes = Object.fromEntries(outputs.map(([p, m]) => [rel(p), m.bytes]));
   // Fonts used above the fold, preloaded so text does not shift when they swap in.
   const fonts = [font('red-hat-display'), font('red-hat-text')];
-  return { js: rel(js), css: rel(css), fonts, sizes };
+  // Arabic pages also preload the Arabic text face.
+  const arabicFonts = [font('ibm-plex-sans-arabic-400')];
+  return { js: rel(js), css: rel(css), fonts, arabicFonts, sizes };
 }
 
 async function main() {
@@ -143,8 +145,9 @@ async function main() {
     ].join('\n'),
   );
 
-  /** Template context for one page. `root` is the relative path from that page to the site root. */
-  const context = (lang, root, otherLangHref) => ({
+  /** Template context for one page. `root` is the relative path from that page to the site root;
+      the language links point to the same page (`sub`) in the other languages. */
+  const context = (lang, root, sub = '') => ({
     profile,
     lang,
     ui: UI[lang],
@@ -155,35 +158,35 @@ async function main() {
     resumeSize,
     resumeHref: `${root}${profile.site.resume}`,
     themeScriptHash,
-    otherLangHref,
+    langLinks: LANGS.filter((l) => l !== lang).map((l) => ({ lang: l, href: `${root}${langPrefix(l)}${sub}` || './' })),
   });
+  const alternatesOf = (sub) => [...LANGS.map((l) => ({ lang: l, path: `${langPrefix(l)}${sub}` })), { lang: 'x-default', path: sub }];
 
   for (const lang of LANGS) {
-    const prefix = lang === 'en' ? '' : `${lang}/`;
-    const ctx = context(lang, lang === 'en' ? '' : '../', lang === 'en' ? 'fr/' : '../');
+    const prefix = langPrefix(lang);
+    const ctx = context(lang, lang === 'en' ? '' : '../');
     const page = layout(ctx, {
       home: true,
       path: prefix,
       title: t(profile.site.title, lang),
       description: t(profile.site.description, lang),
-      alternates: [
-        { lang: 'en', path: '' },
-        { lang: 'fr', path: 'fr/' },
-        { lang: 'x-default', path: '' },
-      ],
+      alternates: alternatesOf(''),
       body: homeBody(ctx),
       jsonld: personJsonLd(ctx),
       bodyClass: 'page-home',
     });
     await write(`${prefix}index.html`, page);
     pages.push({ path: prefix, alternates: true });
-    await write(
-      `${prefix}${profile.site.command}.1`,
-      renderManPage(profile, lang, { date: build.date, version: build.version, siteUrl: build.siteUrl, notes: posts }),
-    );
+    // The man page exists in English and French (roff and terminals handle Arabic poorly).
+    if (lang !== 'ar') {
+      await write(
+        `${prefix}${profile.site.command}.1`,
+        renderManPage(profile, lang, { date: build.date, version: build.version, siteUrl: build.siteUrl, notes: posts }),
+      );
+    }
 
-    // The blog index, in both languages (the posts themselves are in English).
-    const blogCtx = context(lang, lang === 'en' ? '../' : '../../', lang === 'en' ? '../fr/blog/' : '../../blog/');
+    // The blog index, in every language (the posts themselves are in English).
+    const blogCtx = context(lang, lang === 'en' ? '../' : '../../', 'blog/');
     const blogPath = `${prefix}blog/`;
     await write(
       `${blogPath}index.html`,
@@ -193,11 +196,7 @@ async function main() {
         title: `${t(profile.blog.title, lang)} | ${profile.person.name}`,
         description: t(profile.blog.description, lang),
         ogType: 'website',
-        alternates: [
-          { lang: 'en', path: 'blog/' },
-          { lang: 'fr', path: 'fr/blog/' },
-          { lang: 'x-default', path: 'blog/' },
-        ],
+        alternates: alternatesOf('blog/'),
         body: String(blogIndexBody(blogCtx)),
         jsonld: blogJsonLd(blogCtx, `${build.siteUrl}${blogPath}`),
         bodyClass: 'page-blog',
@@ -208,7 +207,7 @@ async function main() {
 
   // Posts: blog/<slug>/. Older and newer neighbours are linked at the bottom of each post.
   for (const [i, post] of posts.entries()) {
-    const ctx = context(post.lang, '../../', '../../fr/blog/');
+    const ctx = context(post.lang, '../../', 'blog/');
     const postPath = `blog/${post.slug}/`;
     const url = `${build.siteUrl}${postPath}`;
     const ogFile = `og/${post.slug}.png`;
@@ -236,7 +235,7 @@ async function main() {
 
   // 404: served at arbitrary paths, so every URL in it must be absolute.
   {
-    const ctx = context('en', build.basePath, `${build.basePath}fr/`);
+    const ctx = context('en', build.basePath);
     await write(
       '404.html',
       layout(ctx, {
@@ -266,8 +265,8 @@ async function main() {
   // Machine-readable extras.
   const today = build.date;
   const alternatesFor = (p) => {
-    const en = p.path.replace(/^fr\//, '');
-    return `<xhtml:link rel="alternate" hreflang="en" href="${build.siteUrl}${en}"/><xhtml:link rel="alternate" hreflang="fr" href="${build.siteUrl}fr/${en}"/>`;
+    const sub = p.path.replace(/^(fr|ar)\//, '');
+    return LANGS.map((l) => `<xhtml:link rel="alternate" hreflang="${l}" href="${build.siteUrl}${langPrefix(l)}${sub}"/>`).join('');
   };
   await write(
     'sitemap.xml',
@@ -285,7 +284,7 @@ async function main() {
   );
   await write(
     'humans.txt',
-    `/* TEAM */\n  Author: ${profile.person.name}\n  Role: ${t(profile.person.role, 'en')}\n  Contact: ${profile.person.email}\n  From: ${t(profile.person.location, 'en')}\n\n/* SITE */\n  Last update: ${today}\n  Language: English, French\n  Standards: HTML, CSS, a man page (roff)\n  Components: esbuild, marked, highlight.js, yaml, ajv\n  Fonts: Red Hat Display, Red Hat Text, Red Hat Mono (SIL Open Font License)\n  Source: https://github.com/${build.repository}\n`,
+    `/* TEAM */\n  Author: ${profile.person.name}\n  Role: ${t(profile.person.role, 'en')}\n  Contact: ${profile.person.email}\n  From: ${t(profile.person.location, 'en')}\n\n/* SITE */\n  Last update: ${today}\n  Language: English, French, Arabic\n  Standards: HTML, CSS, a man page (roff)\n  Components: esbuild, marked, highlight.js, yaml, ajv\n  Fonts: Red Hat Display, Red Hat Text, Red Hat Mono (SIL Open Font License)\n  Source: https://github.com/${build.repository}\n`,
   );
   await write(
     'site.webmanifest',

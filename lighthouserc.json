@@ -2,7 +2,7 @@
   "ci": {
     "collect": {
       "staticDistDir": "./dist",
-      "url": ["/", "/fr/", "/blog/", "/blog/airgapped-kubernetes/", "/blog/kubernetes-operators/"],
+      "url": ["/", "/fr/", "/ar/", "/blog/", "/blog/airgapped-kubernetes/", "/blog/kubernetes-operators/"],
       "numberOfRuns": 1,
       "settings": {
         "throttlingMethod": "simulate"

@@ -196,14 +196,14 @@
 
 .bullets li {
   position: relative;
-  padding-left: 1.25rem;
+  padding-inline-start: 1.25rem;
   color: var(--ink-2);
 }
 
 .bullets li::before {
   position: absolute;
   top: 0.68em;
-  left: 0.2rem;
+  inset-inline-start: 0.2rem;
   width: 0.4rem;
   height: 0.4rem;
   border-radius: 50%;

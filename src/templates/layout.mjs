@@ -1,5 +1,7 @@
 // Document shell: <head>, the site header with navigation, and the footer.
 import { html, raw, t, icon } from './common.mjs';
+import { langPrefix } from '../../scripts/lib/content.mjs';
+import { UI } from '../i18n.mjs';
 
 // Sections of the home page, plus the blog, which has its own pages.
 export const NAV = ['about', 'expertise', 'experience', 'research', 'projects', 'blog', 'contact'];
@@ -30,9 +32,9 @@ export const monogram = (profile) =>
 
 function header(ctx, { home, blog }) {
   const { ui, profile, lang, root, resumeHref } = ctx;
-  const homeHref = lang === 'en' ? root || './' : `${root}fr/`;
+  const homeHref = `${root}${langPrefix(lang)}` || './';
   const anchor = (id) => (home ? `#${id}` : `${homeHref}#${id}`);
-  const blogHref = lang === 'en' ? `${root}blog/` : `${root}fr/blog/`;
+  const blogHref = `${root}${langPrefix(lang)}blog/`;
   const item = (id) =>
     id === 'blog'
       ? html`<li><a href="${blogHref}"${blog ? raw(' aria-current="page"') : ''}${home ? raw(' data-nav-link="writing"') : ''}>${ui.nav.blog}</a></li>`
@@ -44,7 +46,9 @@ function header(ctx, { home, blog }) {
     <nav class="nav" id="site-nav" aria-label="${ui.navLabel}" data-nav>
       <ul class="nav-links">${NAV.map(item)}</ul>
       <div class="nav-tools">
-        <a class="lang" href="${ctx.otherLangHref}" hreflang="${ui.otherLang}" lang="${ui.otherLang}" data-lang-link><span aria-hidden="true">${ui.otherLangShort}</span><span class="sr-only">${ui.otherLangName}</span></a>
+        <div class="lang-links" role="group" aria-label="${ui.langLabel}">${ctx.langLinks.map(
+          (l) => html`<a class="lang" href="${l.href}" hreflang="${l.lang}" lang="${l.lang}" data-lang-link><span aria-hidden="true">${UI[l.lang].langShort}</span><span class="sr-only">${UI[l.lang].langName}</span></a>`,
+        )}</div>
         <button type="button" class="icon-btn theme-btn" data-theme-toggle data-label-light="${ui.theme.toLight}" data-label-dark="${ui.theme.toDark}" aria-label="${ui.theme.toDark}"><span class="i-moon">${icon.moon}</span><span class="i-sun">${icon.sun}</span></button>
       </div>
     </nav>
@@ -65,7 +69,7 @@ function footer(ctx) {
     ? html`${f.built}, ${f.fromCommit} <a href="${repoUrl}/commit/${build.sha}"><code>${build.sha.slice(0, 7)}</code></a>${
         build.runId ? html` (<a href="${repoUrl}/actions/runs/${build.runId}">${f.run} #${build.runNumber}</a>)` : ''
       }.`
-    : html`${f.built}. ${f.local}, ${build.date}.`;
+    : html`${f.built}. ${f.local}, <bdi dir="ltr">${build.date}</bdi>.`;
   return html`
 <footer class="site-footer">
   <div class="container footer-grid">
@@ -93,13 +97,14 @@ export function layout(ctx, page) {
     repository: build.repository,
     email: profile.person.email,
     timezone: profile.person.timezone,
-    home: lang === 'en' ? root || './' : `${root}fr/`,
-    blog: lang === 'en' ? `${root}blog/` : `${root}fr/blog/`,
+    locale: ui.locale,
+    home: `${root}${langPrefix(lang)}` || './',
+    blog: `${root}${langPrefix(lang)}blog/`,
     posts: ctx.posts.map((n) => ({ slug: n.slug, title: n.title, href: `${root}blog/${n.slug}/` })),
     resume: ctx.resumeHref,
   };
   return `<!doctype html>
-${html`<html lang="${ui.htmlLang}" dir="ltr">
+${html`<html lang="${ui.htmlLang}" dir="${ui.dir}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -137,7 +142,7 @@ ${page.article.tags.map((tag) => html`<meta property="article:tag" content="${ta
 <link rel="apple-touch-icon" href="${root}apple-touch-icon.png">
 <link rel="manifest" href="${root}site.webmanifest">
 <link rel="alternate" type="application/atom+xml" title="${profile.person.name}: ${t(profile.blog.title, lang)}" href="${root}feed.xml">
-${assets.fonts.map((f) => html`<link rel="preload" href="${root}${f}" as="font" type="font/woff2" crossorigin>`)}
+${[...assets.fonts, ...(lang === 'ar' ? assets.arabicFonts : [])].map((f) => html`<link rel="preload" href="${root}${f}" as="font" type="font/woff2" crossorigin>`)}
 <link rel="stylesheet" href="${root}${assets.css}">
 <script>${raw(THEME_SCRIPT)}</script>
 <script type="module" src="${root}${assets.js}"></script>

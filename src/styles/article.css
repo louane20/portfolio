@@ -163,14 +163,15 @@
 .toc ol {
   display: grid;
   margin-top: 0.75rem;
-  border-left: 2px solid var(--line);
+  border-inline-start: 2px solid var(--line);
 }
 
 .toc a {
   display: block;
-  margin-left: -2px;
-  padding: 0.32rem 0 0.32rem 0.95rem;
-  border-left: 2px solid transparent;
+  margin-inline-start: -2px;
+  padding-block: 0.32rem;
+  padding-inline: 0.95rem 0;
+  border-inline-start: 2px solid transparent;
   color: var(--ink-2);
   font-size: 0.875rem;
   line-height: 1.4;
@@ -182,7 +183,7 @@
 }
 
 .toc a[aria-current="true"] {
-  border-left-color: var(--accent);
+  border-inline-start-color: var(--accent);
   color: var(--accent);
   font-weight: 600;
 }
@@ -241,7 +242,7 @@
 .post-body ol {
   display: grid;
   gap: 0.45rem;
-  padding-left: 1.35rem;
+  padding-inline-start: 1.35rem;
 }
 
 .post-body ul {
@@ -279,8 +280,9 @@
 }
 
 .post-body blockquote {
-  padding: 0.25rem 0 0.25rem 1.25rem;
-  border-left: 3px solid var(--line-strong);
+  padding-block: 0.25rem;
+  padding-inline: 1.25rem 0;
+  border-inline-start: 3px solid var(--line-strong);
 }
 
 .post-body blockquote p {
@@ -312,7 +314,7 @@
 .post-body td {
   padding: 0.7rem 0.95rem;
   border-bottom: 1px solid var(--line);
-  text-align: left;
+  text-align: start;
   vertical-align: top;
 }
 
@@ -339,7 +341,7 @@
 
   padding: 1rem 1.25rem 1.1rem;
   border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
-  border-left: 4px solid var(--c);
+  border-inline-start: 4px solid var(--c);
   border-radius: var(--radius);
   background: color-mix(in srgb, var(--c-soft) 65%, var(--surface));
 }
@@ -516,7 +518,7 @@
 
 .post-nav-link.is-next {
   justify-items: end;
-  text-align: right;
+  text-align: end;
 }
 
 .post-nav-label {

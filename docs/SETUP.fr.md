@@ -68,12 +68,14 @@ Après le premier run de *Container image*, l'image apparaît dans *Packages*
 - Dans *Actions → Zero Trust e2e*, le résumé du job montre le tableau des contrôles
   (200, 403, timeouts) et les flux bloqués relevés par Hubble.
 - Dans un terminal : `curl -sL https://louane20.github.io/portfolio/guerd.1 | man -l -`
-- Le blog répond sur **https://louane20.github.io/portfolio/blog/** (et `/fr/blog/`), et le flux
+- La version arabe répond sur **https://louane20.github.io/portfolio/ar/**.
+- Le blog répond sur **https://louane20.github.io/portfolio/blog/** (et `/fr/blog/`, `/ar/blog/`), et le flux
   sur `/feed.xml`.
 
 ## Modifier le contenu
 
-Tout le texte du site (anglais et français) est dans `content/profile.yaml`. Les articles du
+Tout le texte du site (anglais, français et arabe : champs `en`, `fr` et `ar`) est dans
+`content/profile.yaml`. Les articles du
 blog sont dans `content/blog/*.md`. En local :
 
 ```sh
@@ -116,6 +118,18 @@ Dans le texte, en plus du Markdown habituel :
 
 Après un nouvel article ou un titre modifié, régénère les images de partage (LinkedIn, etc.) :
 `node scripts/render-images.mjs --posts`, puis commite les fichiers de `src/static/og/`.
+
+## Ce qui a changé : la version arabe
+
+- Le site existe maintenant en arabe, sur `/ar/` et `/ar/blog/`, de droite à gauche. Le menu propose
+  les deux autres langues (EN, FR ou ع selon la page).
+- Police arabe IBM Plex Sans Arabic, hébergée sur le site (licence libre OFL). Les pages anglaises
+  et françaises ne la téléchargent jamais, donc elles restent aussi rapides qu'avant.
+- Les mois suivent l'usage algérien (جانفي، فيفري، …) et les chiffres restent occidentaux.
+- Le code, les schémas et les articles du blog restent en anglais et de gauche à droite ; la page
+  arabe du blog le signale.
+- **Relis les traductions arabes** dans `profile.yaml` (champs `ar:`) : ton nom est laissé en
+  lettres latines (Nawal Guerd), à toi de voir si tu préfères une graphie arabe.
 
 ## Ce qui a changé : le blog
 

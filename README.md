@@ -9,11 +9,12 @@
 My portfolio: production Kubernetes, GitOps delivery and Zero Trust network security.
 The site is simple to read; the repository behind it is built and shipped like production software.
 
-**Live:** https://louane20.github.io/portfolio/ &nbsp;·&nbsp; **Français :** https://louane20.github.io/portfolio/fr/
+**Live:** https://louane20.github.io/portfolio/ &nbsp;·&nbsp; **Français :** https://louane20.github.io/portfolio/fr/ &nbsp;·&nbsp; **العربية:** https://louane20.github.io/portfolio/ar/
 
 ## What is in it
 
-- **A professional one-page portfolio** in English and French: profile, expertise (with the tools
+- **A professional one-page portfolio** in English, French and Arabic (right to left, with a
+  self-hosted Arabic typeface that English and French pages never download): profile, expertise (with the tools
   I run in production marked as such), experience, research, projects, education, certifications
   and contact, with a one-click CV download.
 - **A research diagram** that explains my IEEE WCNC 2025 paper in three steps: a flat network,
@@ -83,7 +84,7 @@ Node 24 (see `.nvmrc`). `make zero-trust` needs Docker, and installs nothing beh
 ## Edit the content
 
 Everything you read on the site lives in [`content/profile.yaml`](content/profile.yaml), in
-English and French, validated by [`content/schema.json`](content/schema.json). Blog posts are
+English, French and Arabic (`en`, `fr`, `ar`), validated by [`content/schema.json`](content/schema.json). Blog posts are
 Markdown files in [`content/blog/`](content/blog/). Push to `main` and the pipeline does the rest.
 
 A post starts with front matter, checked at build time:

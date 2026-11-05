@@ -33,11 +33,36 @@ test.describe('pages', () => {
     };
     await page.goto('./');
     await openMenu();
-    await page.locator('a.lang').click();
+    await page.locator('a.lang[hreflang="fr"]').click();
     await expect(page).toHaveURL(/\/fr\/(#[a-z-]+)?$/);
     await openMenu();
-    await page.locator('a.lang').click();
+    await page.locator('a.lang[hreflang="ar"]').click();
+    await expect(page).toHaveURL(/\/ar\/(#[a-z-]+)?$/);
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+    await openMenu();
+    await page.locator('a.lang[hreflang="en"]').click();
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  });
+
+  test('Arabic version is a full right-to-left translation', async ({ page, consoleErrors }) => {
+    await page.goto('ar/');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+    await expect(page.locator('.hero-role')).toHaveText('مهندسة DevOps');
+    await expect(page.locator('#experience h2')).toHaveText('الخبرة المهنية');
+    await expect(page.locator('link[rel="alternate"][hreflang="ar"]')).toHaveAttribute('href', /\/ar\/$/);
+    await expect(page.locator('link[rel="preload"][href*="ibm-plex-sans-arabic"]')).toHaveCount(1);
+    await page.goto('ar/blog/');
+    await expect(page.locator('h1')).toHaveText('ملاحظات من الإنتاج');
+    await expect(page.locator('.post-card[lang="en"][dir="ltr"]').first()).toBeAttached();
+    expect(consoleErrors).toEqual([]);
+  });
+
+  test('English and French pages never download the Arabic font', async ({ page }) => {
+    const fonts = [];
+    page.on('request', (r) => r.url().includes('ibm-plex-sans-arabic') && fonts.push(r.url()));
+    for (const path of ['./', 'fr/', 'blog/']) await page.goto(path, { waitUntil: 'networkidle' });
+    expect(fonts).toEqual([]);
   });
 
   test('blog index lists every post, the latest featured', async ({ page, consoleErrors }) => {
@@ -152,7 +177,7 @@ test.describe('files', () => {
 
 test.describe('layout', () => {
   test('nothing overflows horizontally', async ({ page }) => {
-    for (const path of ['./', 'fr/', 'blog/', 'fr/blog/', 'blog/airgapped-kubernetes/', 'blog/kubernetes-operators/', 'nope/']) {
+    for (const path of ['./', 'fr/', 'ar/', 'blog/', 'fr/blog/', 'ar/blog/', 'blog/airgapped-kubernetes/', 'blog/kubernetes-operators/', 'nope/']) {
       await page.goto(path);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow, path).toBeLessThanOrEqual(0);

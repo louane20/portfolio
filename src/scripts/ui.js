@@ -48,13 +48,12 @@ export function initMenu() {
   window.matchMedia('(width >= 1200px)').addEventListener('change', () => setOpen(false));
 }
 
-/** Highlights the section in view in the navigation, and keeps the language link on the same section. */
+/** Highlights the section in view in the navigation, and keeps the language links on the same section. */
 export function initScrollSpy() {
   const links = new Map([...document.querySelectorAll('[data-nav-link]')].map((a) => [a.dataset.navLink, a]));
-  const langLink = document.querySelector('[data-lang-link]');
+  const langLinks = [...document.querySelectorAll('[data-lang-link]')].map((a) => [a, a.getAttribute('href').split('#')[0]]);
   const sections = [...links.keys()].map((id) => document.getElementById(id)).filter(Boolean);
   if (!sections.length) return;
-  const langBase = langLink?.getAttribute('href').split('#')[0];
   let ticking = false;
   const update = () => {
     ticking = false;
@@ -68,7 +67,7 @@ export function initScrollSpy() {
       if (id === active) a.setAttribute('aria-current', 'true');
       else a.removeAttribute('aria-current');
     }
-    if (langLink) langLink.setAttribute('href', active ? `${langBase}#${active}` : langBase);
+    for (const [a, base] of langLinks) a.setAttribute('href', active ? `${base}#${active}` : base);
   };
   window.addEventListener(
     'scroll',
@@ -162,11 +161,11 @@ export function initPhoneReveal() {
 }
 
 /** "09:14 local time" next to the location, updated every minute. */
-export function initLocalTime(lang) {
+export function initLocalTime(locale) {
   for (const el of document.querySelectorAll('[data-local-time]')) {
     let format;
     try {
-      format = new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', {
+      format = new Intl.DateTimeFormat(locale, {
         hour: '2-digit',
         minute: '2-digit',
         timeZone: el.dataset.tz,

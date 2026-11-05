@@ -35,7 +35,8 @@ test.describe('header', () => {
     await page.locator('#research').scrollIntoViewIfNeeded();
     await page.evaluate(() => window.scrollBy(0, 200));
     await expect(page.locator('[data-nav-link="research"]')).toHaveAttribute('aria-current', 'true');
-    await expect(page.locator('[data-lang-link]')).toHaveAttribute('href', 'fr/#research');
+    await expect(page.locator('[data-lang-link][hreflang="fr"]')).toHaveAttribute('href', 'fr/#research');
+    await expect(page.locator('[data-lang-link][hreflang="ar"]')).toHaveAttribute('href', 'ar/#research');
   });
 });
 
