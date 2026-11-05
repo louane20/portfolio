@@ -69,7 +69,7 @@ try {
     await page.setViewportSize({ width: size, height: size });
     const inner = size - padding * 2;
     await page.setContent(
-      `<html><body style="margin:0;background:${padding ? '#2a0b21' : 'transparent'}"><div style="padding:${padding}px">${svg.replace('<svg ', `<svg width="${inner}" height="${inner}" `)}</div></body></html>`,
+      `<html><body style="margin:0;background:${padding ? '#0b0f0e' : 'transparent'}"><div style="padding:${padding}px">${svg.replace('<svg ', `<svg width="${inner}" height="${inner}" `)}</div></body></html>`,
     );
     return page.screenshot({ omitBackground: !padding, clip: { x: 0, y: 0, width: size, height: size } });
   };

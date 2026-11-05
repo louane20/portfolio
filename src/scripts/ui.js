@@ -5,8 +5,8 @@ const THEME_KEY = 'ng-theme';
 export function initTheme() {
   const root = document.documentElement;
   const button = document.querySelector('[data-theme-toggle]');
-  const system = window.matchMedia('(prefers-color-scheme: dark)');
-  const current = () => root.dataset.theme || (system.matches ? 'dark' : 'light');
+  // Dark by default (the console look); light only when chosen.
+  const current = () => root.dataset.theme || 'dark';
   const sync = () => {
     if (!button) return;
     const dark = current() === 'dark';
@@ -22,7 +22,6 @@ export function initTheme() {
     sync();
   };
   button?.addEventListener('click', () => set(current() === 'dark' ? 'light' : 'dark'));
-  system.addEventListener('change', sync);
   sync();
 }
 
@@ -162,7 +161,7 @@ export function initPhoneReveal() {
 
 /** "09:14 local time" next to the location, updated every minute. */
 export function initLocalTime(locale) {
-  for (const el of document.querySelectorAll('[data-local-time]')) {
+  for (const el of document.querySelectorAll('[data-local-time], [data-clock]')) {
     let format;
     try {
       format = new Intl.DateTimeFormat(locale, {

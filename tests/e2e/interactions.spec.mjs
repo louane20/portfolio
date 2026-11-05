@@ -1,17 +1,18 @@
 import { test, expect } from './fixtures.mjs';
 
 test.describe('header', () => {
-  test('theme switch persists across visits', async ({ page }) => {
+  test('dark by default; the light theme persists across visits', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'light' });
     await page.goto('./');
     const toggle = page.locator('[data-theme-toggle]').first();
     if (await page.locator('[data-menu]').isVisible()) await page.locator('[data-menu]').click();
-    await expect(toggle).toHaveAttribute('aria-label', 'Switch to dark theme');
-    await toggle.click();
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(page.locator('html')).not.toHaveAttribute('data-theme', /.+/);
     await expect(toggle).toHaveAttribute('aria-label', 'Switch to light theme');
+    await toggle.click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(toggle).toHaveAttribute('aria-label', 'Switch to dark theme');
     await page.reload();
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   });
 
   test('mobile menu opens, navigates and closes', async ({ page, isMobile }) => {

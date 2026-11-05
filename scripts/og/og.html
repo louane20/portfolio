@@ -4,46 +4,44 @@
 <meta charset="utf-8">
 <title>og</title>
 <style>
-  @font-face { font-family: "Red Hat Display"; src: url("../../src/fonts/red-hat-display.woff2") format("woff2"); font-weight: 300 900; }
+  @font-face { font-family: "Red Hat Mono"; src: url("../../src/fonts/red-hat-mono.woff2") format("woff2"); font-weight: 300 700; }
   @font-face { font-family: "Red Hat Text"; src: url("../../src/fonts/red-hat-text.woff2") format("woff2"); font-weight: 300 700; }
   html, body { margin: 0; }
   body {
-    width: 1200px; height: 630px; box-sizing: border-box; overflow: hidden;
-    padding: 64px 72px; background: #f5f7fa; color: #0f1c2e;
-    font-family: "Red Hat Text", sans-serif;
-    display: grid; grid-template-columns: 1fr 380px; gap: 56px; align-items: center;
+    width: 1200px; height: 630px; box-sizing: border-box; overflow: hidden; padding: 48px;
+    background: #0b0f0e radial-gradient(rgb(74 222 128 / 18%) 1.2px, transparent 1.4px) 0 0 / 24px 24px;
+    color: #e6ede9; font-family: "Red Hat Text", sans-serif;
   }
-  .status { display: inline-flex; align-items: center; gap: 10px; padding: 8px 18px 8px 14px; border-radius: 999px; background: #e1f2e8; color: #157046; font-size: 22px; font-weight: 600; }
-  .status i { width: 11px; height: 11px; border-radius: 50%; background: #157046; }
-  h1 { margin: 30px 0 0; font-family: "Red Hat Display", sans-serif; font-size: 104px; font-weight: 700; letter-spacing: -0.035em; line-height: 1; }
-  .role { margin-top: 14px; color: #1a55a6; font-family: "Red Hat Display", sans-serif; font-size: 40px; font-weight: 600; }
-  .pitch { margin-top: 26px; color: #435267; font-size: 26px; line-height: 1.45; max-width: 640px; }
-  .card { padding: 30px; border: 1px solid #dbe2eb; border-radius: 22px; background: #fff; box-shadow: 0 20px 44px -18px rgb(15 28 46 / 22%); }
-  .head { display: flex; align-items: center; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid #dbe2eb; }
-  .mono { width: 64px; height: 64px; border-radius: 50%; background: #1a55a6; color: #fff; display: grid; place-items: center; font-family: "Red Hat Display", sans-serif; font-size: 24px; font-weight: 800; }
-  .head b { display: block; font-family: "Red Hat Display", sans-serif; font-size: 24px; }
-  .head span:not(.mono) { color: #5a687c; font-size: 18px; }
-  dl { margin: 0; }
-  dl div { padding: 15px 0; border-bottom: 1px solid #dbe2eb; }
-  dl div:last-child { border-bottom: 0; padding-bottom: 0; }
-  dt { color: #5a687c; font-size: 16px; }
-  dd { margin: 4px 0 0; font-size: 20px; font-weight: 600; }
+  .win { height: 100%; box-sizing: border-box; border: 1px solid #31423b; border-radius: 22px; background: #111816; box-shadow: 0 0 0 1px rgb(74 222 128 / 20%), 0 30px 60px -20px rgb(0 0 0 / 80%); overflow: hidden; display: flex; flex-direction: column; }
+  .bar { display: flex; align-items: center; gap: 22px; padding: 18px 26px; border-bottom: 1px solid #1f2b27; background: #0e1412; color: #8fa199; font: 500 21px "Red Hat Mono", monospace; }
+  .dots { display: flex; gap: 10px; } .dots i { width: 16px; height: 16px; border-radius: 50%; background: #f87171; } .dots i:nth-child(2) { background: #fbbf24; } .dots i:nth-child(3) { background: #4ade80; }
+  .body { flex: 1; display: grid; grid-template-columns: 1fr 340px; gap: 48px; align-items: center; padding: 0 56px; }
+  .cmd { font: 500 26px "Red Hat Mono", monospace; color: #8fa199; } .cmd b { color: #4ade80; } .cmd s { text-decoration: none; color: #7fb2ff; }
+  h1 { margin: 14px 0 0; font: 700 92px/1 "Red Hat Mono", monospace; letter-spacing: -0.05em; }
+  .role { display: flex; align-items: center; margin-top: 18px; color: #4ade80; font: 600 40px "Red Hat Mono", monospace; }
+  .role i { display: inline-block; width: 22px; height: 42px; margin-left: 10px; background: #4ade80; }
+  .pitch { margin-top: 26px; color: #b4c1ba; font-size: 25px; line-height: 1.45; max-width: 600px; }
+  dl { margin: 0; font: 500 22px/1.35 "Red Hat Mono", monospace; }
+  dl div { padding: 13px 0; border-bottom: 1px solid #1f2b27; } dl div:last-child { border: 0; }
+  dt { color: #4ade80; font-weight: 600; } dd { margin: 4px 0 0; color: #e6ede9; font-family: "Red Hat Text", sans-serif; font-weight: 600; }
 </style>
 </head>
 <body>
-  <div>
-    <span class="status"><i></i>Open to new opportunities</span>
-    <h1>Nawal Guerd</h1>
-    <div class="role">DevOps Engineer</div>
-    <p class="pitch">Production Kubernetes, GitOps delivery and Zero Trust network security.</p>
-  </div>
-  <div class="card">
-    <div class="head"><span class="mono">NG</span><div><b>Nawal Guerd</b><span>Algiers, Algeria</span></div></div>
-    <dl>
-      <div><dt>Current role</dt><dd>DevOps Engineer at ATM Mobilis</dd></div>
-      <div><dt>Research</dt><dd>IEEE WCNC 2025 paper</dd></div>
-      <div><dt>Education</dt><dd>M.Sc., Computer Systems Security</dd></div>
-    </dl>
+  <div class="win">
+    <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span>nawal@guerd: ~/portfolio</span></div>
+    <div class="body">
+      <div>
+        <p class="cmd"><b>nawal@guerd</b><s>:~$</s> whoami</p>
+        <h1>Nawal Guerd</h1>
+        <div class="role">DevOps Engineer<i></i></div>
+        <p class="pitch">Production Kubernetes, GitOps delivery and Zero Trust network security. Linux and open source by default.</p>
+      </div>
+      <dl>
+        <div><dt>role</dt><dd>DevOps Engineer, ATM Mobilis</dd></div>
+        <div><dt>research</dt><dd>IEEE WCNC 2025 paper</dd></div>
+        <div><dt>location</dt><dd>Algiers, Algeria</dd></div>
+      </dl>
+    </div>
   </div>
 </body>
 </html>

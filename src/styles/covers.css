@@ -1,8 +1,8 @@
 /* Blog cover illustrations (src/templates/blog/covers.mjs). One palette class per cover;
    everything else derives from the theme tokens, so covers follow light and dark mode. */
 .pal-blue {
-  --cv-ink: var(--accent);
-  --cv-base: var(--accent-soft);
+  --cv-ink: var(--blue);
+  --cv-base: var(--blue-soft);
 }
 
 .pal-teal {

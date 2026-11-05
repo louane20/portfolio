@@ -1,6 +1,6 @@
 // The blog: index pages (blog/, fr/blog/), post pages (blog/<slug>/) and the post cards
 // shared with the home page.
-import { html, raw, t, fmtDay, icon } from '../common.mjs';
+import { html, raw, t, fmtDay, icon, cmd } from '../common.mjs';
 import { coverSvg } from './covers.mjs';
 import { UI } from '../../i18n.mjs';
 import { renderMarkdown } from './markdown.mjs';
@@ -71,7 +71,7 @@ export function blogIndexBody(ctx) {
   return html`
 <section class="blog-hero">
   <div class="container blog-hero-inner">
-    <p class="kicker">${ui.blog.kicker}</p>
+    ${cmd('cd ~/blog && ls')}
     <h1 class="blog-title">${t(b.title, lang)}</h1>
     <p class="lede">${t(b.lede, lang)}</p>
     <div class="blog-hero-meta">
@@ -167,6 +167,7 @@ export function postBody(ctx, post, { older, newer, url }) {
           <li><a href="${blog}?topic=${post.category}">${catLabel(ctx, post.category)}</a></li>
         </ol>
       </nav>
+      ${cmd(`less ${post.slug}.md`)}
       <h1 class="post-title">${post.title}</h1>
       <p class="post-lede">${post.summary}</p>
       <div class="byline">

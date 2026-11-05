@@ -18,6 +18,8 @@ for (const theme of ['light', 'dark']) {
   for (const [name, path] of PAGES) {
     test(`${name}, ${theme === 'light' ? 'paper' : 'terminal'} rendering, has no axe violations`, async ({ page }) => {
       await page.emulateMedia({ colorScheme: theme, reducedMotion: 'reduce' });
+      // Dark is the default; the light theme is the one a visitor chooses with the toggle.
+      if (theme === 'light') await page.addInitScript(() => localStorage.setItem('ng-theme', 'light'));
       await page.goto(path);
       await page.locator('body').waitFor();
       const results = await new AxeBuilder({ page })

@@ -118,23 +118,14 @@
   color: var(--ink);
 }
 
-.theme-btn .i-sun,
-:root[data-theme="dark"] .theme-btn .i-moon {
+/* Dark is the default: the button offers the light theme, and the moon once light is on. */
+.theme-btn .i-moon,
+:root[data-theme="light"] .theme-btn .i-sun {
   display: none;
 }
 
-:root[data-theme="dark"] .theme-btn .i-sun {
+:root[data-theme="light"] .theme-btn .i-moon {
   display: inline;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .theme-btn .i-moon {
-    display: none;
-  }
-
-  :root:not([data-theme="light"]) .theme-btn .i-sun {
-    display: inline;
-  }
 }
 
 .theme-btn {

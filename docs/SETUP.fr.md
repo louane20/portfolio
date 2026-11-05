@@ -119,6 +119,21 @@ Dans le texte, en plus du Markdown habituel :
 Après un nouvel article ou un titre modifié, régénère les images de partage (LinkedIn, etc.) :
 `node scripts/render-images.mjs --posts`, puis commite les fichiers de `src/static/og/`.
 
+## Ce qui a changé : le design « console »
+
+- Nouveau look inspiré du terminal, pensé pour ton profil DevOps, Linux, open source et sécurité :
+  sombre par défaut, vert phosphore, titres en police mono (Red Hat Mono).
+- L'en-tête ressemble à une barre de fenêtre de terminal, chaque section est précédée d'une
+  commande (`kubectl get skills`, `git log --oneline career`, `./contact.sh`…), l'encadré « En
+  bref » devient une fenêtre `neofetch`, et un curseur clignote après ton titre.
+- Une barre d'état façon tmux/vim en bas de l'écran (sur ordinateur) : mode, branche, commit du
+  build, page courante et heure d'Alger.
+- Le bouton soleil passe au thème clair (« papier »), mémorisé par le navigateur.
+- Le favicon (une invite `>_`) et les images de partage LinkedIn ont été redessinés dans le même
+  style.
+- Les commandes affichées sont décoratives : elles sont ignorées par les lecteurs d'écran, et
+  l'accessibilité reste vérifiée par les tests (aucune erreur axe, en sombre comme en clair).
+
 ## Ce qui a changé : la version arabe
 
 - Le site existe maintenant en arabe, sur `/ar/` et `/ar/blog/`, de droite à gauche. Le menu propose

@@ -1,14 +1,6 @@
 /* Self-hosted fonts (no third-party requests). Red Hat Display, Text and Mono are open source
    under the SIL Open Font License (see src/fonts/LICENSE-RedHat.txt). */
 @font-face {
-  font-family: "Red Hat Display";
-  src: url("../fonts/red-hat-display.woff2") format("woff2");
-  font-weight: 300 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
   font-family: "Red Hat Text";
   src: url("../fonts/red-hat-text.woff2") format("woff2");
   font-weight: 300 700;
@@ -62,146 +54,104 @@
   unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
 }
 
-/* Layout: one 1160px column. The hero splits text and an "at a glance" panel; every section
-   puts a left-aligned heading above its content, and sections alternate page and band surfaces.
-   Palette, "Alger la Blanche": whitewash, harbour ink and Mediterranean blue. */
+/* Theme "console": dark by default, like a terminal; a light "paper" theme on request
+   (the toggle in the header, remembered per browser). Phosphor green is the accent, amber the
+   warning colour; headings and labels use Red Hat Mono. */
 :root {
+  color-scheme: dark;
+
+  --bg: #0b0f0e;
+  --surface: #111816;
+  --surface-2: #0e1412;
+  --ink: #e6ede9;
+  --ink-2: #b4c1ba;
+  --ink-3: #8fa199;
+  --line: #1f2b27;
+  --line-strong: #31423b;
+  --accent: #4ade80;
+  --accent-hover: #86efac;
+  --accent-ink: #052012;
+  --accent-soft: #0f2a1b;
+  --accent-soft-ink: #bbf7d0;
+  --ok: #4ade80;
+  --ok-soft: #0f2a1b;
+  --warn: #fbbf24;
+  --warn-soft: #2e2309;
+  --bad: #f87171;
+  --bad-soft: #351616;
+  --blue: #7fb2ff;
+  --blue-soft: #132540;
+  --teal: #2dd4bf;
+  --teal-soft: #0c2a27;
+  --violet: #c4b5fd;
+  --violet-soft: #221b3b;
+  --code-bg: #070a09;
+  --code-head: #0c1210;
+  --code-line: #1f2b27;
+  --code-ink: #e3ebe6;
+  --code-muted: #a1b2aa;
+  --contact-bg: #0f1d17;
+  --contact-ink: #ecf5ef;
+  --contact-ink-2: #b8c9bf;
+  --contact-line: #24382f;
+  --contact-accent: #4ade80;
+  --contact-accent-ink: #052012;
+  --glow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent), 0 0 24px -6px color-mix(in srgb, var(--accent) 45%, transparent);
+  --shadow: 0 1px 2px rgb(0 0 0 / 35%), 0 18px 40px -18px rgb(0 0 0 / 70%);
+
+  --font-display: "Red Hat Mono", "IBM Plex Sans Arabic", ui-monospace, "SFMono-Regular", menlo, consolas, monospace;
+  --font-text: "Red Hat Text", "IBM Plex Sans Arabic", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "Red Hat Mono", "IBM Plex Sans Arabic", ui-monospace, "SFMono-Regular", menlo, consolas, monospace;
+
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.1875rem;
+  --step-2: 1.375rem;
+  --step-3: clamp(1.6rem, 1.3rem + 1.1vw, 2.15rem);
+  --step-4: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  --step-5: clamp(2.5rem, 1.4rem + 4.2vw, 4.25rem);
+
+  --container: 72.5rem;
+  --pad: clamp(1rem, 4vw, 2rem);
+  --section-space: clamp(4rem, 2.8rem + 4.5vw, 7rem);
+  --header-h: 4rem;
+  --radius: 0.5rem;
+  --radius-lg: 0.75rem;
+}
+
+:root[data-theme="light"] {
   color-scheme: light;
 
-  --bg: #f5f7fa;
+  --bg: #f5f6f1;
   --surface: #fff;
-  --surface-2: #edf1f6;
-  --ink: #0f1c2e;
-  --ink-2: #435267;
-  --ink-3: #5a687c;
-  --line: #dbe2eb;
-  --line-strong: #bfcad7;
-  --accent: #1a55a6;
-  --accent-hover: #12428a;
+  --surface-2: #edf0e8;
+  --ink: #0f1a14;
+  --ink-2: #3b4a42;
+  --ink-3: #56665d;
+  --line: #dce2d8;
+  --line-strong: #bfc9bc;
+  --accent: #0d7442;
+  --accent-hover: #095a33;
   --accent-ink: #fff;
-  --accent-soft: #e6eef9;
-  --accent-soft-ink: #143f7c;
+  --accent-soft: #e1f2e7;
+  --accent-soft-ink: #0a4a2a;
   --ok: #157046;
   --ok-soft: #e1f2e8;
   --warn: #8a5300;
   --warn-soft: #fbefd9;
   --bad: #b3302a;
   --bad-soft: #fbe6e4;
+  --blue: #1a55a6;
+  --blue-soft: #e6eef9;
   --teal: #0f6b64;
   --teal-soft: #dcf0ed;
   --violet: #6a3fb5;
   --violet-soft: #eee7fa;
-  --code-bg: #0f1c2e;
-  --code-head: #15253b;
-  --code-line: #26384f;
-  --code-ink: #e3eaf3;
-  --code-muted: #a3b3c8;
-  --contact-bg: #0f1c2e;
-  --contact-ink: #f2f6fb;
-  --contact-ink-2: #b4c2d4;
-  --contact-line: #2b3c55;
-  --contact-accent: #8db8ff;
-  --contact-accent-ink: #0b1320;
-  --shadow: 0 1px 2px rgb(15 28 46 / 4%), 0 14px 34px -14px rgb(15 28 46 / 18%);
-
-  --font-display: "Red Hat Display", "IBM Plex Sans Arabic", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --font-text: "Red Hat Text", "IBM Plex Sans Arabic", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --font-mono: "Red Hat Mono", ui-monospace, "SFMono-Regular", menlo, consolas, monospace;
-
-  --step--1: 0.875rem;
-  --step-0: 1.0625rem;
-  --step-1: 1.1875rem;
-  --step-2: 1.375rem;
-  --step-3: clamp(1.75rem, 1.35rem + 1.3vw, 2.375rem);
-  --step-4: clamp(1.5rem, 1.2rem + 1vw, 2rem);
-  --step-5: clamp(2.75rem, 1.5rem + 4.6vw, 4.75rem);
-
-  --container: 72.5rem;
-  --pad: clamp(1rem, 4vw, 2rem);
-  --section-space: clamp(4rem, 2.8rem + 4.5vw, 7rem);
-  --header-h: 4rem;
-  --radius: 0.75rem;
-  --radius-lg: 1rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-
-    --bg: #0b1320;
-    --surface: #111c2d;
-    --surface-2: #0e1827;
-    --ink: #e8eef6;
-    --ink-2: #b6c3d4;
-    --ink-3: #96a5b9;
-    --line: #22324a;
-    --line-strong: #34486a;
-    --accent: #8db8ff;
-    --accent-hover: #b4d0ff;
-    --accent-ink: #0b1320;
-    --accent-soft: #162a4c;
-    --accent-soft-ink: #cfe0ff;
-    --ok: #57cf96;
-    --ok-soft: #0f2e20;
-    --warn: #f2b65e;
-    --warn-soft: #33250d;
-    --bad: #ff8178;
-    --bad-soft: #3a1818;
-    --teal: #5ccfc2;
-    --teal-soft: #0e2b29;
-    --violet: #c4a8ff;
-    --violet-soft: #231a3b;
-    --code-bg: #08101b;
-    --code-head: #0d1726;
-    --code-line: #22324a;
-    --code-ink: #e3eaf3;
-    --code-muted: #a3b3c8;
-    --contact-bg: #15284a;
-    --contact-ink: #eef4fc;
-    --contact-ink-2: #b9c9df;
-    --contact-line: #2c4470;
-    --contact-accent: #b4d0ff;
-    --contact-accent-ink: #0b1320;
-    --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 14px 34px -14px rgb(0 0 0 / 55%);
-  }
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-
-  --bg: #0b1320;
-  --surface: #111c2d;
-  --surface-2: #0e1827;
-  --ink: #e8eef6;
-  --ink-2: #b6c3d4;
-  --ink-3: #96a5b9;
-  --line: #22324a;
-  --line-strong: #34486a;
-  --accent: #8db8ff;
-  --accent-hover: #b4d0ff;
-  --accent-ink: #0b1320;
-  --accent-soft: #162a4c;
-  --accent-soft-ink: #cfe0ff;
-  --ok: #57cf96;
-  --ok-soft: #0f2e20;
-  --warn: #f2b65e;
-  --warn-soft: #33250d;
-  --bad: #ff8178;
-  --bad-soft: #3a1818;
-  --teal: #5ccfc2;
-  --teal-soft: #0e2b29;
-  --violet: #c4a8ff;
-  --violet-soft: #231a3b;
-  --code-bg: #08101b;
-  --code-head: #0d1726;
-  --code-line: #22324a;
-  --code-ink: #e3eaf3;
-  --code-muted: #a3b3c8;
-  --contact-bg: #15284a;
-  --contact-ink: #eef4fc;
-  --contact-ink-2: #b9c9df;
-  --contact-line: #2c4470;
-  --contact-accent: #b4d0ff;
-  --contact-accent-ink: #0b1320;
-  --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 14px 34px -14px rgb(0 0 0 / 55%);
+  --code-bg: #0f1a14;
+  --code-head: #15241c;
+  --code-line: #26382e;
+  --contact-bg: #0f1a14;
+  --contact-line: #26382e;
+  --glow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent), 0 10px 26px -12px color-mix(in srgb, var(--accent) 45%, transparent);
+  --shadow: 0 1px 2px rgb(15 26 20 / 5%), 0 14px 34px -14px rgb(15 26 20 / 18%);
 }

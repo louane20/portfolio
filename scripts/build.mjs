@@ -105,7 +105,7 @@ async function bundle() {
   if (!js || !css) throw new Error('esbuild did not produce the expected outputs');
   const sizes = Object.fromEntries(outputs.map(([p, m]) => [rel(p), m.bytes]));
   // Fonts used above the fold, preloaded so text does not shift when they swap in.
-  const fonts = [font('red-hat-display'), font('red-hat-text')];
+  const fonts = [font('red-hat-mono'), font('red-hat-text')];
   // Arabic pages also preload the Arabic text face.
   const arabicFonts = [font('ibm-plex-sans-arabic-400')];
   return { js: rel(js), css: rel(css), fonts, arabicFonts, sizes };
@@ -294,8 +294,8 @@ async function main() {
         short_name: 'Nawal Guerd',
         start_url: './',
         display: 'standalone',
-        background_color: '#f5f7fa',
-        theme_color: '#1a55a6',
+        background_color: '#0b0f0e',
+        theme_color: '#0b0f0e',
         icons: [
           { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml' },
           { src: 'apple-touch-icon.png', sizes: '180x180', type: 'image/png' },

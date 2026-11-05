@@ -1,0 +1,454 @@
+/* ---------- Console theme ----------
+   The visual identity on top of the layout: a terminal window for the header, shell prompts
+   above the headings, a neofetch card, mono type for headings and labels, phosphor green, and a
+   tmux-like status bar. Everything stays readable without the jokes: the prompts are decorative
+   and hidden from assistive technology. */
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--ink);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* Shell prompt above a heading. */
+.cmd {
+  margin-bottom: 0.6rem;
+  overflow: hidden;
+  color: var(--ink-3);
+  font: 500 0.875rem/1.5 var(--font-mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[dir="rtl"] .cmd {
+  text-align: right;
+}
+
+.crumbs + .cmd {
+  margin-top: 1.25rem;
+}
+
+.cmd .ps1 {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.cmd .ps2 {
+  color: var(--blue);
+  font-weight: 600;
+}
+
+/* Header: a terminal title bar. */
+.site-header {
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+}
+
+.brand {
+  gap: 0.75rem;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.win-dots {
+  display: inline-flex;
+  flex: none;
+  gap: 0.35rem;
+}
+
+.win-dots i {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--bad);
+}
+
+.win-dots i:nth-child(2) {
+  background: var(--warn);
+}
+
+.win-dots i:nth-child(3) {
+  background: var(--ok);
+}
+
+.header-cv {
+  white-space: nowrap;
+}
+
+@media (width < 480px) {
+  .brand .win-dots {
+    display: none;
+  }
+}
+
+.nav-links a {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+.nav-links a[aria-current="true"],
+.nav-links a[aria-current="page"] {
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.lang,
+.icon-btn,
+.btn,
+.copy-btn,
+.filter {
+  font-family: var(--font-mono);
+}
+
+.btn {
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease;
+}
+
+.btn-primary:hover {
+  box-shadow: var(--glow);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Hero. */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(color-mix(in srgb, var(--accent) 22%, transparent) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+  content: "";
+  mask-image: radial-gradient(ellipse 70% 80% at 30% 20%, #000 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-grid {
+  position: relative;
+}
+
+.status {
+  border: 1px solid color-mix(in srgb, var(--ok) 35%, transparent);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+.status + .cmd {
+  margin-top: 1.75rem;
+}
+
+.hero-name {
+  margin-top: 0;
+  font-weight: 700;
+  letter-spacing: -0.045em;
+}
+
+.hero-role {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.05em;
+  margin-inline-start: 0.2em;
+  background: var(--accent);
+  animation: blink 1.1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor {
+    animation: none;
+  }
+}
+
+.hero-links a {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+/* The "at a glance" card as a neofetch window. */
+.glance {
+  padding: 0;
+  overflow: hidden;
+  border-color: var(--line-strong);
+  border-radius: var(--radius-lg);
+}
+
+.win-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink-3);
+  font: 500 0.8125rem/1.3 var(--font-mono);
+}
+
+.win-bar .win-dots i {
+  width: 0.65rem;
+  height: 0.65rem;
+}
+
+.win-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.glance-head {
+  padding: 1.25rem clamp(1.25rem, 1rem + 1vw, 1.75rem) 1.1rem;
+}
+
+.glance-list {
+  padding: 0 clamp(1.25rem, 1rem + 1vw, 1.75rem) clamp(1.25rem, 1rem + 1vw, 1.5rem);
+}
+
+.portrait-mono,
+.monogram,
+.avatar {
+  font-family: var(--font-mono);
+}
+
+.portrait,
+.portrait-mono {
+  border-radius: var(--radius);
+}
+
+.glance-list dt {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.glance-list dd {
+  font-size: 0.9375rem;
+}
+
+/* Sections. */
+.section-title {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.band {
+  background: var(--surface-2);
+}
+
+:root[data-theme="light"] .band {
+  background: var(--surface);
+}
+
+.chip {
+  border-radius: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+.chip-strong {
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.tags li,
+.tag-list,
+.topic-list li,
+.post-meta,
+.job-dates,
+.job-place,
+.edu-dates,
+.cred-meta,
+.paper-venue,
+.project-year,
+.featured-label,
+.feature-label,
+.aside-label,
+.toc-title,
+.stage-name,
+.pipeline-title,
+.pipeline-run,
+.glance-title,
+.tools dt,
+.also dt,
+.footer-build {
+  font-family: var(--font-mono);
+}
+
+.job-dates,
+.edu-dates,
+.project-year {
+  color: var(--accent);
+}
+
+.venue {
+  border-radius: 0.3rem;
+  font-family: var(--font-mono);
+}
+
+/* Cards light up like a focused pane. */
+.project,
+.post-card,
+.feature-card,
+.featured,
+.aside-card,
+.paper,
+.author-box,
+.post-nav-link {
+  border-radius: var(--radius-lg);
+}
+
+.project,
+.post-card,
+.feature-card,
+.post-nav-link {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.project:hover,
+.post-card:hover,
+.feature-card:hover,
+.post-nav-link:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: var(--glow);
+}
+
+.card-title,
+.feature-title,
+.post-title,
+.blog-title {
+  letter-spacing: -0.03em;
+}
+
+.blog-title {
+  font-weight: 700;
+}
+
+/* Contact: the last screen of the session. */
+.contact-box {
+  border: 1px solid var(--contact-line);
+  box-shadow: var(--glow);
+}
+
+.contact-box .cmd {
+  color: var(--contact-ink-2);
+}
+
+.contact-box .cmd .ps1 {
+  color: var(--contact-accent);
+}
+
+.contact-box .cmd .ps2 {
+  color: var(--contact-ink);
+}
+
+.btn-primary .btn-meta {
+  opacity: 0.92;
+}
+
+/* Posts. */
+.post-body h2,
+.post-body h3 {
+  letter-spacing: -0.02em;
+}
+
+.post-body h2::before {
+  margin-inline-end: 0.5rem;
+  color: var(--accent);
+  content: "#" / "";
+}
+
+/* Status bar, like tmux or vim: decorative, desktop only. */
+.statusbar {
+  display: none;
+}
+
+@media (width >= 900px) {
+  :root {
+    --statusbar-h: 1.75rem;
+  }
+
+  body {
+    padding-bottom: var(--statusbar-h);
+  }
+
+  .statusbar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 40;
+    display: flex;
+    align-items: stretch;
+    height: var(--statusbar-h);
+    border-top: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink-3);
+    font: 500 0.75rem/1 var(--font-mono);
+  }
+
+  .sb-mode,
+  .sb-item {
+    display: flex;
+    align-items: center;
+    padding-inline: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .sb-item + .sb-item {
+    border-inline-start: 1px solid var(--line);
+  }
+
+  .sb-mode {
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  .sb-path {
+    color: var(--ink-2);
+  }
+
+  .sb-spacer {
+    flex: 1;
+  }
+
+  .sb-clock {
+    color: var(--accent);
+  }
+
+  .toast {
+    bottom: calc(var(--statusbar-h) + 1.25rem);
+  }
+}

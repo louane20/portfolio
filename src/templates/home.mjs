@@ -1,5 +1,5 @@
 // The home page, section by section.
-import { html, raw, md, t, fmtMonth, fmtPeriod, icon } from './common.mjs';
+import { html, raw, md, t, fmtMonth, fmtPeriod, icon, cmd } from './common.mjs';
 import { monogram } from './layout.mjs';
 import { panelSvg, legendSwatch } from './figure.mjs';
 import { postCard, blogHref } from './blog/pages.mjs';
@@ -18,8 +18,9 @@ function hero(ctx) {
   <div class="container hero-grid">
     <div class="hero-main">
       <p class="status"><span class="status-dot" aria-hidden="true"></span>${t(p.availability, lang)}</p>
+      ${cmd('whoami')}
       <h1 class="hero-name" id="hero-name">${p.name}</h1>
-      <p class="hero-role">${t(p.role, lang)}</p>
+      <p class="hero-role">${t(p.role, lang)}<span class="cursor" aria-hidden="true"></span></p>
       <p class="hero-headline">${t(p.headline, lang)}</p>
       <div class="actions">
         <a class="btn btn-primary" href="${resumeHref}" download>${icon.download}<span>${ui.downloadCv}</span><span class="btn-meta">${ui.pdf}, ${resumeSize}</span></a>
@@ -32,6 +33,7 @@ function hero(ctx) {
       </ul>
     </div>
     <aside class="glance" aria-labelledby="glance-title">
+      <div class="win-bar" aria-hidden="true" dir="ltr"><span class="win-dots"><i></i><i></i><i></i></span><span class="win-title">nawal@guerd: ~ — neofetch</span></div>
       <div class="glance-head">
         ${portrait}
         <div>
@@ -58,6 +60,7 @@ function about(ctx) {
 <section class="section" id="about" aria-labelledby="about-h">
   <div class="container about-grid">
     <div class="prose">
+      ${cmd('cat about.md')}
       <h2 class="section-title" id="about-h">${t(a.heading, lang)}</h2>
       ${a.paragraphs.map((para) => html`<p>${md(t(para, lang))}</p>`)}
     </div>
@@ -78,6 +81,7 @@ function expertise(ctx) {
 <section class="section band" id="expertise" aria-labelledby="expertise-h">
   <div class="container">
     <header class="section-head">
+      ${cmd('kubectl get skills -o wide')}
       <h2 class="section-title" id="expertise-h">${t(e.heading, lang)}</h2>
       ${e.intro ? html`<p class="lede">${t(e.intro, lang)}</p>` : ''}
     </header>
@@ -110,6 +114,7 @@ function experience(ctx) {
 <section class="section" id="experience" aria-labelledby="experience-h">
   <div class="container">
     <header class="section-head">
+      ${cmd('git log --oneline career')}
       <h2 class="section-title" id="experience-h">${t(x.heading, lang)}</h2>
     </header>
     <ol class="timeline">
@@ -173,6 +178,7 @@ function research(ctx) {
 <section class="section band" id="research" aria-labelledby="research-h">
   <div class="container">
     <header class="section-head">
+      ${cmd('cat research/ieee-wcnc-2025.md')}
       <h2 class="section-title" id="research-h">${t(r.heading, lang)}</h2>
       ${r.intro ? html`<p class="lede">${t(r.intro, lang)}</p>` : ''}
     </header>
@@ -242,6 +248,7 @@ function projects(ctx) {
 <section class="section" id="projects" aria-labelledby="projects-h">
   <div class="container">
     <header class="section-head">
+      ${cmd('ls -l ~/projects')}
       <h2 class="section-title" id="projects-h">${t(pr.heading, lang)}</h2>
       ${pr.intro ? html`<p class="lede">${t(pr.intro, lang)}</p>` : ''}
     </header>
@@ -291,6 +298,7 @@ function education(ctx) {
 <section class="section band" id="education" aria-labelledby="education-h">
   <div class="container edu-grid">
     <div>
+      ${cmd('cat education.txt')}
       <h2 class="section-title" id="education-h">${t(ed.heading, lang)}</h2>
       <ol class="edu-list">
         ${ed.items.map(
@@ -323,7 +331,8 @@ function writing(ctx) {
   <div class="container">
     <header class="section-head section-head-split">
       <div>
-        <h2 class="section-title" id="writing-h">${t(b.heading, lang)}</h2>
+        ${cmd('ls -t ~/blog | head -3')}
+      <h2 class="section-title" id="writing-h">${t(b.heading, lang)}</h2>
         ${b.intro ? html`<p class="lede">${t(b.intro, lang)}</p>` : ''}
       </div>
       <a class="btn btn-secondary" href="${blogHref(ctx)}"><span>${ui.blog.viewAll}</span>${icon.arrowRight}</a>
@@ -350,7 +359,8 @@ function contact(ctx) {
   <div class="container">
     <div class="contact-box">
       <div class="contact-main">
-        <h2 class="section-title" id="contact-h">${t(profile.contact.heading, lang)}</h2>
+        ${cmd('./contact.sh')}
+      <h2 class="section-title" id="contact-h">${t(profile.contact.heading, lang)}</h2>
         <p class="lede">${t(profile.contact.text, lang)}</p>
         <p class="contact-email"><a href="mailto:${p.email}">${p.email}</a><button type="button" class="copy-btn" data-copy="${p.email}" aria-label="${ui.copyEmail}">${icon.copy}<span>${ui.copy}</span></button></p>
         <div class="actions">

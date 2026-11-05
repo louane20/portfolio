@@ -25,6 +25,10 @@ export function fmtDay(iso, ui) {
   return `${d} ${ui.monthsLong[mo - 1]} ${y}`;
 }
 
+/** A decorative shell command shown above a heading (hidden from assistive technology). */
+export const cmd = (command) =>
+  html`<p class="cmd" aria-hidden="true" dir="ltr"><span class="ps1">nawal@guerd</span><span class="ps2">:~$</span> ${command}</p>`;
+
 const svg = (body, cls = 'ico') =>
   raw(`<svg class="${cls}" viewBox="0 0 20 20" aria-hidden="true" focusable="false">${body}</svg>`);
 

@@ -26,7 +26,9 @@ The site is simple to read; the repository behind it is built and shipped like p
   JavaScript to read, and they follow the light and dark themes.
 - **Live delivery status.** The featured project reads the latest run of this repository's
   pipeline from the GitHub API.
-- Light and dark themes, works without JavaScript, no tracker and no third-party request,
+- A "console" design for a DevOps and Linux profile: dark by default (light on request), mono
+  headings, shell prompts above the sections, a neofetch card and a tmux-like status bar. Works
+  without JavaScript, no tracker and no third-party request,
   WCAG 2.2 AA (axe), Lighthouse 100 on performance, accessibility, best practices and SEO.
 - For terminal lovers, the same profile as a real man page:
   `curl -sL https://louane20.github.io/portfolio/guerd.1 | man -l -`

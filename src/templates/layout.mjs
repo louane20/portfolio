@@ -30,6 +30,12 @@ export function csp(ctx) {
 export const monogram = (profile) =>
   html`<span class="monogram" aria-hidden="true">${profile.person.given_name[0]}${profile.person.family_name[0]}</span>`;
 
+/** The page as a working directory, for the header and the status bar: ~, ~/blog, ~/blog/<slug>. */
+const cwdOf = (path) => {
+  const rel = path.replace(/^(fr|ar)\//, '').replace(/index\.html$|\.html$/, '').replace(/\/$/, '');
+  return rel ? `~/${rel}` : '~';
+};
+
 function header(ctx, { home, blog }) {
   const { ui, profile, lang, root, resumeHref } = ctx;
   const homeHref = `${root}${langPrefix(lang)}` || './';
@@ -42,7 +48,7 @@ function header(ctx, { home, blog }) {
   return html`
 <header class="site-header">
   <div class="container header-row">
-    <a class="brand" href="${home ? '#top' : homeHref}">${monogram(profile)}<span class="brand-name">${profile.person.name}</span></a>
+    <a class="brand" href="${home ? '#top' : homeHref}"><span class="win-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="brand-name">${profile.person.name}</span></a>
     <nav class="nav" id="site-nav" aria-label="${ui.navLabel}" data-nav>
       <ul class="nav-links">${NAV.map(item)}</ul>
       <div class="nav-tools">
@@ -84,7 +90,17 @@ function footer(ctx) {
     </div>
   </div>
 </footer>
-<p class="toast" data-toast role="status" aria-live="polite"></p>`;
+<p class="toast" data-toast role="status" aria-live="polite"></p>
+<div class="statusbar" aria-hidden="true" dir="ltr">
+  <span class="sb-mode">NORMAL</span>
+  <span class="sb-item">git:main</span>
+  <span class="sb-item">${build.sha ? build.sha.slice(0, 7) : 'local build'}</span>
+  <span class="sb-item sb-path">${cwdOf(ctx.path ?? '')}</span>
+  <span class="sb-spacer"></span>
+  <span class="sb-item">${ui.htmlLang}</span>
+  <span class="sb-item">utf-8</span>
+  <span class="sb-item sb-clock" data-clock data-tz="${profile.person.timezone}" data-suffix="Algiers">Algiers</span>
+</div>`;
 }
 
 export function layout(ctx, page) {
@@ -116,9 +132,8 @@ ${html`<html lang="${ui.htmlLang}" dir="${ui.dir}">
 ${page.noindex ? html`<meta name="robots" content="noindex">` : ''}
 <link rel="canonical" href="${canonical}">
 ${alternates.map((a) => html`<link rel="alternate" hreflang="${a.lang}" href="${build.siteUrl}${a.path}">`)}
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f7fa">
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b1320">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0b0f0e">
 <meta property="og:type" content="${page.ogType ?? 'profile'}">
 ${
   page.article
@@ -154,7 +169,7 @@ ${header(ctx, { home: page.home, blog: page.blog })}
 <main id="main" tabindex="-1">
 ${raw(page.body)}
 </main>
-${footer(ctx)}
+${footer({ ...ctx, path: page.path })}
 <script type="application/json" id="site-data">${jsonForScript(clientData)}</script>
 </body>
 </html>`}
