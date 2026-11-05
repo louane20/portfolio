@@ -176,6 +176,8 @@ h2 small mark { background: var(--soft); color: var(--soft-ink); padding: 0 1mm;
 .projects .head .stack { flex: none; }
 .projects h3 .year { margin-left: 1.6mm; font-family: "Red Hat Mono", monospace; font-size: 7.4pt; font-weight: 400; color: var(--faint); }
 .projects h3 a { margin-left: 1.6mm; font-family: "Red Hat Mono", monospace; font-size: 7.4pt; font-weight: 600; color: var(--accent); }
+.projects h3 a.title-link { display: inline-flex; align-items: center; gap: 1mm; margin: 0; font: inherit; color: inherit; }
+.projects h3 a.title-link .ico { width: 2.6mm; height: 2.6mm; color: var(--accent); }
 .projects p { margin-top: 0.6mm; color: var(--ink-2); }
 .stack { font-family: "Red Hat Mono", monospace; font-size: 7.2pt; color: var(--accent) !important; }
 
@@ -296,7 +298,10 @@ export function cvHtml({ profile, lang, root, now = new Date() }) {
       ${projects.map(
         (x) => html`
       <li>
-        <div class="head"><h3>${t(x.title, lang)}<span class="year">${x.year}</span></h3><p class="stack">${x.tags.join(' · ')}</p></div>
+        <div class="head"><h3>${
+          // A project's own link makes its title clickable in the PDF (the GitHub profile placeholder does not).
+          x.link && x.link !== p.links.github ? html`<a class="title-link" href="${x.link}">${t(x.title, lang)}${icon.external}</a>` : t(x.title, lang)
+        }<span class="year">${x.year}</span></h3><p class="stack">${x.tags.join(' · ')}</p></div>
         <p>${md(t(x.text, lang))}</p>
       </li>`,
       )}

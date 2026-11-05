@@ -189,6 +189,25 @@ test.describe('files', () => {
   });
 });
 
+test.describe('projects', () => {
+  test('a project card with a link opens it from anywhere on the card', async ({ page }) => {
+    await page.goto('./#projects');
+    const cards = page.locator('.project.is-link');
+    expect(await cards.count()).toBeGreaterThan(0);
+    for (const card of await cards.all()) {
+      const href = await card.locator('a.project-link').getAttribute('href');
+      expect(href).toMatch(/^https:\/\//);
+      // Centred, so the sticky header and the status bar cover none of it.
+      await card.evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      const box = await card.boundingBox();
+      // A point near the bottom of the card, far from the title, still hits the title's link.
+      const hit = await page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.closest('a')?.getAttribute('href'), [box.x + 12, box.y + box.height - 12]);
+      expect(hit).toBe(href);
+    }
+    await expect(page.locator('#project-5g-automation .project-cta')).toHaveText('Read the paper');
+  });
+});
+
 test.describe('layout', () => {
   test('nothing overflows horizontally', async ({ page }) => {
     for (const path of ['./', 'fr/', 'ar/', 'blog/', 'fr/blog/', 'ar/blog/', 'blog/airgapped-kubernetes/', 'blog/kubernetes-operators/', 'nope/']) {

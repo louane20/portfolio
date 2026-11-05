@@ -240,6 +240,14 @@ function research(ctx) {
 </section>`;
 }
 
+/** What a project card's link leads to, from its address: code, a paper, or anything else. */
+const projectCta = (link, ui) => {
+  const host = new URL(link).hostname.replace(/^www\./, '');
+  if (host === 'github.com' || host === 'gitlab.com') return ui.projectLink.code;
+  if (['zenodo.org', 'doi.org', 'ieeexplore.ieee.org', 'arxiv.org'].includes(host)) return ui.projectLink.paper;
+  return ui.projectLink.other;
+};
+
 function projects(ctx) {
   const { profile, lang, ui, build } = ctx;
   const pr = profile.projects;
@@ -282,11 +290,12 @@ function projects(ctx) {
     <ul class="project-grid">
       ${pr.items.map(
         (p) => html`
-      <li class="project" id="project-${p.id}">
+      <li class="project${p.link ? ' is-link' : ''}" id="project-${p.id}">
         <p class="project-year">${p.year}</p>
-        <h3>${p.link ? html`<a href="${p.link}" rel="noopener">${t(p.title, lang)}</a>` : t(p.title, lang)}</h3>
+        <h3>${p.link ? html`<a class="project-link" href="${p.link}" rel="noopener">${t(p.title, lang)}</a>` : t(p.title, lang)}</h3>
         <p>${md(t(p.text, lang))}</p>
         <ul class="tag-list">${p.tags.map((tag) => html`<li>${tag}</li>`)}</ul>
+        ${p.link ? html`<p class="project-cta" aria-hidden="true">${projectCta(p.link, ui)}${icon.arrowRight}</p>` : ''}
       </li>`,
       )}
     </ul>

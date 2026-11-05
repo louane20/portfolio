@@ -119,6 +119,25 @@ Dans le texte, en plus du Markdown habituel :
 Après un nouvel article ou un titre modifié, régénère les images de partage (LinkedIn, etc.) :
 `node scripts/render-images.mjs --posts`, puis commite les fichiers de `src/static/og/`.
 
+## Ajouter les liens de tes projets
+
+Chaque carte de la section Projets est cliquable : toute la carte ouvre le lien du projet, avec
+en bas « Voir le code », « Lire l'article » ou « Voir le projet » selon l'adresse (GitHub ou
+GitLab, un article, ou autre chose). Les liens sont dans `content/profile.yaml`, section
+`projects`, un champ `link` par projet :
+
+```yaml
+    - id: ddos-sdn
+      ...
+      link: https://github.com/louane20  # à remplacer par le lien du dépôt ou de la démo
+```
+
+Remplace `https://github.com/louane20` (ton profil, en attendant) par le lien du dépôt, d'une
+démo ou d'un article. Le projet 5G pointe déjà vers ton article en accès libre. Pour qu'un projet
+ne soit plus cliquable, supprime sa ligne `link`. Puis lance `npm run cv` : dans le CV en PDF, le
+titre d'un projet devient cliquable dès qu'il a son propre lien (le lien vers ton profil GitHub
+n'y est pas repris).
+
 ## Le CV en PDF
 
 Le CV n'est plus un fichier fait à la main : il est **généré depuis `profile.yaml`**, comme le

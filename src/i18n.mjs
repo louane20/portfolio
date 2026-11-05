@@ -62,6 +62,7 @@ export const UI = {
     },
     featured: 'Featured',
     viewSource: 'Source code',
+    projectLink: { code: 'View the code', paper: 'Read the paper', other: 'View the project' },
     viewPipeline: 'Pipeline runs',
     pipelineLabel: 'Delivery pipeline',
     stages: {
@@ -263,6 +264,7 @@ export const UI = {
     },
     featured: 'À la une',
     viewSource: 'Code source',
+    projectLink: { code: 'Voir le code', paper: 'Lire l’article', other: 'Voir le projet' },
     viewPipeline: 'Exécutions du pipeline',
     pipelineLabel: 'Pipeline de livraison',
     stages: {
@@ -464,6 +466,7 @@ export const UI = {
     },
     featured: 'مشروع مميّز',
     viewSource: 'الشيفرة المصدرية',
+    projectLink: { code: 'عرض الشيفرة', paper: 'قراءة الورقة', other: 'عرض المشروع' },
     viewPipeline: 'تشغيلات خط التسليم',
     pipelineLabel: 'خط التسليم',
     stages: {
