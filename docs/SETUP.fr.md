@@ -119,6 +119,49 @@ Dans le texte, en plus du Markdown habituel :
 Après un nouvel article ou un titre modifié, régénère les images de partage (LinkedIn, etc.) :
 `node scripts/render-images.mjs --posts`, puis commite les fichiers de `src/static/og/`.
 
+## Le CV en PDF
+
+Le CV n'est plus un fichier fait à la main : il est **généré depuis `profile.yaml`**, comme le
+site, en anglais (`GUERD_Nawal_CV.pdf`) et en français (`GUERD_Nawal_CV_FR.pdf`). La page
+française propose le CV français ; les pages anglaise et arabe, le CV anglais. Après chaque
+modification de `profile.yaml` :
+
+```sh
+npm run cv         # ou : make cv
+```
+
+puis commite les deux PDF de `src/static/`. La commande refuse un CV de plus de 2 pages.
+
+- Ce qui n'apparaît que sur le CV est dans la section `cv` de `profile.yaml` : la ligne de
+  mots-clés sous le titre, le résumé, les quatre chiffres clés et la liste des projets retenus.
+  Tout le reste (expérience, compétences, formation, recherche, certifications, langues) vient
+  des mêmes sections que le site.
+- Le PDF est lisible par les logiciels de tri des recruteurs (ATS) : vrai texte sur une colonne,
+  titres de section reconnaissables, PDF balisé (accessible) avec signets. Le prompt
+  `nawal@guerd:~$ whoami` au-dessus du nom est dessiné, pas écrit, pour qu'un ATS ne le prenne
+  pas pour ton nom.
+- Les polices du CV (`scripts/cv/fonts/`) sont des versions statiques des polices Red Hat du
+  site : les polices variables s'intègrent mal dans un PDF. `scripts/cv-fonts.sh` les régénère
+  (rarement utile).
+
+## Ce qui a changé : nouveau positionnement et nouveau CV
+
+- **Positionnement** : « DevOps & Cloud Infrastructure Engineer ». Le titre, l'accroche, la
+  description pour Google et LinkedIn, la section « Profil », l'encadré « En bref » et le
+  contact mettent en avant l'infrastructure cloud-native, l'automatisation (infrastructure as
+  code) et le CI/CD, avec la sécurité comme atout plutôt que comme sujet principal. Rien n'a été
+  inventé : tout vient de ton ancien CV et de ton profil.
+- **Expertise** regroupée en 6 domaines : Kubernetes et plateformes cloud-native, automatisation
+  et infrastructure as code, CI/CD et GitOps, réseau et haute disponibilité, observabilité et
+  données, sécurité et Zero Trust.
+- **Expérience** : les puces ATM Mobilis commencent par un verbe d'action, avec les mots-clés
+  en gras, et une ligne précise ce qu'est ATM Mobilis (utile pour un recruteur à l'étranger).
+- **Projets** : nouveau projet « Déploiement automatisé d'une plateforme 5G cloud-native » (ton
+  mémoire), placé en premier ; le test d'intrusion et Snort sont réunis en un seul projet. La
+  section Projets passe avant Recherche.
+- **Nouveau CV** (voir « Le CV en PDF ») : 2 pages, en-tête façon terminal, chiffres clés,
+  compétences avec les outils de production surlignés, expérience en forme de graphe git.
+
 ## Ce qui a changé : terminal interactif
 
 - Nouvelle section **« Essayez mon terminal »** juste après l'en-tête : un vrai terminal où le

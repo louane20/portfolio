@@ -5,7 +5,7 @@
   "description": "Schema for content/profile.yaml. Every translatable field must exist in English and French.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["site", "person", "glance", "about", "expertise", "experience", "education", "research", "projects", "credentials", "blog", "contact"],
+  "required": ["site", "person", "glance", "about", "expertise", "experience", "education", "research", "projects", "credentials", "blog", "contact", "cv"],
   "$defs": {
     "i18n": {
       "type": "object",
@@ -15,6 +15,16 @@
         "en": { "type": "string", "minLength": 1 },
         "fr": { "type": "string", "minLength": 1 },
         "ar": { "type": "string", "minLength": 1 }
+      }
+    },
+    "i18nCv": {
+      "description": "Text of the PDF résumé, which exists in English and French only.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["en", "fr"],
+      "properties": {
+        "en": { "type": "string", "minLength": 1 },
+        "fr": { "type": "string", "minLength": 1 }
       }
     },
     "text": {
@@ -69,7 +79,12 @@
         },
         "url": { "$ref": "#/$defs/url" },
         "repository": { "type": "string", "pattern": "^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$" },
-        "resume": { "type": "string", "pattern": "^[A-Za-z0-9._-]+\\.pdf$" }
+        "resume": {
+          "allOf": [
+            { "$ref": "#/$defs/i18n" },
+            { "type": "object", "additionalProperties": { "type": "string", "pattern": "^[A-Za-z0-9._-]+\\.pdf$" } }
+          ]
+        }
       }
     },
     "person": {
@@ -195,6 +210,7 @@
               "id": { "$ref": "#/$defs/id" },
               "role": { "$ref": "#/$defs/i18n" },
               "org": { "type": "string" },
+              "org_about": { "$ref": "#/$defs/i18n" },
               "place": { "$ref": "#/$defs/text" },
               "start": { "$ref": "#/$defs/month" },
               "end": { "oneOf": [{ "$ref": "#/$defs/month" }, { "const": "present" }] },
@@ -359,6 +375,27 @@
       "additionalProperties": false,
       "required": ["heading", "text"],
       "properties": { "heading": { "$ref": "#/$defs/i18n" }, "text": { "$ref": "#/$defs/i18n" } }
+    },
+    "cv": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["keywords", "summary", "highlights", "projects"],
+      "properties": {
+        "keywords": { "$ref": "#/$defs/i18nCv" },
+        "summary": { "$ref": "#/$defs/i18nCv" },
+        "highlights": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["value", "label"],
+            "properties": { "value": { "$ref": "#/$defs/i18nCv" }, "label": { "$ref": "#/$defs/i18nCv" } }
+          }
+        },
+        "projects": { "type": "array", "maxItems": 4, "items": { "$ref": "#/$defs/id" } }
+      }
     }
   }
 }

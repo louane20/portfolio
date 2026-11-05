@@ -187,7 +187,7 @@ test.describe('interactive terminal', () => {
     await expect(input).toBeVisible();
     await input.fill('whoami');
     await input.press('Enter');
-    await expect(out).toContainText('Nawal Guerd: DevOps Engineer, ATM Mobilis');
+    await expect(out).toContainText('Nawal Guerd: DevOps & Cloud Infrastructure Engineer, ATM Mobilis');
     await input.fill('skills');
     await input.press('Enter');
     await expect(out).toContainText('in production: Cilium');

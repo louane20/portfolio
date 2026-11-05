@@ -17,6 +17,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "build:drafts": "node scripts/build.mjs --drafts",
+    "cv": "node scripts/render-cv.mjs",
     "dev": "node scripts/dev.mjs",
     "serve": "node scripts/serve.mjs dist 4173",
     "validate:content": "node scripts/validate-content.mjs",

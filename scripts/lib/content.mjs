@@ -45,6 +45,10 @@ function crossCheck(profile) {
       seen.add(tool);
     }
   }
+  const projectIds = new Set(profile.projects.items.map((p) => p.id));
+  for (const id of profile.cv.projects) {
+    if (!projectIds.has(id)) problems.push(`cv.projects lists "${id}", which is not a project id`);
+  }
   const panels = profile.research.figure.panels.map((p) => p.id).join(',');
   if (panels !== 'flat,network,mesh') problems.push('research.figure.panels must be, in order: flat, network, mesh');
   const sorted = [...profile.experience.items].sort((a, b) => String(b.start).localeCompare(String(a.start)));

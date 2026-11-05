@@ -4,7 +4,7 @@ import { langPrefix } from '../../scripts/lib/content.mjs';
 import { UI } from '../i18n.mjs';
 
 // Sections of the home page, plus the blog, which has its own pages.
-export const NAV = ['about', 'expertise', 'experience', 'research', 'projects', 'blog', 'contact'];
+export const NAV = ['about', 'expertise', 'experience', 'projects', 'research', 'blog', 'contact'];
 
 // Inline so the theme is applied before the first paint (no flash). Its hash is added to the CSP.
 export const THEME_SCRIPT =

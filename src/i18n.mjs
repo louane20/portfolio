@@ -430,7 +430,7 @@ export const UI = {
     downloadCv: 'تحميل السيرة الذاتية',
     cvShort: 'السيرة',
     contactMe: 'تواصل معي',
-    pdf: 'PDF',
+    pdf: 'PDF بالإنجليزية',
     atAGlance: 'لمحة سريعة',
     location: 'الموقع',
     localTime: 'بالتوقيت المحلي',

@@ -63,7 +63,10 @@ kind-down: ## Delete the kind cluster
 images: ## Re-render the favicons and the social card
 	node scripts/render-images.mjs
 
+cv: ## Re-render the PDF résumé (English and French) from content/profile.yaml
+	npm run cv
+
 clean: ## Remove build and test outputs
 	rm -rf dist build test-results playwright-report .lighthouseci k6-summary.*
 
-.PHONY: help install dev build serve lint test lighthouse man image run tools kind-up zero-trust kind-down images clean
+.PHONY: help install dev build serve lint test lighthouse man image run tools kind-up zero-trust kind-down images cv clean

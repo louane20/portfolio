@@ -106,8 +106,9 @@ async function bundle() {
   const sizes = Object.fromEntries(outputs.map(([p, m]) => [rel(p), m.bytes]));
   // Fonts used above the fold, preloaded so text does not shift when they swap in.
   const fonts = [font('red-hat-mono'), font('red-hat-text')];
-  // Arabic pages also preload the Arabic text face.
-  const arabicFonts = [font('ibm-plex-sans-arabic-400')];
+  // Arabic pages also preload the Arabic faces of the first screen: 400 for the text, 600 for the
+  // title (it wraps on phones, so a late swap would move everything below it).
+  const arabicFonts = [font('ibm-plex-sans-arabic-400'), font('ibm-plex-sans-arabic-600')];
   return { js: rel(js), css: rel(css), fonts, arabicFonts, sizes };
 }
 
@@ -122,7 +123,10 @@ async function main() {
   const assets = await bundle();
 
   await cp(path.join(ROOT, 'src/static'), DIST, { recursive: true });
-  const resumeSize = kb((await stat(path.join(DIST, profile.site.resume))).size);
+  // Each language offers its own résumé (the Arabic pages offer the English one).
+  const resumes = Object.fromEntries(
+    await Promise.all(LANGS.map(async (l) => [l, { file: t(profile.site.resume, l), size: kb((await stat(path.join(DIST, t(profile.site.resume, l)))).size) }])),
+  );
   const themeScriptHash = `sha256-${sha256(THEME_SCRIPT)}`;
   const pages = [];
 
@@ -155,8 +159,8 @@ async function main() {
     build,
     assets,
     root,
-    resumeSize,
-    resumeHref: `${root}${profile.site.resume}`,
+    resumeSize: resumes[lang].size,
+    resumeHref: `${root}${resumes[lang].file}`,
     themeScriptHash,
     langLinks: LANGS.filter((l) => l !== lang).map((l) => ({ lang: l, href: `${root}${langPrefix(l)}${sub}` || './' })),
   });

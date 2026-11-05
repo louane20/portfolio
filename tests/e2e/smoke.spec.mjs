@@ -1,6 +1,6 @@
 import { test, expect } from './fixtures.mjs';
 
-const SECTIONS = ['shell', 'pipeline-map', 'about', 'expertise', 'experience', 'research', 'projects', 'education', 'writing', 'contact'];
+const SECTIONS = ['shell', 'pipeline-map', 'about', 'expertise', 'experience', 'projects', 'research', 'education', 'writing', 'contact'];
 
 test.describe('pages', () => {
   test('home page renders every section', async ({ page, consoleErrors }) => {
@@ -9,7 +9,7 @@ test.describe('pages', () => {
     await expect(page).toHaveTitle(/Nawal Guerd/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.locator('h1')).toHaveText('Nawal Guerd');
-    await expect(page.locator('.hero-role')).toHaveText('DevOps Engineer');
+    await expect(page.locator('.hero-role')).toHaveText('DevOps & Cloud Infrastructure Engineer');
     for (const id of SECTIONS) await expect(page.locator(`#${id}`)).toHaveCount(1);
     await expect(page.locator('meta[http-equiv="Content-Security-Policy"]')).toHaveCount(1);
     await expect(page.locator('link[rel="alternate"][hreflang="fr"]')).toHaveCount(1);
@@ -20,9 +20,9 @@ test.describe('pages', () => {
   test('French version is a full translation', async ({ page, consoleErrors }) => {
     await page.goto('fr/');
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-    await expect(page.locator('.hero-role')).toHaveText('Ingénieure DevOps');
+    await expect(page.locator('.hero-role')).toHaveText('Ingénieure DevOps & Infrastructure Cloud');
     await expect(page.locator('#experience h2')).toHaveText('Expérience');
-    await expect(page.locator('.hero-headline')).toContainText('Je construis et je sécurise');
+    await expect(page.locator('.hero-headline')).toContainText("Je conçois, j'automatise");
     await expect(page.locator('#area-kubernetes dt').first()).toHaveText('En production');
     expect(consoleErrors).toEqual([]);
   });
@@ -48,10 +48,10 @@ test.describe('pages', () => {
     await page.goto('ar/');
     await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
-    await expect(page.locator('.hero-role')).toHaveText('مهندسة DevOps');
+    await expect(page.locator('.hero-role')).toHaveText('مهندسة DevOps والبنية التحتية السحابية');
     await expect(page.locator('#experience h2')).toHaveText('الخبرة المهنية');
     await expect(page.locator('link[rel="alternate"][hreflang="ar"]')).toHaveAttribute('href', /\/ar\/$/);
-    await expect(page.locator('link[rel="preload"][href*="ibm-plex-sans-arabic"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="preload"][href*="ibm-plex-sans-arabic"]')).toHaveCount(2);
     await page.goto('ar/blog/');
     await expect(page.locator('h1')).toHaveText('ملاحظات من الإنتاج');
     await expect(page.locator('.post-card[lang="en"][dir="ltr"]').first()).toBeAttached();
@@ -134,10 +134,24 @@ test.describe('pages', () => {
 });
 
 test.describe('files', () => {
-  test('résumé is downloadable', async ({ request }) => {
-    const res = await request.get('GUERD_Nawal_CV.pdf');
-    expect(res.status()).toBe(200);
-    expect((await res.body()).subarray(0, 5).toString()).toBe('%PDF-');
+  test('résumé is downloadable, in English and French', async ({ request }) => {
+    for (const file of ['GUERD_Nawal_CV.pdf', 'GUERD_Nawal_CV_FR.pdf']) {
+      const res = await request.get(file);
+      expect(res.status()).toBe(200);
+      const body = await res.body();
+      expect(body.subarray(0, 5).toString()).toBe('%PDF-');
+      // Two pages at most (scripts/render-cv.mjs enforces it too).
+      expect((body.toString('latin1').match(/\/Type\s*\/Page[^s]/g) ?? []).length).toBeLessThanOrEqual(2);
+    }
+  });
+
+  test('each language offers its own résumé', async ({ page }) => {
+    for (const [path, file] of [['./', 'GUERD_Nawal_CV.pdf'], ['fr/', 'GUERD_Nawal_CV_FR.pdf'], ['ar/', 'GUERD_Nawal_CV.pdf']]) {
+      await page.goto(path);
+      const links = page.locator('a[download]');
+      expect(await links.count()).toBeGreaterThan(1);
+      for (const href of await links.evaluateAll((els) => els.map((a) => a.getAttribute('href')))) expect(href).toMatch(new RegExp(`(^|/)${file.replace('.', '\\.')}$`));
+    }
   });
 
   test('the terminal version is a valid man page', async ({ request }) => {

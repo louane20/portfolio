@@ -17,6 +17,11 @@ The site is simple to read; the repository behind it is built and shipped like p
   self-hosted Arabic typeface that English and French pages never download): profile, expertise (with the tools
   I run in production marked as such), experience, research, projects, education, certifications
   and contact, with a one-click CV download.
+- **A PDF résumé generated from the same content file**, in English and French
+  (`npm run cv`, [`scripts/render-cv.mjs`](scripts/render-cv.mjs)): two A4 pages printed by
+  Chromium from [`src/templates/cv.mjs`](src/templates/cv.mjs), readable by applicant tracking
+  systems (real text in one column, tagged PDF with bookmarks), and refused if it grows past two
+  pages. The site and the résumé can never disagree.
 - **A research diagram** that explains my IEEE WCNC 2025 paper in three steps: a flat network,
   network policies with Cilium, then a service mesh with Istio, each stopping the attack it can see.
 - **A blog** ([`/blog/`](https://louane20.github.io/portfolio/blog/)) with illustrated articles on
@@ -115,15 +120,18 @@ In the body, on top of standard Markdown:
 After adding a post or changing a title, `node scripts/render-images.mjs --posts` regenerates the
 social images in `src/static/og/` (commit them with the post).
 
+After changing `content/profile.yaml`, `npm run cv` regenerates the two résumés in `src/static/`
+(commit them too).
+
 ## Layout
 
 ```
-content/            profile.yaml (EN + FR), schema.json, blog/*.md
+content/            profile.yaml (EN, FR, AR; the résumé's cv section), schema.json, blog/*.md
 src/templates/      page sections and the research diagram, rendered at build time
 src/templates/blog/ blog pages, Markdown rendering, cover illustrations and article diagrams
 src/scripts/        theme, menu, copy buttons, local time, live pipeline status, blog filters
 src/styles/         design tokens (light and dark), layout, components
-scripts/            build.mjs, serve.mjs, check-links.mjs, ci/*.sh
+scripts/            build.mjs, render-cv.mjs, render-images.mjs, serve.mjs, check-links.mjs, ci/*.sh
 tests/              Playwright + axe (e2e/), k6 (load/)
 deploy/             nginx config, kustomize base and overlays, kind, Argo CD
 .github/            workflows, composite action, Dependabot

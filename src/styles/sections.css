@@ -333,6 +333,14 @@
   font-weight: 600;
 }
 
+.job-org-about {
+  display: block;
+  margin-top: 0.1rem;
+  color: var(--ink-3);
+  font-size: var(--step--1);
+  font-weight: 400;
+}
+
 .job-body .tags {
   margin-top: 0.9rem;
 }

@@ -39,8 +39,8 @@ function hero(ctx) {
       <ol class="boot" aria-hidden="true" dir="ltr">
         <li><span class="ok">[  OK  ]</span> Reached target <b>kubernetes.target</b></li>
         <li><span class="ok">[  OK  ]</span> Started <b>argocd.service</b>: GitOps sync</li>
+        <li><span class="ok">[  OK  ]</span> Started <b>ansible.service</b>: infrastructure as code</li>
         <li><span class="ok">[  OK  ]</span> Started <b>cilium.service</b>: Zero Trust policies</li>
-        <li><span class="ok">[  OK  ]</span> Mounted <b>/home/nawal/research</b></li>
         <li class="boot-cmd"><span class="ps1">nawal@guerd</span><span class="ps2">:~$</span> neofetch</li>
       </ol>
       <div class="glance-head">
@@ -136,7 +136,7 @@ function experience(ctx) {
         </div>
         <div class="job-body">
           <h3 class="job-role">${t(job.role, lang)}</h3>
-          <p class="job-org">${job.org}</p>
+          <p class="job-org">${job.org}${job.org_about ? html`<span class="job-org-about">${t(job.org_about, lang)}</span>` : ''}</p>
           ${job.tags?.length ? html`<ul class="tags">${job.tags.map((tag) => html`<li>${t(tag, lang)}</li>`)}</ul>` : ''}
           ${
             job.highlights.length > 1
@@ -184,7 +184,7 @@ function research(ctx) {
   const fig = r.figure;
   const tone = { flat: 'is-bad', network: 'is-warn', mesh: 'is-good' };
   return html`
-<section class="section band" id="research" aria-labelledby="research-h">
+<section class="section" id="research" aria-labelledby="research-h">
   <div class="container">
     <header class="section-head">
       ${cmd('cat research/ieee-wcnc-2025.md')}
@@ -254,7 +254,7 @@ function projects(ctx) {
               <span class="stage-state" data-stage-state>${ui.client.pipe.unknown}</span>
             </li>`;
   return html`
-<section class="section" id="projects" aria-labelledby="projects-h">
+<section class="section band" id="projects" aria-labelledby="projects-h">
   <div class="container">
     <header class="section-head">
       ${cmd('ls -l ~/projects')}
@@ -390,7 +390,7 @@ function contact(ctx) {
 }
 
 export function homeBody(ctx) {
-  return [hero, termSection, shipSection, about, expertise, experience, research, projects, education, writing, contact].map((fn) => String(fn(ctx))).join('\n');
+  return [hero, termSection, shipSection, about, expertise, experience, projects, research, education, writing, contact].map((fn) => String(fn(ctx))).join('\n');
 }
 
 export function personJsonLd(ctx) {
