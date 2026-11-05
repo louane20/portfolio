@@ -178,3 +178,43 @@ test.describe('delivery map and navigation', () => {
     await expect(page.locator('[data-nav-link="contact"]')).not.toHaveClass(/is-done/);
   });
 });
+
+test.describe('interactive terminal', () => {
+  test('answers commands from the profile, and links work', async ({ page }) => {
+    await page.goto('./#shell');
+    const input = page.locator('#term-input');
+    const out = page.locator('[data-term-out]');
+    await expect(input).toBeVisible();
+    await input.fill('whoami');
+    await input.press('Enter');
+    await expect(out).toContainText('Nawal Guerd: DevOps Engineer, ATM Mobilis');
+    await input.fill('skills');
+    await input.press('Enter');
+    await expect(out).toContainText('in production: Cilium');
+    await input.fill('contact');
+    await input.press('Enter');
+    await expect(out.locator('a[href="mailto:guerd.nawal@gmail.com"]')).toBeVisible();
+    await input.fill('rm -rf /');
+    await input.press('Enter');
+    await expect(out).toContainText('command not found: rm');
+    await input.fill('<img src=x onerror=alert(1)>');
+    await input.press('Enter');
+    await expect(out.locator('img')).toHaveCount(0);
+    await input.press('ArrowUp');
+    await expect(input).toHaveValue('<img src=x onerror=alert(1)>');
+    await input.fill('cle');
+    await input.press('Tab');
+    await expect(input).toHaveValue('clear');
+    await input.press('Enter');
+    await expect(out.locator('.t-line')).toHaveCount(0);
+  });
+
+  test('shows a recorded session without JavaScript', async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto(test.info().project.use.baseURL);
+    await expect(page.locator('[data-term-out]')).toContainText('whoami');
+    await expect(page.locator('#term-input')).toBeHidden();
+    await context.close();
+  });
+});

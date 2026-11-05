@@ -1,6 +1,6 @@
 import { test, expect } from './fixtures.mjs';
 
-const SECTIONS = ['pipeline-map', 'about', 'expertise', 'experience', 'research', 'projects', 'education', 'writing', 'contact'];
+const SECTIONS = ['shell', 'pipeline-map', 'about', 'expertise', 'experience', 'research', 'projects', 'education', 'writing', 'contact'];
 
 test.describe('pages', () => {
   test('home page renders every section', async ({ page, consoleErrors }) => {

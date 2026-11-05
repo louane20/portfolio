@@ -119,6 +119,17 @@ Dans le texte, en plus du Markdown habituel :
 Après un nouvel article ou un titre modifié, régénère les images de partage (LinkedIn, etc.) :
 `node scripts/render-images.mjs --posts`, puis commite les fichiers de `src/static/og/`.
 
+## Ce qui a changé : terminal interactif
+
+- Nouvelle section **« Essayez mon terminal »** juste après l'en-tête : un vrai terminal où le
+  visiteur tape des commandes. `help`, `whoami`, `neofetch`, `skills`, `experience` (ou `git log`),
+  `projects`, `research`, `blog`, `contact`, `cv`, `clear`, et `sudo hire-me` qui l'emmène au
+  contact. Historique avec les flèches, complétion avec Tab. Les réponses viennent de
+  `profile.yaml`, dans la langue de la page. Sans JavaScript, la section montre une session
+  enregistrée.
+- La fenêtre `neofetch` démarre avec un journal de boot façon systemd
+  (`[  OK  ] Started cilium.service`…).
+
 ## Ce qui a changé : version plus DevOps
 
 - Nouvelle section **« Comment je livre »** juste après l'en-tête : une carte animée de ta chaîne

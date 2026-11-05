@@ -5,6 +5,7 @@
 import { initTheme, initMenu, initScrollSpy, createToast, initCopy, initPhoneReveal, initLocalTime } from './ui.js';
 import { initPipeline } from './pipeline.js';
 import { initFilters, initToc, initProgress } from './blog.js';
+import { initTerminal } from './term.js';
 
 function siteData() {
   try {
@@ -49,6 +50,7 @@ function main() {
   initFilters(data.ui);
   initToc();
   initProgress();
+  initTerminal();
   const pipe = document.querySelector('[data-pipeline]');
   if (pipe) {
     // The API call is not needed for the first screen: wait until the section comes close.

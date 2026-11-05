@@ -4,6 +4,7 @@ import { monogram } from './layout.mjs';
 import { panelSvg, legendSwatch } from './figure.mjs';
 import { postCard, blogHref } from './blog/pages.mjs';
 import { shipSection } from './ship.mjs';
+import { termSection } from './term.mjs';
 
 const languagesLine = (profile, lang) =>
   profile.person.languages.map((l) => `${t(l.name, lang)} (${t(l.level, lang)})`).join(lang === 'ar' ? '، ' : ', ');
@@ -35,6 +36,13 @@ function hero(ctx) {
     </div>
     <aside class="glance" aria-labelledby="glance-title">
       <div class="win-bar" aria-hidden="true" dir="ltr"><span class="win-dots"><i></i><i></i><i></i></span><span class="win-title">nawal@guerd: ~ — neofetch</span></div>
+      <ol class="boot" aria-hidden="true" dir="ltr">
+        <li><span class="ok">[  OK  ]</span> Reached target <b>kubernetes.target</b></li>
+        <li><span class="ok">[  OK  ]</span> Started <b>argocd.service</b>: GitOps sync</li>
+        <li><span class="ok">[  OK  ]</span> Started <b>cilium.service</b>: Zero Trust policies</li>
+        <li><span class="ok">[  OK  ]</span> Mounted <b>/home/nawal/research</b></li>
+        <li class="boot-cmd"><span class="ps1">nawal@guerd</span><span class="ps2">:~$</span> neofetch</li>
+      </ol>
       <div class="glance-head">
         ${portrait}
         <div>
@@ -382,7 +390,7 @@ function contact(ctx) {
 }
 
 export function homeBody(ctx) {
-  return [hero, shipSection, about, expertise, experience, research, projects, education, writing, contact].map((fn) => String(fn(ctx))).join('\n');
+  return [hero, termSection, shipSection, about, expertise, experience, research, projects, education, writing, contact].map((fn) => String(fn(ctx))).join('\n');
 }
 
 export function personJsonLd(ctx) {
